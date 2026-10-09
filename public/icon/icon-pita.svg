@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Pita banner">
+  <polygon fill="#A80F15" points="6,46 32,46 32,92 6,92 20,69"/>
+  <polygon fill="#A80F15" points="122,46 96,46 96,92 122,92 108,69"/>
+  <polygon fill="#D7191F" points="22,34 106,34 106,82 22,82"/>
+  <path fill="none" stroke="#fff" stroke-width="2.5" stroke-dasharray="6 5" d="M30 42h68v32H30z"/>
+</svg>

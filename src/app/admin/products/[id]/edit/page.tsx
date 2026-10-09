@@ -1,0 +1,45 @@
+import { createClient } from '@/lib/supabase/server'
+import { ProductForm } from '@/components/admin/ProductForm'
+import { notFound } from 'next/navigation'
+
+export const dynamic = 'force-dynamic'
+
+export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const supabase = await createClient()
+
+  const [{ data: product }, { data: categories }, { data: gallery }, { data: specs }] = await Promise.all([
+    supabase.from('products').select('*').eq('id', id).single(),
+    supabase.from('categories').select('*').order('name'),
+    supabase.from('product_images').select('*').eq('product_id', id).order('sort_order'),
+    supabase.from('product_specifications').select('*').eq('product_id', id).order('sort_order'),
+  ])
+
+  if (!product) notFound()
+
+  return (
+    <div>
+      <h1 className="text-2xl font-extrabold text-[#0A1628] mb-1">Edit Produk</h1>
+      <p className="text-sm text-gray-500 mb-6">{product.name}</p>
+      <ProductForm
+        categories={categories || []}
+        initialValues={{
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          category_id: product.category_id,
+          description: product.description || '',
+          thumbnail_url: product.main_image,
+          shopee_url: product.shopee_url || '',
+          tokopedia_url: product.tokopedia_url || '',
+          lazada_url: product.lazada_url || '',
+          is_featured: product.is_featured,
+          status: product.status,
+        }}
+
+        initialGallery={(gallery || []).map((g) => ({ id: g.id, image_url: g.image_url, sort_order: g.sort_order }))}
+        initialSpecs={(specs || []).map((s) => ({ id: s.id, spec_key: s.spec_key, spec_value: s.spec_value }))}
+      />
+    </div>
+  )
+}

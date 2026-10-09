@@ -1,0 +1,66 @@
+# ==============================
+# Environment Variables (KRITIS - JANGAN DI-PUSH)
+# ==============================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# ==============================
+# Next.js Build Output
+# ==============================
+.next/
+out/
+
+# ==============================
+# Dependencies
+# ==============================
+node_modules/
+
+# ==============================
+# Package Manager Locks
+# (pilih salah satu: npm atau pnpm, hapus yg tidak dipakai)
+# ==============================
+# package-lock.json  # uncomment jika pakai pnpm
+# pnpm-lock.yaml     # uncomment jika pakai npm
+
+# ==============================
+# TypeScript Build Cache
+# ==============================
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# ==============================
+# Vercel & v0 Sandbox Internal
+# ==============================
+.vercel/
+.snowflake/
+.v0-trash/
+__v0_runtime_loader.js
+__v0_devtools.tsx
+__v0_jsx-dev-runtime.ts
+
+# ==============================
+# OS / IDE
+# ==============================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/settings.json
+.idea/
+
+# ==============================
+# Debug
+# ==============================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==============================
+# DESIGN REFERENCE (aset internal, tidak perlu di-push)
+# ==============================
+DESIGN REFERENCE/
