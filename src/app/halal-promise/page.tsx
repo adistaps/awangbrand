@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { HalalPromiseClient } from './HalalPromiseClient'
+import HalalPromiseClient from './HalalPromiseClient'
 
 export const metadata: Metadata = {
   title: 'Our Halal Commitment | AWANG Brand',

@@ -98,14 +98,6 @@ function VideoCard({ item, idx }: { item: typeof socialVideos[0]; idx: number })
             Tap to Play
           </span>
 
-          {/* Info teks bawah jika ada title */}
-          {'title' in item && item.title && (
-            <div className="absolute inset-x-0 bottom-0 p-4 flex flex-col items-start text-white text-left z-10">
-              <p className="text-xs font-bold uppercase tracking-wider opacity-90 mb-1">
-                {item.title}
-              </p>
-            </div>
-          )}
         </div>
       )}
 

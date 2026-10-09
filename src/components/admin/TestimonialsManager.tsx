@@ -21,7 +21,7 @@ export function TestimonialsManager({ initialTestimonials }: { initialTestimonia
 
   function openEdit(t: Testimonial) {
     setEditing(t)
-    setForm({ quote: t.quote, author: t.author, role: t.role || '', image_url: t.image_url })
+    setForm({ quote: t.quote || t.content || '', author: t.author || t.name || '', role: t.role || '', image_url: t.image_url ?? null })
     setModalOpen(true)
   }
 

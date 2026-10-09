@@ -130,3 +130,5 @@ export function HalalPromiseClient() {
     </main>
   )
 }
+
+export default HalalPromiseClient
