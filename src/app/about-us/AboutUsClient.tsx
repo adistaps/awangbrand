@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useInView } from 'framer-motion'
-import { useLanguage } from '@/context/LanguageContext'
 import TimelineBlock01 from '@/components/ui/timeline-01'
 import { MarqueeSection } from '@/components/Homepage/MarqueeSection'
 import { ProductCarouselSection } from '@/components/Homepage/ProductCarouselSection'
@@ -47,8 +46,6 @@ function Counter({ target, suffix = "", duration = 2 }: { target: number; suffix
 }
 
 export function AboutUsClient() {
-  const { language } = useLanguage()
-
   return (
     <div className="w-full bg-[#FDFBF7] font-sans">
 
@@ -127,10 +124,7 @@ export function AboutUsClient() {
             {/* Kutipan & Informasi Detail */}
             <div className="flex flex-col justify-center p-6 sm:p-10 md:p-12 space-y-5">
               <blockquote className="text-lg sm:text-xl md:text-2xl font-medium text-[#111111] leading-relaxed tracking-tight">
-                &ldquo;<span className="font-bold text-[#C8102E]">AWANG</span> {language === 'en'
-                  ? 'is dedicated to preserving authentic heritage recipes while continuously advancing culinary innovation for everyday cooking.'
-                  : 'berkomitmen melestarikan cita rasa warisan autentik sekaligus memajukan inovasi kuliner modern agar kelezatan tradisi dapat dinikmati dengan mudah.'
-                }&rdquo;
+                &ldquo;<span className="font-bold text-[#C8102E]">AWANG</span> berkomitmen melestarikan cita rasa warisan autentik sekaligus memajukan inovasi kuliner modern agar kelezatan tradisi dapat dinikmati dengan mudah.&rdquo;
               </blockquote>
 
               <div className="space-y-0.5">
@@ -163,13 +157,10 @@ export function AboutUsClient() {
 
             <div className="flex flex-col justify-center space-y-1">
               <h3 className="text-lg md:text-xl font-bold text-[#111111] leading-snug">
-                {language === 'en' ? 'Pastes Produced Annually' : 'Total Produksi Bumbu Pertahun'}
+                Total Produksi Bumbu Pertahun
               </h3>
               <p className="text-xs sm:text-sm text-gray-500 font-medium leading-relaxed max-w-sm">
-                {language === 'en'
-                  ? 'Serving households, conscious consumers, and global hypermarkets with authentic Malaysian flavors.'
-                  : 'Melayani ribuan keluarga, konsumen modern, dan hipermarket global dengan kelezatan autentik.'
-                }
+                Melayani ribuan keluarga, konsumen modern, dan hipermarket global dengan kelezatan autentik.
               </p>
             </div>
           </div>
@@ -199,7 +190,7 @@ export function AboutUsClient() {
               <Counter target={150} suffix="+" />
             </span>
             <span className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase text-gray-500 tracking-wider">
-              {language === 'en' ? 'PASTE VARIETIES' : 'VARIAN PASTA BUMBU'}
+              VARIAN PASTA BUMBU
             </span>
           </div>
 
@@ -211,7 +202,7 @@ export function AboutUsClient() {
               <Counter target={10} suffix="+" />
             </span>
             <span className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase text-gray-500 tracking-wider">
-              {language === 'en' ? 'GLOBAL REGIONS' : 'JARINGAN PASAR GLOBAL'}
+              JARINGAN PASAR GLOBAL
             </span>
           </div>
 
@@ -223,7 +214,7 @@ export function AboutUsClient() {
               <Counter target={100} suffix="%" />
             </span>
             <span className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase text-gray-500 tracking-wider">
-              {language === 'en' ? 'HALAL & NATURAL' : 'HALAL & ALAMI'}
+              HALAL & ALAMI
             </span>
           </div>
 

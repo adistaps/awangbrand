@@ -4,7 +4,6 @@ import { DM_Sans } from 'next/font/google'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { LoadingScreen } from '@/components/LoadingScreen'
-import { LanguageProvider } from '@/context/LanguageContext'
 import './globals.css'
 
 const dmSans = DM_Sans({
@@ -93,12 +92,10 @@ export default function RootLayout({
   return (
     <html lang="id" className={`bg-background ${dmSans.variable}`}>
       <body className="antialiased">
-        <LanguageProvider>
-          <LoadingScreen />
-          <Navbar />
-          {children}
-          <Footer />
-        </LanguageProvider>
+        <LoadingScreen />
+        <Navbar />
+        {children}
+        <Footer />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

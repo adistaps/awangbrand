@@ -3,11 +3,8 @@
 import React from 'react'
 import Image from 'next/image'
 import { MessageSquare, Phone } from 'lucide-react'
-import { useLanguage } from '@/context/LanguageContext'
 
 export function ContactClient() {
-  const { language } = useLanguage()
-
   // Nomor WhatsApp Sales & CS
   const salesPhone = '+60123456789'
   const csPhone = '+60198765432'

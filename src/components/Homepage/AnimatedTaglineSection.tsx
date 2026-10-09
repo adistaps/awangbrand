@@ -1,8 +1,6 @@
 'use client'
 
 import { motion, Variants } from 'framer-motion'
-import { useLanguage } from '@/context/LanguageContext'
-
 import Image from 'next/image'
 
 interface AnimatedTextProps {
@@ -42,7 +40,7 @@ function AnimatedFallingText({ text, className, baseDelay = 0 }: AnimatedTextPro
                   delay: currentDelay,
                   repeat: Infinity,
                   repeatType: 'reverse',
-                  repeatDelay: 2, // Jeda waktu saat teks penuh sebelum naik kembali
+                  repeatDelay: 2.5,
                 },
               },
             }
@@ -66,41 +64,31 @@ function AnimatedFallingText({ text, className, baseDelay = 0 }: AnimatedTextPro
 }
 
 export function AnimatedTaglineSection() {
-  const { language } = useLanguage()
-
   return (
     <section className="relative w-full bg-[#C8102E] pt-12 sm:pt-16 md:pt-20 pb-0 px-4 sm:px-6 lg:px-12 flex items-end justify-center overflow-hidden">
       <div className="w-full max-w-[1400px] mx-auto flex flex-col lg:flex-row items-end justify-between gap-8 lg:gap-6 relative">
         {/* Sisi Kiri: Teks Tagline (Rata Kiri) */}
         <div className="w-full lg:w-[55%] text-left flex flex-col items-start justify-center pb-12 sm:pb-16 md:pb-20 gap-1 sm:gap-2 z-10">
-          {language === 'en' ? (
-            <>
-              {/* Baris 1 */}
-              <AnimatedFallingText
-                text="SIZZLE"
-                baseDelay={0}
-                className="text-4xl sm:text-6xl md:text-7xl lg:text-[6rem] xl:text-[7.5rem] font-black uppercase tracking-tighter leading-[0.9] text-[#4A0D18]"
-              />
+          {/* Baris 1 */}
+          <AnimatedFallingText
+            text="SIZZLE"
+            baseDelay={0}
+            className="text-4xl sm:text-6xl md:text-7xl lg:text-[6rem] xl:text-[7.5rem] font-black uppercase tracking-tighter leading-[0.9] text-[#4A0D18]"
+          />
 
-              {/* Baris 2 */}
-              <AnimatedFallingText
-                text="SLURP"
-                baseDelay={0.6}
-                className="text-5xl sm:text-7xl md:text-8xl lg:text-[7rem] xl:text-[9rem] font-black uppercase tracking-tighter leading-[0.9] text-white my-1"
-              />
+          {/* Baris 2 */}
+          <AnimatedFallingText
+            text="SLURP"
+            baseDelay={0.4}
+            className="text-5xl sm:text-7xl md:text-8xl lg:text-[7rem] xl:text-[9rem] font-black uppercase tracking-tighter leading-[0.9] text-white my-1"
+          />
 
-              {/* Baris 3 */}
-              <AnimatedFallingText
-                text="REPEAT"
-                baseDelay={1.0}
-                className="text-4xl sm:text-6xl md:text-7xl lg:text-[6rem] xl:text-[7.5rem] font-black uppercase tracking-tighter leading-[0.9] text-[#4A0D18]"
-              />
-            </>
-          ) : (
-            <>
-
-            </>
-          )}
+          {/* Baris 3 */}
+          <AnimatedFallingText
+            text="REPEAT"
+            baseDelay={0.8}
+            className="text-4xl sm:text-6xl md:text-7xl lg:text-[6rem] xl:text-[7.5rem] font-black uppercase tracking-tighter leading-[0.9] text-[#4A0D18]"
+          />
         </div>
 
         {/* Sisi Kanan: Gambar Orang (people.webp) menyatu rapat ke dasar section */}

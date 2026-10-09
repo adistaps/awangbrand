@@ -6,13 +6,11 @@ import Image from 'next/image'
 import { Check } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { buildWhatsAppLink, buildQuoteWhatsAppMessage } from '@/lib/whatsapp'
-import { useLanguage } from '@/context/LanguageContext'
 
 export function QuoteFormSection() {
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [formData, setFormData] = useState({ name: '', email: '', message: '' })
-  const { t } = useLanguage()
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -66,10 +64,10 @@ export function QuoteFormSection() {
           className="w-full lg:w-1/2 max-w-lg mx-auto lg:pb-16 pb-12 z-20"
         >
           <h2 className="text-3xl sm:text-5xl font-black text-white uppercase tracking-tight mb-2 text-center lg:text-left drop-shadow-md">
-            GET A FREE QUOTE
+            MINTA PENAWARAN
           </h2>
           <p className="text-sm sm:text-base text-white/90 mb-6 font-medium text-center lg:text-left">
-            {t('quote_desc', 'Konsultasikan kebutuhan pasokan industri, perkakas listrik, layanan ODM, dan OEM Anda secara gratis bersama kami.')}
+            Konsultasikan kebutuhan pasokan produk, kerjasama distributor, dan pemesanan grosir bersama kami.
           </p>
 
           {submitted ? (
@@ -78,10 +76,10 @@ export function QuoteFormSection() {
                 <Check size={36} strokeWidth={3} />
               </div>
               <h3 className="text-2xl sm:text-3xl font-black uppercase mb-2">
-                {t('form_success', 'PERMINTAAN TERKIRIM!')}
+                PERMINTAAN TERKIRIM!
               </h3>
               <p className="text-sm sm:text-base text-white/90 mb-6 font-medium">
-                Tim Keywell akan segera menghubungi Anda dengan penawaran terbaik.
+                Tim AWANG akan segera menghubungi Anda dengan penawaran terbaik.
               </p>
               <button
                 type="button"
@@ -96,7 +94,7 @@ export function QuoteFormSection() {
               {/* Input Nama */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-white text-xs sm:text-sm font-bold uppercase tracking-wider ml-1">
-                  {t('form_name', 'Nama Lengkap')}
+                  Nama Lengkap
                 </label>
                 <input
                   required
@@ -111,7 +109,7 @@ export function QuoteFormSection() {
               {/* Input Email */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-white text-xs sm:text-sm font-bold uppercase tracking-wider ml-1">
-                  {t('form_email', 'Alamat Email')}
+                  Alamat Email
                 </label>
                 <input
                   required
@@ -126,7 +124,7 @@ export function QuoteFormSection() {
               {/* Input Pesan / Detail Quotation */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-white text-xs sm:text-sm font-bold uppercase tracking-wider ml-1">
-                  {t('form_message', 'Detail Kebutuhan Penawaran')}
+                  Detail Kebutuhan Penawaran
                 </label>
                 <textarea
                   rows={4}
@@ -145,7 +143,7 @@ export function QuoteFormSection() {
                   disabled={submitting}
                   className="w-full sm:w-auto bg-[#111111] hover:bg-black text-white font-extrabold text-sm sm:text-base py-4 px-10 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 shadow-xl disabled:opacity-60 uppercase tracking-wider"
                 >
-                  {submitting ? t('sending', 'Mengirim...') : t('form_submit', 'Submit Quotation Request')}
+                  {submitting ? 'Mengirim...' : 'Kirim Permintaan Penawaran'}
                 </button>
               </div>
             </form>

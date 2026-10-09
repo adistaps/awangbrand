@@ -1,17 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useLanguage } from '@/context/LanguageContext'
-
 export function TimelineSection() {
-  const { language } = useLanguage()
-
   const milestones = [
-    { category: language === 'en' ? 'Our Beginnings' : 'Awal Mulai', year: '2002', text: language === 'en' ? 'Xinju Tools established as a leading power tools R&D manufacturer' : 'Xinju Tools didirikan sebagai produsen alat listrik R&D terkemuka' },
-    { category: language === 'en' ? 'Expansion' : 'Ekspansi', year: '2016', text: language === 'en' ? 'Xinju Tools initiated overseas manufacturing expansion and international market reach' : 'Xinju Tools mulai ekspansi manufaktur dan jangkauan pasar internasional' },
-    { category: language === 'en' ? 'Collaboration' : 'Kolaborasi', year: '2020', text: language === 'en' ? 'Xinju Tools partnered with Keywell Ark Holdings to form Keywell Arshaka' : 'Xinju Tools berkolaborasi dengan Keywell Ark Holdings membentuk Keywell Arshaka' },
-    { category: language === 'en' ? 'Establishment' : 'Pendirian', year: '2024', text: language === 'en' ? 'PT. Keywell Arshaka Innovation officially established in Indonesia' : 'PT. Keywell Arshaka Innovation resmi didirikan di Indonesia' },
-    { category: language === 'en' ? 'Future Vision' : 'Visi Masa Depan', year: '2026', text: language === 'en' ? '(Target) Fully operational manufacturing facility in Indonesia' : '(Rencana) Fasilitas manufaktur operasional penuh di Indonesia' }
+    { category: 'Awal Mulai', year: '2002', text: 'Pengembangan resep saus dan bumbu khas dengan bahan pilihan terbaik' },
+    { category: 'Ekspansi Pasar', year: '2016', text: 'Perluasan distribusi ke jaringan toko dan supermarket terkemuka' },
+    { category: 'Inovasi Produk', year: '2020', text: 'Peluncuran lini varian sambal dan saus praktis siap saji AWANG' },
+    { category: 'Pendirian Resmi', year: '2024', text: 'PT. AWANG Indonesia resmi didirikan untuk memperkuat layanan kuliner nasional' },
+    { category: 'Visi Masa Depan', year: '2026', text: '(Target) Menjadi merek bumbu dan saus pilihan utama keluarga Indonesia' }
   ]
 
   return (

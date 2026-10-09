@@ -4,14 +4,12 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { useLanguage } from '@/context/LanguageContext'
 import { FlavorPopOutCard } from '@/components/ui/FlavorPopOutCard'
 
 export function ProductCarouselSection() {
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const { language } = useLanguage()
 
   useEffect(() => {
     async function fetchProducts() {
@@ -59,7 +57,7 @@ export function ProductCarouselSection() {
         {/* Header & Navigasi Panah Kanan Atas */}
         <div className="flex items-center justify-between mb-12 sm:mb-16">
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-[#E3000F] uppercase tracking-tight">
-            {language === 'en' ? 'SPICE UP YOUR KITCHEN' : 'TEMUKAN PILIHANMU'}
+            TEMUKAN PILIHANMU
           </h2>
 
           <div className="flex items-center gap-2 sm:gap-3">
@@ -105,7 +103,7 @@ export function ProductCarouselSection() {
             href="/products"
             className="inline-block bg-[#C8102E] hover:bg-[#a60c24] text-white !text-white font-black text-sm sm:text-base py-4 px-10 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 shadow-md uppercase tracking-wider"
           >
-            {language === 'en' ? 'See All Products' : 'Lihat Semua Produk'}
+            Lihat Semua Produk
           </Link>
         </div>
 

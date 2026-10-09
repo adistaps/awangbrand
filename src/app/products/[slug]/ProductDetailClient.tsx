@@ -7,7 +7,6 @@ import { ShoppingBag, X, ChevronRight } from 'lucide-react'
 import { ProductGallery } from '@/components/ProductGallery'
 import { ProductViewTracker } from '@/components/ProductViewTracker'
 import { ProductsGrid } from '@/components/ProductsGrid'
-import { useLanguage } from '@/context/LanguageContext'
 
 interface ProductDetailClientProps {
   product: {
@@ -35,7 +34,6 @@ export function ProductDetailClient({
   brands = [],
 }: ProductDetailClientProps) {
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false)
-  const { language } = useLanguage()
 
   const displayName = product.name
   const displayDescription = product.description
@@ -110,7 +108,7 @@ export function ProductDetailClient({
                 className="w-full py-4 px-8 bg-[#C8102E] hover:bg-[#a60c24] text-white font-extrabold text-sm sm:text-base uppercase tracking-wider rounded-full shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 cursor-pointer"
               >
                 <ShoppingBag className="w-5 h-5" />
-                <span>{language === 'en' ? 'Where to Buy' : 'Beli Sekarang'}</span>
+                <span>Beli Sekarang</span>
               </button>
             </div>
 
@@ -123,7 +121,7 @@ export function ProductDetailClient({
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 mb-16">
           <div className="py-4">
             <h3 className="text-xl sm:text-2xl md:text-3xl font-bold uppercase tracking-tight text-[#C8102E] mb-8 text-center">
-              {language === 'en' ? 'WE ARE AVAILABLE AT STORES' : 'KAMI TERSEDIA DI SUPERMARKET & TOKO'}
+              KAMI TERSEDIA DI SUPERMARKET & TOKO
             </h3>
             <div className="grid grid-cols-3 sm:grid-cols-6 items-center justify-items-center gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto">
               {brands.map((brand) => (
@@ -155,13 +153,13 @@ export function ProductDetailClient({
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl sm:text-3xl font-black text-[#C8102E] uppercase tracking-tight">
-              {language === 'en' ? 'Related Products' : 'Produk Lainnya'}
+              Produk Lainnya
             </h2>
             <Link
               href="/products"
               className="inline-flex items-center gap-1 text-xs sm:text-sm font-extrabold text-[#C8102E] hover:underline uppercase tracking-wider"
             >
-              <span>{language === 'en' ? 'View All' : 'Lihat Semua'}</span>
+              <span>Lihat Semua</span>
               <ChevronRight size={16} />
             </Link>
           </div>
@@ -188,10 +186,10 @@ export function ProductDetailClient({
                 <ShoppingBag className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-black text-[#111111] uppercase tracking-tight">
-                {language === 'en' ? 'Choose Store' : 'Pilih Toko Online'}
+                Pilih Toko Online
               </h3>
               <p className="text-xs sm:text-sm text-gray-500 font-medium mt-1">
-                {language === 'en' ? 'Select your favorite online marketplace to purchase' : 'Beli produk ini di toko resmi kesayangan Anda'}
+                Beli produk ini di toko resmi kesayangan Anda
               </p>
             </div>
 

@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .eq('status', 'published')
 
   const productUrls: MetadataRoute.Sitemap = (products ?? []).map((p) => ({
-    url: `https://keywellarshakainnovation.com/products/${p.slug}`,
+    url: `https://awangbrand.com/products/${p.slug}`,
     lastModified: new Date(p.updated_at),
     changeFrequency: 'weekly',
     priority: 0.8,
@@ -19,31 +19,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticPages: MetadataRoute.Sitemap = [
     {
-      url: 'https://keywellarshakainnovation.com',
+      url: 'https://awangbrand.com',
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
-      url: 'https://keywellarshakainnovation.com/products',
+      url: 'https://awangbrand.com/products',
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.9,
     },
     {
-      url: 'https://keywellarshakainnovation.com/about-us',
+      url: 'https://awangbrand.com/about-us',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.7,
     },
     {
-      url: 'https://keywellarshakainnovation.com/why-choose-us',
+      url: 'https://awangbrand.com/halal-promise',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.7,
     },
     {
-      url: 'https://keywellarshakainnovation.com/contact',
+      url: 'https://awangbrand.com/contact',
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.6,

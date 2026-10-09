@@ -2,7 +2,6 @@
 
 import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { useLanguage } from '@/context/LanguageContext'
 
 // Data video dari folder public — link Instagram asli untuk "Open in Instagram"
 const socialVideos = [
@@ -117,8 +116,6 @@ function VideoCard({ item, idx }: { item: typeof socialVideos[0]; idx: number })
 }
 
 export function SocialSection() {
-  const { language } = useLanguage()
-
   return (
     <section className="relative w-full bg-[#C8102E] py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-12 overflow-hidden">
       <div className="max-w-[1400px] mx-auto text-center">
@@ -130,12 +127,10 @@ export function SocialSection() {
           </div>
 
           <h2 className="text-4xl sm:text-6xl md:text-7xl font-black text-white uppercase tracking-tight">
-            {language === 'en' ? 'FOLLOW US ON INSTAGRAM' : 'IKUTI KAMI DI INSTAGRAM'}
+            IKUTI KAMI DI INSTAGRAM
           </h2>
           <p className="text-white/70 text-sm sm:text-base mt-4 font-medium">
-            {language === 'en'
-              ? '@awangbrand — Recipes, tips & behind the scenes'
-              : '@awangbrand — Resep, tips & di balik dapur AWANG'}
+            @awangbrand — Resep, tips & di balik dapur AWANG
           </p>
         </div>
 
@@ -155,7 +150,7 @@ export function SocialSection() {
             className="inline-flex items-center gap-2 bg-white text-[#C8102E] font-extrabold text-sm sm:text-base px-8 py-3.5 rounded-full hover:bg-white/90 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-lg"
           >
             <InstagramIcon className="w-5 h-5 text-[#C8102E]" />
-            {language === 'en' ? 'Follow @awangbrand' : 'Ikuti @awangbrand'}
+            Ikuti @awangbrand
           </a>
         </div>
 

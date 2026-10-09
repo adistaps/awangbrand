@@ -3,11 +3,8 @@
 import React from 'react'
 import Image from 'next/image'
 import { ShieldCheck, Award, CheckCircle2 } from 'lucide-react'
-import { useLanguage } from '@/context/LanguageContext'
 
 export function HalalPromiseClient() {
-  const { language } = useLanguage()
-
   return (
     <main className="bg-white min-h-screen font-sans pt-0 pb-24 text-slate-900">
 

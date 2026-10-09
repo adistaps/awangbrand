@@ -5,8 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ShoppingCart } from 'lucide-react'
-import { useLanguage } from '@/context/LanguageContext'
-
 export function ProductsGrid({
   products,
   showFilters = true,
@@ -15,7 +13,6 @@ export function ProductsGrid({
   showFilters?: boolean
 }) {
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL')
-  const { t } = useLanguage()
 
   // Mendapatkan daftar kategori unik dari data produk
   const categoriesList = useMemo(() => {
@@ -33,7 +30,7 @@ export function ProductsGrid({
   }, [products, selectedCategory])
 
   if (products.length === 0) {
-    return <p className="text-gray-400 text-center py-20">{t('no_products', 'Belum ada produk yang dipublikasikan.')}</p>
+    return <p className="text-gray-400 text-center py-20">Belum ada produk yang dipublikasikan.</p>
   }
 
   const hasCategories = showFilters && categoriesList.length > 1
@@ -56,7 +53,7 @@ export function ProductsGrid({
                       : 'bg-gray-100 text-[#4A1521]/70 hover:bg-gray-200 hover:text-[#4A1521]'
                     }`}
                 >
-                  {category === 'ALL' ? t('all_categories', 'Semua Produk') : category}
+                  {category === 'ALL' ? 'Semua Produk' : category}
                 </button>
               )
             })}
@@ -133,7 +130,7 @@ export function ProductsGrid({
         </motion.div>
 
         {filteredProducts.length === 0 && (
-          <p className="text-gray-400 text-center py-20">{t('no_products', 'Tidak ada produk dalam kategori ini.')}</p>
+          <p className="text-gray-400 text-center py-20">Tidak ada produk dalam kategori ini.</p>
         )}
       </div>
     </div>

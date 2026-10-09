@@ -2,11 +2,8 @@
 
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
-import { useLanguage } from '@/context/LanguageContext'
 
 export function PageHero({ title, crumb }: { title: string; crumb: string }) {
-  const { t } = useLanguage()
-
   return (
     <section
       className="relative w-full pt-28 pb-12 md:pt-40 md:pb-20 px-4 sm:px-6 md:px-16 font-sans text-white overflow-hidden border-b border-white/10"
@@ -19,7 +16,7 @@ export function PageHero({ title, crumb }: { title: string; crumb: string }) {
       <div className="max-w-[1400px] mx-auto relative z-10">
         {/* Breadcrumbs: Ditambahkan flex-wrap & shrink-0 agar jika judul panjang tidak merusak alur di HP */}
         <div className="flex items-center flex-wrap gap-1.5 sm:gap-2 text-xs md:text-sm text-gray-300 font-semibold mb-3 md:mb-4">
-          <Link href="/" className="hover:text-[#F5A200] transition-colors">{t('nav_home', 'Home')}</Link>
+          <Link href="/" className="hover:text-[#F5A200] transition-colors">Home</Link>
           <ChevronRight size={14} className="text-[#F5A200] shrink-0" />
           <span className="text-[#F5A200] font-bold">{crumb}</span>
           <ChevronRight size={14} className="text-white/40 shrink-0" />
