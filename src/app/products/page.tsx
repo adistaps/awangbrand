@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ProductsGrid } from '@/components/ProductsGrid'
 
 export const metadata: Metadata = {
-  title: 'Produk Power Tools Profesional',
+  title: 'Produk Awang Brand',
   description:
     'Jelajahi katalog lengkap power tools profesional dari Keywell Arshaka Innovation — untuk kebutuhan industri, konstruksi, dan pertambangan di Indonesia.',
   keywords: [
