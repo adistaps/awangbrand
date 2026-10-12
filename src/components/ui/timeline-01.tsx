@@ -152,43 +152,32 @@ function Timeline({ items }: { items: TimelineItem[] }) {
 export function TimelineBlock01() {
     return (
         <section className="overflow-hidden bg-[#C8102E] text-white py-6 relative">
-            {/* Garis Tipis Horizontal Persis di Atas Section */}
-            <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16 pt-2">
-                <div className="w-full h-[1px] bg-white/20" />
-            </div>
 
-            <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-16">
+            {/* Header Section */}
+            <div className="px-4 py-6 sm:px-6 md:px-10 md:py-10 lg:px-16">
+                <div className="max-w-2xl space-y-3 sm:space-y-4">
 
-                {/* Header Section */}
-                <div className="px-4 py-6 sm:px-6 md:px-10 md:py-10 lg:px-16">
-                    <div className="max-w-2xl space-y-3 sm:space-y-4">
-                        <Badge
-                            variant="outline"
-                            className="rounded-full px-3.5 py-1 font-semibold border-white/40 text-white bg-white/10 backdrop-blur-sm text-xs sm:text-sm"
+                    <div className="space-y-2 sm:space-y-3">
+                        <h2
+                            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-wider text-white uppercase drop-shadow-md"
+                            style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
                         >
-                            Timeline
-                        </Badge>
-                        <div className="space-y-2 sm:space-y-3">
-                            <h2
-                                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-wider text-white uppercase drop-shadow-md"
-                                style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
-                            >
-                                A Story Of Growth
-                            </h2>
-                            <p className="text-xs sm:text-base md:text-lg text-white/90 leading-relaxed font-normal">
-                                Our journey reflects years of dedication to preserving authentic heritage flavors while bringing modern culinary convenience to homes worldwide.
-                            </p>
-                        </div>
+                            A Story Of Growth
+                        </h2>
+                        <p className="text-xs sm:text-base md:text-lg text-white/90 leading-relaxed font-normal">
+                            Our journey reflects years of dedication to preserving authentic heritage flavors while bringing modern culinary convenience to homes worldwide.
+                        </p>
                     </div>
                 </div>
-
-                {/* Timeline Component Body */}
-                <div className="w-full">
-                    <Timeline items={awangTimelineData} />
-                </div>
-
             </div>
-        </section>
+
+            {/* Timeline Component Body */}
+            <div className="w-full">
+                <Timeline items={awangTimelineData} />
+            </div>
+
+
+        </section >
     );
 }
 
