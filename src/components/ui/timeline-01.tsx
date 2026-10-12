@@ -151,7 +151,7 @@ function Timeline({ items }: { items: TimelineItem[] }) {
 
 export function TimelineBlock01() {
     return (
-        <section className="overflow-hidden bg-[#C8102E] text-white py-6 relative">
+        <section className="overflow-hidden bg-[#C8102E] text-white py-6 relative border-none -my-px">
 
             {/* Header Section */}
             <div className="px-4 py-6 sm:px-6 md:px-10 md:py-10 lg:px-16">
