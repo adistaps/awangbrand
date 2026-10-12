@@ -102,13 +102,154 @@ export function RecipeDetailClient({ recipe, relatedRecipes, slug }: Props) {
 
   return (
     <div className="w-full bg-white min-h-screen pt-20 sm:pt-28 pb-16 font-sans relative z-10">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
-        {/* Konten Utama Resep */}
-        <div className="space-y-8 mb-16">
+        {/* ========================================================
+            DESKTOP LAYOUT (lg:grid lg:grid-cols-12 - KEMBALI KE SEMULA)
+            ======================================================== */}
+        <div className="hidden lg:grid lg:grid-cols-12 gap-12 items-start mb-20">
+
+          {/* Kolom Kiri: Judul, Metrik, Deskripsi, Bahan, Instruksi, Tips */}
+          <div className="lg:col-span-7 space-y-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#111111] leading-tight tracking-tight uppercase">
+              {displayRecipe.title}
+            </h1>
+
+            {/* Time / Servings Metrics */}
+            <div className="flex flex-wrap items-center gap-6 py-4 border-y border-stone-200 text-xs font-extrabold uppercase text-stone-700">
+              {displayRecipe.prep_time && (
+                <div>
+                  <span className="text-stone-400 block text-[10px] tracking-widest">Prep</span>
+                  <span className="text-[#C8102E]">{displayRecipe.prep_time}</span>
+                </div>
+              )}
+              {displayRecipe.cook_time && (
+                <div>
+                  <span className="text-stone-400 block text-[10px] tracking-widest">Cook</span>
+                  <span className="text-[#C8102E]">{displayRecipe.cook_time}</span>
+                </div>
+              )}
+              {displayRecipe.servings && (
+                <div>
+                  <span className="text-stone-400 block text-[10px] tracking-widest">Servings</span>
+                  <span className="text-[#C8102E]">{displayRecipe.servings}</span>
+                </div>
+              )}
+              {displayRecipe.calories && (
+                <div>
+                  <span className="text-stone-400 block text-[10px] tracking-widest">Calories</span>
+                  <span className="text-[#C8102E]">{displayRecipe.calories}</span>
+                </div>
+              )}
+            </div>
+
+            <p className="text-stone-700 text-base leading-relaxed font-medium">
+              {displayRecipe.description}
+            </p>
+
+            {/* Ingredients List */}
+            <div className="pt-6">
+              <h2 className="text-2xl font-black text-[#C8102E] uppercase tracking-tight mb-6">
+                Ingredients
+              </h2>
+              <ul className="space-y-3.5 text-stone-800 font-semibold text-sm sm:text-base">
+                {displayRecipe.ingredients.map((item, idx) => (
+                  <li key={idx} className="flex items-start gap-3 pb-3 border-b border-stone-100">
+                    <Check size={18} className="text-[#C8102E] shrink-0 mt-0.5" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Step-by-Step Instructions */}
+            <div className="pt-6">
+              <h2 className="text-2xl font-black text-[#C8102E] uppercase tracking-tight mb-6">
+                Instructions
+              </h2>
+              <div className="space-y-6">
+                {displayRecipe.instructions.map((step, idx) => (
+                  <div key={idx} className="space-y-1.5">
+                    <h3 className="text-xs font-black text-[#C8102E] uppercase tracking-widest">
+                      Step {idx + 1}
+                    </h3>
+                    <p className="text-stone-800 text-sm sm:text-base leading-relaxed font-medium">
+                      {step}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Recipe Tip Box */}
+            {displayRecipe.tips && (
+              <div className="mt-8 p-6 bg-stone-50 border border-stone-200/60 rounded-2xl">
+                <h4 className="text-xs font-black uppercase tracking-widest text-[#C8102E] mb-2">
+                  💡 Recipe Tip
+                </h4>
+                <p className="text-stone-700 text-xs sm:text-sm leading-relaxed font-medium">
+                  {displayRecipe.tips}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Kolom Kanan: Main Recipe Image & Sticky Featured Product Card */}
+          <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-28">
+
+            {/* Main Recipe Image */}
+            <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden bg-stone-100 border border-stone-100 shadow-sm">
+              <img
+                src={displayRecipe.main_image || 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=1200&q=80'}
+                alt={displayRecipe.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* Featured Product Card */}
+            {displayRecipe.featured_product && (
+              <Link
+                href={`/products/${displayRecipe.featured_product.slug}`}
+                className="group block bg-white p-6 rounded-2xl border border-stone-200/80 shadow-sm hover:border-[#C8102E] transition-all duration-300 space-y-3"
+              >
+                <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 block">
+                  Shop Featured Products
+                </span>
+
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-stone-50 rounded-xl overflow-hidden shrink-0 border border-stone-100 p-2 flex items-center justify-center">
+                    <img
+                      src={displayRecipe.featured_product.main_image || '/placeholder-product.jpg'}
+                      alt={displayRecipe.featured_product.name}
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+
+                  <div className="flex-1 flex items-center justify-between gap-3">
+                    <h4 className="text-sm sm:text-base font-extrabold text-[#111111] line-clamp-2 leading-snug tracking-tight">
+                      {displayRecipe.featured_product.name}
+                    </h4>
+
+                    {/* Tombol Bundar Ikon Keranjang Belanja */}
+                    <div className="shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-stone-100 group-hover:bg-[#C8102E] text-stone-700 group-hover:text-white flex items-center justify-center transition-all duration-300">
+                      <ShoppingCart className="w-4 h-4" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            )}
+
+          </div>
+
+        </div>
+
+        {/* ========================================================
+            MOBILE LAYOUT (lg:hidden - DIPERTAHANKAN SESUAI TAMPILAN PONSEL)
+            ======================================================== */}
+        <div className="lg:hidden space-y-8 mb-16 max-w-xl mx-auto">
 
           {/* 1. Judul Utama Resep */}
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-[#111111] leading-tight tracking-tight uppercase">
+          <h1 className="text-2xl sm:text-4xl font-bold text-[#111111] leading-tight tracking-tight uppercase">
             {displayRecipe.title}
           </h1>
 
@@ -244,9 +385,9 @@ export function RecipeDetailClient({ recipe, relatedRecipes, slug }: Props) {
         </div>
 
         {/* COOK WITH US SECTION */}
-        <section className="pt-12 border-t border-stone-200/80">
-          <div className="mb-8">
-            <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-[#C8102E] tracking-tight uppercase">
+        <section className="pt-12 sm:pt-16 border-t border-stone-200/80">
+          <div className="mb-8 sm:mb-10">
+            <h2 className="text-xl sm:text-3xl md:text-4xl font-extrabold text-[#C8102E] tracking-tight uppercase" style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}>
               Cook With Us
             </h2>
           </div>

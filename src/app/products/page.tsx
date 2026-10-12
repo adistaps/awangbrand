@@ -142,10 +142,7 @@ export default async function Page() {
 
           {/* Kolom Kanan: Judul & Subtitle */}
           <div className="lg:col-span-6 flex flex-col justify-center space-y-4 order-1 lg:order-2">
-            <h1
-              className="text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-tight uppercase tracking-tight"
-              style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
-            >
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-tight uppercase tracking-tight">
               Favorites from AWANG
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-white/90 font-medium leading-relaxed max-w-xl">

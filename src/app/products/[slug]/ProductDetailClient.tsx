@@ -203,8 +203,14 @@ export function ProductDetailClient({
                 className="flex items-center justify-between p-4 rounded-2xl border border-orange-100 bg-orange-50/50 hover:bg-orange-50 transition-all duration-200 group"
               >
                 <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-[#EE4D2D] text-white flex items-center justify-center font-black text-lg shadow-sm">
-                    S
+                  <div className="w-10 h-10 rounded-xl bg-white border border-orange-100 flex items-center justify-center p-2 shadow-sm shrink-0">
+                    <Image
+                      src="/icon/shopee.svg"
+                      alt="Shopee"
+                      width={28}
+                      height={28}
+                      className="object-contain w-full h-full"
+                    />
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-gray-900 group-hover:text-[#EE4D2D] transition-colors">Shopee Official Store</h4>
@@ -222,8 +228,14 @@ export function ProductDetailClient({
                 className="flex items-center justify-between p-4 rounded-2xl border border-emerald-100 bg-emerald-50/50 hover:bg-emerald-50 transition-all duration-200 group"
               >
                 <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-[#03AC0E] text-white flex items-center justify-center font-black text-lg shadow-sm">
-                    T
+                  <div className="w-10 h-10 rounded-xl bg-white border border-emerald-100 flex items-center justify-center p-2 shadow-sm shrink-0">
+                    <Image
+                      src="/icon/tokopedia.svg"
+                      alt="Tokopedia"
+                      width={28}
+                      height={28}
+                      className="object-contain w-full h-full"
+                    />
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-gray-900 group-hover:text-[#03AC0E] transition-colors">Tokopedia Official Store</h4>
@@ -241,8 +253,14 @@ export function ProductDetailClient({
                 className="flex items-center justify-between p-4 rounded-2xl border border-blue-100 bg-blue-50/50 hover:bg-blue-50 transition-all duration-200 group"
               >
                 <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-[#0F146D] text-white flex items-center justify-center font-black text-lg shadow-sm">
-                    L
+                  <div className="w-10 h-10 rounded-xl bg-white border border-blue-100 flex items-center justify-center p-2 shadow-sm shrink-0">
+                    <Image
+                      src="/icon/lazada.svg"
+                      alt="Lazada"
+                      width={28}
+                      height={28}
+                      className="object-contain w-full h-full"
+                    />
                   </div>
                   <div>
                     <h4 className="font-bold text-sm text-gray-900 group-hover:text-[#0F146D] transition-colors">Lazada Flagship Store</h4>

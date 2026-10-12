@@ -12,7 +12,7 @@ import { TestimonialsSection } from '@/components/Homepage/TestimonialsSection'
 import { BrandsSection } from '@/components/Homepage/BrandsSection'
 
 export const metadata: Metadata = {
-  title: 'AWANG Brand  — Pes Masakan Autentik & Perencah Warisan Melayu',
+  title: 'Awang Brand  — Pes Masakan Autentik & Perencah Warisan Melayu',
   description: 'AWANG Brand — Pengeluar pes masakan autentik warisan Melayu terkemuka di Malaysia. 100% ramuan asli semulajadi, disahkan Halal JAKIM, mudah dan lazat untuk seisi keluarga.',
   alternates: { canonical: 'https://awangbrand.com' },
 }
