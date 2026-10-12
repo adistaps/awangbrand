@@ -63,43 +63,45 @@ export function ProductsTable({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="p-4 border-b border-gray-100 flex flex-wrap gap-3 items-center">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+    <div className="bg-white rounded-2xl shadow-xs border border-gray-100 overflow-hidden">
+      <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row gap-3 sm:items-center">
+        <div className="relative flex-1 min-w-0">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input
             placeholder="Cari produk..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#F5A200]"
+            className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] transition-colors"
           />
         </div>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none"
-        >
-          <option value="">Semua Status</option>
-          <option value="draft">Draft</option>
-          <option value="published">Published</option>
-        </select>
-        <select
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none"
-        >
-          <option value="">Semua Kategori</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+        <div className="flex items-center gap-2">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="flex-1 sm:flex-initial px-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm bg-white focus:outline-none focus:border-[#C8102E]"
+          >
+            <option value="">Semua Status</option>
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+          </select>
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="flex-1 sm:flex-initial px-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm bg-white focus:outline-none focus:border-[#C8102E]"
+          >
+            <option value="">Semua Kategori</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {selected.length > 0 && (
-        <div className="px-4 py-2.5 bg-amber-50 border-b border-amber-100 flex items-center gap-3 text-sm">
-          <span className="font-semibold text-amber-700">{selected.length} dipilih</span>
+        <div className="px-4 py-2.5 bg-red-50/60 border-b border-red-100 flex items-center gap-3 text-xs sm:text-sm">
+          <span className="font-semibold text-[#C8102E]">{selected.length} dipilih</span>
           <button onClick={() => handleBulkStatus('published')} disabled={busy} className="text-emerald-600 font-semibold hover:underline">
             Publish
           </button>
@@ -112,67 +114,72 @@ export function ProductsTable({
         </div>
       )}
 
-      <table className="w-full text-sm">
-        <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
-          <tr>
-            <th className="p-3 text-left w-8">
-              <input type="checkbox" checked={selected.length === filtered.length && filtered.length > 0} onChange={toggleSelectAll} />
-            </th>
-            <th className="p-3 text-left">Produk</th>
-            <th className="p-3 text-left">Kategori</th>
-            <th className="p-3 text-left">Status</th>
-            <th className="p-3 text-left">Featured</th>
-            <th className="p-3 text-right">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.map((p) => (
-            <tr key={p.id} className="border-t border-gray-50 hover:bg-gray-50/50">
-              <td className="p-3">
-                <input type="checkbox" checked={selected.includes(p.id)} onChange={() => toggleSelect(p.id)} />
-              </td>
-              <td className="p-3">
-                <div className="flex items-center gap-3">
-                  {p.main_image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.main_image} alt={p.name} className="w-10 h-10 rounded-lg object-cover border border-gray-100" />
-                  ) : (
-                    <div className="w-10 h-10 rounded-lg bg-gray-100" />
-                  )}
-                  <span className="font-semibold text-[#0A1628]">{p.name}</span>
-                </div>
-              </td>
-              <td className="p-3 text-gray-500">{p.category?.name || '-'}</td>
-              <td className="p-3">
-                <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${p.status === 'published' ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-500'}`}>
-                  {p.status}
-                </span>
-              </td>
-              <td className="p-3">{p.is_featured && <Star size={16} className="text-[#F5A200] fill-[#F5A200]" />}</td>
-              <td className="p-3">
-                <div className="flex items-center justify-end gap-3">
-                  <Link href={`/products/${p.slug}`} target="_blank" className="text-gray-400 hover:text-[#0A1628]">
-                    <ExternalLink size={16} />
-                  </Link>
-                  <Link href={`/admin/products/${p.id}/edit`} className="text-gray-400 hover:text-[#F5A200]">
-                    <Pencil size={16} />
-                  </Link>
-                  <button onClick={() => handleDelete(p.id)} className="text-gray-400 hover:text-red-500">
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-          {filtered.length === 0 && (
+      <div className="overflow-x-auto w-full">
+        <table className="w-full text-sm min-w-[620px]">
+          <thead className="bg-gray-50/75 text-gray-500 text-xs uppercase border-b border-gray-100">
             <tr>
-              <td colSpan={7} className="p-8 text-center text-gray-400 text-sm">
-                Tidak ada produk ditemukan.
-              </td>
+              <th className="p-3.5 text-left w-10">
+                <input type="checkbox" checked={selected.length === filtered.length && filtered.length > 0} onChange={toggleSelectAll} className="accent-[#C8102E] rounded" />
+              </th>
+              <th className="p-3.5 text-left">Produk</th>
+              <th className="p-3.5 text-left">Kategori</th>
+              <th className="p-3.5 text-left">Status</th>
+              <th className="p-3.5 text-left">Featured</th>
+              <th className="p-3.5 text-right">Aksi</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-gray-50">
+            {filtered.map((p) => (
+              <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
+                <td className="p-3.5">
+                  <input type="checkbox" checked={selected.includes(p.id)} onChange={() => toggleSelect(p.id)} className="accent-[#C8102E] rounded" />
+                </td>
+                <td className="p-3.5">
+                  <div className="flex items-center gap-3">
+                    {p.main_image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.main_image} alt={p.name} className="w-10 h-10 rounded-xl object-cover border border-gray-100 shrink-0" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-xl bg-gray-100 shrink-0" />
+                    )}
+                    <div className="min-w-0">
+                      <span className="font-semibold text-[#0A1628] block truncate max-w-[220px] sm:max-w-xs">{p.name}</span>
+                      <span className="text-[11px] text-gray-400 block truncate">/{p.slug}</span>
+                    </div>
+                  </div>
+                </td>
+                <td className="p-3.5 text-gray-600 text-xs font-medium">{p.category?.name || '—'}</td>
+                <td className="p-3.5">
+                  <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider ${p.status === 'published' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/50' : 'bg-gray-100 text-gray-500'}`}>
+                    {p.status}
+                  </span>
+                </td>
+                <td className="p-3.5">{p.is_featured && <Star size={16} className="text-amber-500 fill-amber-500" />}</td>
+                <td className="p-3.5">
+                  <div className="flex items-center justify-end gap-1.5">
+                    <Link href={`/products/${p.slug}`} target="_blank" className="p-1.5 rounded-lg text-gray-400 hover:text-[#0A1628] hover:bg-gray-100 transition-colors" title="Lihat di Web">
+                      <ExternalLink size={15} />
+                    </Link>
+                    <Link href={`/admin/products/${p.id}/edit`} className="p-1.5 rounded-lg text-gray-400 hover:text-[#C8102E] hover:bg-red-50 transition-colors" title="Edit">
+                      <Pencil size={15} />
+                    </Link>
+                    <button onClick={() => handleDelete(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer" title="Hapus">
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={6} className="p-8 text-center text-gray-400 text-sm">
+                  Tidak ada produk ditemukan.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

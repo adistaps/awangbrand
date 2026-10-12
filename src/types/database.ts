@@ -124,3 +124,21 @@ export interface SiteSetting {
   value: string | null
 }
 
+export type CashflowType = 'income' | 'expense'
+export type CashflowChannel = 'offline_store' | 'distributor' | 'supermarket' | 'online_shopee' | 'online_tokopedia' | 'online_lazada' | 'event_bazaar' | 'other'
+
+export interface CashflowTransaction {
+  id: string
+  transaction_date: string
+  type: CashflowType
+  amount: number
+  channel: CashflowChannel
+  brand_id?: string | null
+  store_name?: string | null
+  description: string
+  reference_no?: string | null
+  payment_method?: string | null
+  notes?: string | null
+  created_at: string
+  brand?: Brand | null
+}

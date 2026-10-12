@@ -36,19 +36,19 @@ export function SpecificationsEditor({
             <input
               value={spec.spec_key}
               onChange={(e) => updateRow(spec.id, 'spec_key', e.target.value)}
-              placeholder="Nama (mis. Voltage)"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#F5A200]"
+              placeholder="Nama spesifikasi (mis. Berat Bersih)"
+              className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
             />
             <input
               value={spec.spec_value}
               onChange={(e) => updateRow(spec.id, 'spec_value', e.target.value)}
-              placeholder="Nilai (mis. 20V)"
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#F5A200]"
+              placeholder="Nilai (mis. 200g / Sachet)"
+              className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
             />
             <button
               type="button"
               onClick={() => removeRow(spec.id)}
-              className="px-2 text-red-400 hover:text-red-600"
+              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
             >
               <Trash2 size={16} />
             </button>
@@ -58,7 +58,7 @@ export function SpecificationsEditor({
       <button
         type="button"
         onClick={addRow}
-        className="flex items-center gap-1.5 text-xs font-semibold text-[#F5A200] mt-2 hover:text-[#D98B00]"
+        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#C8102E] mt-2.5 hover:underline cursor-pointer"
       >
         <Plus size={14} /> Tambah Spesifikasi
       </button>

@@ -25,30 +25,30 @@ export async function generateMetadata({
     return { title: 'Produk Tidak Ditemukan' }
   }
 
-  const categoryName = (product.category as unknown as { name: string } | null)?.name ?? 'Power Tools'
+  const categoryName = (product.category as unknown as { name: string } | null)?.name ?? 'Pes Masakan'
   const title = product.name
   const description =
     product.description ??
-    `${product.name} — power tools profesional dari Keywell Arshaka Innovation untuk kebutuhan industri dan konstruksi.`
+    `${product.name} — pes masakan autentik dari AWANG Brand Malaysia. Dibuat dengan 100% rempah dan ramuan asli semulajadi, disahkan Halal JAKIM, tanpa bahan pengawet tiruan.`
   const imageUrl = product.main_image ?? '/og-image.webp'
 
   return {
-    title,
+    title: `${title} | AWANG Brand Malaysia`,
     description,
-    keywords: [product.name, categoryName, 'power tools Indonesia', 'Keywell', 'alat industri'],
+    keywords: [product.name, categoryName, 'pes masakan Malaysia', 'AWANG Brand Malaysia', 'bumbu masak halal JAKIM', 'cooking paste Malaysia', 'rempah asli Melayu'],
     openGraph: {
-      title: `${title} | Keywell Arshaka Innovation`,
+      title: `${title} | AWANG Brand`,
       description,
-      url: `https://keywellarshakainnovation.com/products/${slug}`,
+      url: `https://awangbrand.com/products/${slug}`,
       images: [{ url: imageUrl, width: 800, height: 600, alt: product.name }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${title} | Keywell Arshaka Innovation`,
+      title: `${title} | AWANG Brand`,
       description,
       images: [imageUrl],
     },
-    alternates: { canonical: `https://keywellarshakainnovation.com/products/${slug}` },
+    alternates: { canonical: `https://awangbrand.com/products/${slug}` },
   }
 }
 

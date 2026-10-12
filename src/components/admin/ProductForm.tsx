@@ -138,37 +138,38 @@ export function ProductForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl">
-      {error && <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-lg">{error}</div>}
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl bg-white p-5 sm:p-8 rounded-2xl border border-gray-100 shadow-xs">
+      {error && <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl border border-red-100">{error}</div>}
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-xs font-semibold text-gray-600 mb-1.5 block">Nama Produk</label>
+          <label className="text-xs font-semibold text-gray-700 mb-1.5 block">Nama Produk</label>
           <input
             required
             value={values.name}
             onChange={(e) => handleNameChange(e.target.value)}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#C8102E]"
+            placeholder="cth: Pes Rendang Tok Warisan"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] transition-colors"
           />
         </div>
         <div>
-          <label className="text-xs font-semibold text-gray-600 mb-1.5 block">Slug (URL)</label>
+          <label className="text-xs font-semibold text-gray-700 mb-1.5 block">Slug (URL)</label>
           <input
             required
             value={values.slug}
             onChange={(e) => setValues((v) => ({ ...v, slug: slugify(e.target.value) }))}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#C8102E]"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] bg-gray-50/50 transition-colors"
           />
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-xs font-semibold text-gray-600 mb-1.5 block">Kategori</label>
+          <label className="text-xs font-semibold text-gray-700 mb-1.5 block">Kategori</label>
           <select
             value={values.category_id || ''}
             onChange={(e) => setValues((v) => ({ ...v, category_id: e.target.value || null }))}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#C8102E]"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] bg-white transition-colors"
           >
             <option value="">Pilih kategori</option>
             {categories.map((c) => (
@@ -179,32 +180,33 @@ export function ProductForm({
           </select>
         </div>
         <div>
-          <label className="text-xs font-semibold text-gray-600 mb-1.5 block">Status</label>
+          <label className="text-xs font-semibold text-gray-700 mb-1.5 block">Status Publikasi</label>
           <select
             value={values.status}
             onChange={(e) => setValues((v) => ({ ...v, status: e.target.value as 'draft' | 'published' }))}
-            className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#C8102E]"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] bg-white transition-colors"
           >
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
+            <option value="draft">Draft (Disembunyikan)</option>
+            <option value="published">Published (Tayang)</option>
           </select>
         </div>
       </div>
 
       <div>
-        <label className="text-xs font-semibold text-gray-600 mb-1.5 block">Deskripsi Produk</label>
+        <label className="text-xs font-semibold text-gray-700 mb-1.5 block">Deskripsi Produk</label>
         <textarea
           rows={4}
           value={values.description}
           onChange={(e) => setValues((v) => ({ ...v, description: e.target.value }))}
-          className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#C8102E]"
+          placeholder="Jelaskan cita rasa, keunggulan bahan alami, dan panduan saji..."
+          className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] transition-colors"
         />
       </div>
 
       {/* FIELD INPUT E-COMMERCE / MARKETPLACE */}
-      <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-3">
-        <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider">Link E-Commerce (Pop-up Marketplace)</h3>
-        <div className="grid md:grid-cols-3 gap-3">
+      <div className="bg-gray-50/70 p-4 sm:p-5 rounded-2xl border border-gray-100 space-y-3">
+        <h3 className="text-xs font-bold text-gray-700 uppercase tracking-wider">Link E-Commerce (Shopee, Tokopedia, Lazada)</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label className="text-[11px] font-semibold text-gray-500 mb-1 block">Link Shopee</label>
             <input
@@ -212,7 +214,7 @@ export function ProductForm({
               placeholder="https://shopee.co.id/..."
               value={values.shopee_url}
               onChange={(e) => setValues((v) => ({ ...v, shopee_url: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-[#EE4D2D]"
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-[#EE4D2D]"
             />
           </div>
           <div>
@@ -222,7 +224,7 @@ export function ProductForm({
               placeholder="https://tokopedia.com/..."
               value={values.tokopedia_url}
               onChange={(e) => setValues((v) => ({ ...v, tokopedia_url: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-[#03AC0E]"
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-[#03AC0E]"
             />
           </div>
           <div>
@@ -232,45 +234,45 @@ export function ProductForm({
               placeholder="https://lazada.co.id/..."
               value={values.lazada_url}
               onChange={(e) => setValues((v) => ({ ...v, lazada_url: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-[#0F146D]"
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-[#0F146D]"
             />
           </div>
         </div>
       </div>
 
-      <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+      <label className="flex items-center gap-2.5 text-sm font-medium text-gray-700 cursor-pointer">
         <input
           type="checkbox"
           checked={values.is_featured}
           onChange={(e) => setValues((v) => ({ ...v, is_featured: e.target.checked }))}
-          className="w-4 h-4 accent-[#C8102E]"
+          className="w-4 h-4 accent-[#C8102E] rounded"
         />
-        Tampilkan di section produk homepage (Featured)
+        Tampilkan di section produk unggulan homepage (Featured)
       </label>
 
       <ImageUploader
         bucket="product-thumbnails"
         value={values.thumbnail_url}
         onChange={(url) => setValues((v) => ({ ...v, thumbnail_url: url }))}
-        label="Thumbnail Produk (untuk showcase & grid)"
+        label="Thumbnail Produk (untuk katalog & grid produk)"
       />
 
       <GalleryUploader images={gallery} onChange={setGallery} />
 
       <SpecificationsEditor specs={specs} onChange={setSpecs} />
 
-      <div className="flex gap-3 pt-4">
+      <div className="flex flex-col sm:flex-row items-center gap-3 pt-4 border-t border-gray-100">
         <button
           type="submit"
           disabled={saving}
-          className="bg-[#C8102E] hover:bg-[#a60c24] text-white font-bold text-sm px-6 py-2.5 rounded-lg transition-colors disabled:opacity-60 cursor-pointer"
+          className="w-full sm:w-auto bg-[#C8102E] hover:bg-[#a60c24] !text-white font-bold text-sm px-7 py-3 rounded-xl transition-all shadow-xs active:scale-95 disabled:opacity-60 cursor-pointer text-center"
         >
-          {saving ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Buat Produk'}
+          <span className="!text-white text-white">{saving ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Buat Produk'}</span>
         </button>
         <button
           type="button"
           onClick={() => router.push('/admin/products')}
-          className="text-sm font-semibold text-gray-500 px-6 py-2.5 hover:text-gray-700 cursor-pointer"
+          className="w-full sm:w-auto text-sm font-semibold text-gray-500 px-6 py-3 hover:text-gray-700 cursor-pointer text-center"
         >
           Batal
         </button>

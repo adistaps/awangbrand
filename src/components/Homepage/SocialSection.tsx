@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
+import { cn } from '@/lib/utils'
 
-// Data video dari folder public — link Instagram asli untuk "Open in Instagram"
+// Data video dari folder public
 const socialVideos = [
   {
     id: 1,
@@ -45,7 +46,7 @@ function PlayIcon() {
   )
 }
 
-// Komponen VideoCard — menggunakan frame pertama video (preload="metadata") sebagai thumbnail
+// Komponen VideoCard
 function VideoCard({ item, idx }: { item: typeof socialVideos[0]; idx: number }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -61,11 +62,10 @@ function VideoCard({ item, idx }: { item: typeof socialVideos[0]; idx: number })
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+      viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.4, delay: idx * 0.1 }}
-      className="w-[220px] sm:w-[250px] md:w-[270px] h-[390px] sm:h-[445px] rounded-2xl overflow-hidden relative shadow-2xl bg-black group/card flex-shrink-0"
+      className="w-[260px] sm:w-[320px] lg:w-[270px] h-[460px] sm:h-[560px] lg:h-[445px] rounded-3xl lg:rounded-2xl overflow-hidden relative bg-black group/card flex-shrink-0 snap-start snap-always"
     >
-      {/* Video Element — preload metadata menampilkan frame pertama video sebagai thumbnail */}
       <video
         ref={videoRef}
         preload="metadata"
@@ -77,77 +77,137 @@ function VideoCard({ item, idx }: { item: typeof socialVideos[0]; idx: number })
         <source src={item.videoSrc} type="video/mp4" />
       </video>
 
-      {/* Overlay Play & Meta sebelum video diputar */}
       {!isPlaying && (
         <div
           className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/80 flex items-center justify-center cursor-pointer transition-opacity duration-300 group-hover/card:bg-black/40 z-10"
           onClick={handlePlay}
         >
-          {/* Play button bulat */}
           <button
             type="button"
             aria-label="Play video"
-            className="relative z-10 w-20 h-20 rounded-full bg-white/25 backdrop-blur-md border-2 border-white/60 flex items-center justify-center transition-all duration-300 group-hover/card:scale-110 group-hover/card:bg-white/35 active:scale-95 shadow-xl"
+            className="relative z-10 w-20 h-20 lg:w-20 lg:h-20 rounded-full bg-white/25 backdrop-blur-md border-2 border-white/60 flex items-center justify-center transition-all duration-300 group-hover/card:scale-110 group-hover/card:bg-white/35 active:scale-95 shadow-xl"
           >
             <PlayIcon />
           </button>
 
-          {/* Label tap to play */}
           <span className="absolute bottom-14 left-0 right-0 text-center text-white/80 text-[11px] font-semibold tracking-widest uppercase z-10">
             Tap to Play
           </span>
-
         </div>
       )}
 
-      {/* Ikon Instagram di kanan atas */}
       <a
         href={item.instagramUrl}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Lihat di Instagram"
-        className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20 hover:bg-gradient-to-br hover:from-purple-600 hover:to-orange-400 transition-all duration-300"
+        className="absolute top-4 right-4 lg:top-3 lg:right-3 z-20 w-10 h-10 lg:w-8 lg:h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20 hover:bg-gradient-to-br hover:from-purple-600 hover:to-orange-400 transition-all duration-300"
         onClick={(e) => e.stopPropagation()}
       >
-        <InstagramIcon className="w-4 h-4 text-white" />
+        <InstagramIcon className="w-5 h-5 lg:w-4 lg:h-4 text-white" />
       </a>
     </motion.div>
   )
 }
 
 export function SocialSection() {
+  const [activeDot, setActiveDot] = useState(0)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+
+  const handleScroll = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current
+      const scrollLeft = container.scrollLeft
+      const itemWidth = container.querySelector('.snap-start')?.clientWidth || 0
+      const gap = 16
+
+      if (itemWidth > 0) {
+        const index = Math.round(scrollLeft / (itemWidth + gap))
+        setActiveDot(index)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    const container = scrollContainerRef.current
+    if (container) {
+      container.addEventListener('scroll', handleScroll)
+      handleScroll()
+    }
+    return () => {
+      if (container) {
+        container.removeEventListener('scroll', handleScroll)
+      }
+    }
+  }, [handleScroll])
+
+  const scrollToItem = (index: number) => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current
+      const itemWidth = container.querySelector('.snap-start')?.clientWidth || 0
+      const gap = 16
+      container.scrollTo({
+        left: index * (itemWidth + gap),
+        behavior: 'smooth',
+      })
+    }
+  }
+
   return (
-    <section className="relative w-full bg-[#C8102E] py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-12 overflow-hidden">
-      <div className="max-w-[1400px] mx-auto text-center">
+    <section className="relative w-full bg-[#C8102E] py-16 sm:py-20 md:py-24 overflow-hidden">
+      <div className="w-full max-w-[1400px] mx-auto text-center">
 
         {/* Header Section */}
-        <div className="flex flex-col items-center justify-center mb-10">
+        <div className="flex flex-col items-center justify-center mb-10 px-4 sm:px-6 md:px-12">
           <div className="w-12 h-12 rounded-full bg-[#8B0000] flex items-center justify-center mb-4 shadow-inner">
             <InstagramIcon className="w-5 h-5 text-white" />
           </div>
 
-          <h2 className="text-4xl sm:text-6xl md:text-7xl font-black text-white uppercase tracking-tight">
+          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black text-white uppercase tracking-tight leading-none">
             IKUTI KAMI DI INSTAGRAM
           </h2>
-          <p className="text-white/70 text-sm sm:text-base mt-4 font-medium">
+          <p className="text-white/70 text-base sm:text-lg lg:text-base mt-4 font-medium max-w-2xl">
             @awangbrand — Resep, tips & di balik dapur AWANG
           </p>
         </div>
 
-        {/* Card Grid — video TIDAK autoplay, hanya render saat diklik */}
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 py-4">
-          {socialVideos.map((item, idx) => (
-            <VideoCard key={item.id} item={item} idx={idx} />
+        {/* Carousel Produk */}
+        <div className="relative w-full">
+          <div
+            ref={scrollContainerRef}
+            className="flex flex-nowrap lg:flex-wrap items-center lg:justify-center gap-4 sm:gap-6 py-4 px-4 sm:px-6 md:px-12 overflow-x-auto lg:overflow-x-visible scrollbar-hide snap-x snap-mandatory scroll-smooth"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {socialVideos.map((item, idx) => (
+              <VideoCard key={item.id} item={item} idx={idx} />
+            ))}
+          </div>
+        </div>
+
+        {/* Dots Navigation */}
+        <div className="flex lg:hidden items-center justify-center gap-2.5 mt-6 mb-2">
+          {socialVideos.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => scrollToItem(idx)}
+              aria-label={`Scroll to video ${idx + 1}`}
+              className={cn(
+                "w-2.5 h-2.5 rounded-full transition-all duration-300",
+                activeDot === idx
+                  ? "bg-white scale-125 shadow-md"
+                  : "bg-white/30 hover:bg-white/50"
+              )}
+            />
           ))}
         </div>
 
-        {/* CTA ke Instagram */}
-        <div className="mt-10">
+        {/* CTA ke Instagram - Diperkecil ukurannya (w-auto) dan diposisikan pas di tengah */}
+        <div className="mt-10 px-4 flex justify-center items-center w-full">
           <a
             href="https://www.instagram.com/awangbrand/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-white text-[#C8102E] font-extrabold text-sm sm:text-base px-8 py-3.5 rounded-full hover:bg-white/90 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-lg"
+            className="inline-flex items-center justify-center gap-2.5 bg-white text-[#C8102E] font-extrabold text-sm sm:text-base px-6 py-3.5 sm:px-8 sm:py-4 rounded-full hover:bg-white/90 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-md w-auto"
           >
             <InstagramIcon className="w-5 h-5 text-[#C8102E]" />
             Ikuti @awangbrand

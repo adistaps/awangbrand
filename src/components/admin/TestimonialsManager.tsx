@@ -63,54 +63,63 @@ export function TestimonialsManager({ initialTestimonials }: { initialTestimonia
 
   return (
     <div>
-      <button
-        onClick={openNew}
-        className="flex items-center gap-2 bg-[#F5A200] hover:bg-[#D98B00] text-white text-sm font-bold px-4 py-2.5 rounded-lg transition-colors mb-6"
-      >
-        <Plus size={16} /> Tambah Testimoni
-      </button>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-extrabold text-[#0A1628]">Kelola Testimoni</h2>
+          <p className="text-xs sm:text-sm text-gray-500 mt-0.5">Ulasan dan rekomendasi dari pelanggan / chef</p>
+        </div>
+        <button
+          onClick={openNew}
+          className="inline-flex items-center gap-2 bg-[#C8102E] hover:bg-[#a00b22] !text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer shrink-0"
+        >
+          <Plus size={16} className="!text-white" />
+          <span className="!text-white text-white">Tambah Testimoni</span>
+        </button>
+      </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {items.map((t) => (
-          <div key={t.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+          <div key={t.id} className="bg-white rounded-2xl shadow-xs border border-gray-100 p-5 hover:shadow-md transition-all">
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-3">
                 {t.image_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={t.image_url} alt={t.author} className="w-10 h-10 rounded-full object-cover" />
+                  <img src={t.image_url} alt={t.author} className="w-11 h-11 rounded-full object-cover border border-gray-100" />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-gray-100" />
+                  <div className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-400 text-xs">
+                    {(t.author || 'A').charAt(0)}
+                  </div>
                 )}
                 <div>
                   <p className="font-bold text-sm text-[#0A1628]">{t.author}</p>
-                  <p className="text-xs text-gray-500">{t.role}</p>
+                  <p className="text-xs text-gray-400">{t.role}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button onClick={() => openEdit(t)} className="text-gray-400 hover:text-[#F5A200]">
+              <div className="flex items-center gap-1">
+                <button onClick={() => openEdit(t)} className="p-1.5 text-gray-400 hover:text-[#C8102E] hover:bg-red-50 rounded-lg transition-colors" title="Edit">
                   <Pencil size={14} />
                 </button>
-                <button onClick={() => handleDelete(t.id)} className="text-gray-400 hover:text-red-500">
+                <button onClick={() => handleDelete(t.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
                   <Trash2 size={14} />
                 </button>
               </div>
             </div>
-            <p className="text-sm text-gray-600 italic line-clamp-3">&ldquo;{t.quote}&rdquo;</p>
-            <label className="flex items-center gap-2 text-xs font-semibold text-gray-500 mt-3">
-              <input type="checkbox" checked={t.is_active} onChange={() => toggleActive(t)} className="accent-[#F5A200]" />
+            <p className="text-sm text-gray-600 italic line-clamp-3 bg-gray-50/50 p-3 rounded-xl border border-gray-50">&ldquo;{t.quote}&rdquo;</p>
+            <label className="flex items-center gap-2 text-xs font-semibold text-gray-500 mt-3 cursor-pointer">
+              <input type="checkbox" checked={t.is_active} onChange={() => toggleActive(t)} className="accent-[#C8102E] rounded" />
               Aktif (tampil di homepage)
             </label>
           </div>
         ))}
-        {items.length === 0 && <p className="text-sm text-gray-400">Belum ada testimoni.</p>}
+        {items.length === 0 && <p className="col-span-full text-sm text-gray-400 text-center py-8">Belum ada testimoni.</p>}
       </div>
 
       {modalOpen && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-[#0A1628]">{editing ? 'Edit Testimoni' : 'Tambah Testimoni'}</h3>
-              <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600">
+              <h3 className="font-bold text-[#0A1628] text-base">{editing ? 'Edit Testimoni' : 'Tambah Testimoni'}</h3>
+              <button onClick={() => setModalOpen(false)} className="text-gray-400 hover:text-gray-600 p-1 rounded-lg">
                 <X size={18} />
               </button>
             </div>
@@ -119,39 +128,40 @@ export function TestimonialsManager({ initialTestimonials }: { initialTestimonia
                 bucket="testimonial-photos"
                 value={form.image_url}
                 onChange={(url) => setForm((f) => ({ ...f, image_url: url }))}
-                label="Foto"
+                label="Foto Profil"
               />
               <div>
-                <label className="text-xs font-semibold text-gray-600 mb-1 block">Quote</label>
+                <label className="text-xs font-semibold text-gray-600 mb-1 block">Quote Testimoni</label>
                 <textarea
                   rows={3}
                   value={form.quote}
                   onChange={(e) => setForm((f) => ({ ...f, quote: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#F5A200]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-gray-600 mb-1 block">Nama</label>
+                <label className="text-xs font-semibold text-gray-600 mb-1 block">Nama Pelanggan/Chef</label>
                 <input
                   value={form.author}
                   onChange={(e) => setForm((f) => ({ ...f, author: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#F5A200]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-gray-600 mb-1 block">Jabatan/Role</label>
+                <label className="text-xs font-semibold text-gray-600 mb-1 block">Jabatan / Role</label>
                 <input
                   value={form.role}
                   onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#F5A200]"
+                  placeholder="cth: Ibu Rumah Tangga / Chef Eksekutif"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
                 />
               </div>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="w-full bg-[#F5A200] hover:bg-[#D98B00] text-white font-bold text-sm py-2.5 rounded-lg transition-colors disabled:opacity-60"
+                className="w-full bg-[#C8102E] hover:bg-[#a00b22] !text-white font-bold text-sm py-3 rounded-xl transition-all shadow-sm active:scale-95 disabled:opacity-60 cursor-pointer"
               >
-                {saving ? 'Menyimpan...' : 'Simpan'}
+                <span className="!text-white text-white">{saving ? 'Menyimpan...' : 'Simpan'}</span>
               </button>
             </div>
           </div>

@@ -61,7 +61,7 @@ export function ImageUploader({
           </button>
         </div>
       ) : (
-        <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#F5A200] transition-colors">
+        <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-[#C8102E] hover:bg-red-50/20 transition-all">
           {uploading ? (
             <Loader2 className="animate-spin text-gray-400" size={22} />
           ) : (

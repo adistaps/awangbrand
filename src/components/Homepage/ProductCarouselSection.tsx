@@ -35,7 +35,8 @@ export function ProductCarouselSection() {
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
-      const scrollAmount = direction === 'left' ? -340 : 340
+      // KHUSUS MOBILE: Menyesuaikan jarak scroll agar pas dengan lebar card mobile
+      const scrollAmount = direction === 'left' ? -220 : 220
       scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
     }
   }
@@ -78,10 +79,10 @@ export function ProductCarouselSection() {
           </div>
         </div>
 
-        {/* Carousel Produk Pop-Out Menggunakan Komponen Terpisah FlavorPopOutCard */}
+        {/* Carousel Produk Pop-Out - KHUSUS MOBILE: Mengatur padding-left/right awal agar card pertama tidak terpotong */}
         <div
           ref={scrollContainerRef}
-          className="flex justify-start md:justify-center gap-6 overflow-x-auto scrollbar-hide pt-8 pb-8 px-2 snap-x snap-mandatory scroll-smooth"
+          className="flex justify-start md:justify-center gap-4 sm:gap-6 overflow-x-auto scrollbar-hide pt-4 pb-8 px-1 sm:px-2 snap-x snap-mandatory scroll-smooth"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {products.map((p, idx) => (

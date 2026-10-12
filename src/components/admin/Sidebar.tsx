@@ -12,22 +12,23 @@ import {
   Building2,
   Inbox,
   Mail,
-  Settings,
   LogOut,
   UserCircle,
+  TrendingUp,
+  Wallet,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+  { href: '/admin/cashflow', label: 'Cashflow & Penjualan', icon: Wallet },
   { href: '/admin/products', label: 'Produk', icon: Package },
   { href: '/admin/recipes', label: 'Resep', icon: Tags },
   { href: '/admin/categories', label: 'Kategori', icon: Tags },
   { href: '/admin/testimonials', label: 'Testimoni', icon: MessageSquareQuote },
-  { href: '/admin/brands', label: 'Brand', icon: Building2 },
+  { href: '/admin/brands', label: 'Brand & Mitra', icon: Building2 },
   { href: '/admin/quote-submissions', label: 'Quote Masuk', icon: Inbox },
   { href: '/admin/contact-submissions', label: 'Pesan Kontak', icon: Mail },
-  { href: '/admin/settings', label: 'Pengaturan', icon: Settings },
 ]
 
 export function Sidebar({
@@ -59,27 +60,22 @@ export function Sidebar({
   }
 
   return (
-    <aside className="relative w-full lg:w-64 shrink-0 bg-[#0A1628] text-white min-h-full lg:min-h-screen flex flex-col overflow-hidden">
-      {/* Vertical "KEYWELL" watermark accent */}
-      <span
-        aria-hidden="true"
-        className="pointer-events-none select-none absolute right-2 top-1/2 -translate-y-1/2 rotate-180 text-white/[0.06] font-thin tracking-[0.5em] text-[64px] leading-none"
-        style={{ writingMode: 'vertical-rl' }}
-      >
-        KEYWELL
-      </span>
+    <aside className="relative w-full lg:w-64 shrink-0 bg-[#C8102E] text-white h-full flex flex-col z-20">
 
-      <div className="relative z-10 p-6 border-b border-white/10 flex items-center">
+      {/* Header / Logo */}
+      <div className="relative z-10 p-5 border-b border-white/15 flex items-center shrink-0">
         <Image
-          src="/logokey.webp"
-          alt="Keywell Logo"
-          width={140}
-          height={40}
-          className="object-contain h-10 w-auto"
+          src="/logo.webp"
+          alt="AWANG Logo"
+          width={130}
+          height={38}
+          className="object-contain h-9 w-auto brightness-0 invert"
+          priority
         />
       </div>
 
-      <nav className="relative z-10 flex-1 py-4 px-3 space-y-1">
+      {/* Navigasi Utama */}
+      <nav className="relative z-10 flex-1 py-4 pl-4 lg:pr-0 pr-4 space-y-1 overflow-y-auto overflow-x-hidden">
         {navItems.map(({ href, label, icon: Icon, exact }) => {
           const active = exact ? pathname === href : pathname.startsWith(href)
           const badge =
@@ -94,15 +90,20 @@ export function Sidebar({
               key={href}
               href={href}
               onClick={onClose}
-              className={`flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${active ? 'bg-[#F5A200] text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'
+              className={`flex items-center justify-between gap-3 px-4 py-3 font-semibold text-sm transition-all duration-200 ${active
+                ? 'bg-white !text-[#C8102E] rounded-l-2xl lg:-mr-3 pr-6 shadow-sm relative z-10'
+                : 'text-white/80 hover:bg-white/10 hover:text-white rounded-xl'
                 }`}
             >
               <span className="flex items-center gap-3">
-                <Icon size={18} />
-                {label}
+                <Icon size={19} className={active ? '!text-[#C8102E]' : 'text-white/80'} />
+                <span className={active ? '!text-[#C8102E]' : ''}>{label}</span>
               </span>
               {badge > 0 && (
-                <span className="bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                <span
+                  className={`text-[10px] font-extrabold rounded-full min-w-[20px] h-[20px] flex items-center justify-center px-1.5 ${active ? 'bg-[#C8102E] text-white' : 'bg-white text-[#C8102E]'
+                    }`}
+                >
                   {badge}
                 </span>
               )}
@@ -111,21 +112,22 @@ export function Sidebar({
         })}
       </nav>
 
-      <div className="relative z-10 p-3 border-t border-white/10 space-y-2">
-        <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-white/5">
-          <UserCircle size={22} className="text-white/60 shrink-0" />
+      {/* Footer Akun & Logout */}
+      <div className="relative z-10 p-4 border-t border-white/15 space-y-2 shrink-0 mt-auto bg-[#C8102E]">
+        <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/10">
+          <UserCircle size={22} className="text-white/80 shrink-0" />
           <div className="min-w-0">
-            <p className="text-xs font-semibold text-white truncate">
+            <p className="text-xs font-bold text-white truncate">
               {userEmail || 'Memuat...'}
             </p>
-            <p className="text-[10px] text-white/40">Akun aktif</p>
+            <p className="text-[10px] text-white/60">Akun aktif</p>
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-white/80 hover:bg-white/15 hover:text-white transition-colors cursor-pointer"
         >
-          <LogOut size={18} />
+          <LogOut size={16} />
           Keluar
         </button>
       </div>

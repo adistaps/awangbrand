@@ -70,22 +70,18 @@ export function RecipesClient() {
 
       {/* TOP BANNER HERO */}
       <section className="bg-[#C8102E] text-white pt-24 sm:pt-28 pb-8 sm:pb-12 px-6 relative flex flex-col items-center">
-        <div className="max-w-4xl mx-auto text-center space-y-3 sm:space-y-4 relative z-20">
-          <h1
-            className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight uppercase text-white"
-            style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
-          >
-            DISCOVER AUTHENTIC FLAVOURS & EASY HOME RECIPES
+        <div className="max-w-5xl mx-auto text-center space-y-3 sm:space-y-4 relative z-20">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight uppercase text-white">
+            DISCOVER AUTHENTIC <br className="hidden md:inline" />
+            <span className="md:whitespace-nowrap">FLAVOURS & EASY HOME RECIPES</span>
           </h1>
-          <p className="text-white/90 text-sm sm:text-base md:text-lg font-medium leading-relaxed max-w-2xl mx-auto">
-            Elevate your BBQ and daily meals with delicious recipes that pack a zesty punch for the whole family.
-          </p>
+
           <div className="pt-1 sm:pt-2">
             <Link
               href={`/recipes/${displayList[0]?.slug || 'garlic-lemon-shrimp'}`}
-              className="inline-flex items-center gap-2 bg-[#4A1521] text-white font-bold px-8 py-3 rounded-full hover:bg-[#2b0c13] transition-all text-xs sm:text-sm uppercase tracking-wide"
+              className="inline-flex items-center gap-1.5 sm:gap-2 bg-[#4A1521] text-white font-bold px-5 py-2 sm:px-8 sm:py-3 rounded-full hover:bg-[#2b0c13] transition-all text-[11px] sm:text-sm uppercase tracking-wide shadow-md active:scale-95"
             >
-              Get Recipe <ChevronRight size={16} />
+              Get Recipe <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </Link>
           </div>
         </div>

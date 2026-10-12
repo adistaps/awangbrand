@@ -4,25 +4,30 @@ import { createClient } from '@/lib/supabase/server'
 import { ProductsGrid } from '@/components/ProductsGrid'
 
 export const metadata: Metadata = {
-  title: 'Produk Awang Brand',
+  title: 'Katalog Pes Masakan & Bumbu Warisan Melayu | AWANG Brand Malaysia',
   description:
-    'Jelajahi katalog lengkap power tools profesional dari Keywell Arshaka Innovation — untuk kebutuhan industri, konstruksi, dan pertambangan di Indonesia.',
+    'Jelajahi aneka pes masakan autentik, perencah warisan Melayu, sambal, dan sos lazat dari AWANG Brand Malaysia. 100% ramuan asli semulajadi, disahkan Halal JAKIM, tanpa bahan pengawet.',
   keywords: [
-    'katalog power tools',
-    'power tools profesional',
-    'alat industri Indonesia',
-    'jual power tools murah',
-    'power tools konstruksi',
-    'cordless drill Indonesia',
+    'Awang Brand',
+    'Awang Brand Malaysia',
+    'pes masakan Malaysia',
+    'cooking paste Malaysia',
+    'perencah masakan Melayu',
+    'pes sambal serbaguna',
+    'pes kari dan rendang',
+    'bumbu masakan Halal JAKIM',
+    'Malaysian culinary paste',
+    'Asian cooking paste',
+    'natural cooking paste',
   ],
   openGraph: {
-    title: 'Produk Power Tools Profesional | Keywell Arshaka Innovation',
+    title: 'Katalog Pes Masakan & Bumbu Warisan Melayu | AWANG Brand Malaysia',
     description:
-      'Jelajahi katalog lengkap power tools profesional untuk industri, konstruksi, dan pertambangan.',
-    url: 'https://keywellarshakainnovation.com/products',
-    images: [{ url: '/og-image.webp', width: 1200, height: 630, alt: 'Katalog Produk Keywell' }],
+      'Pilihan pes masakan sedia dimasak, ramuan rempah asli berkualiti tinggi disahkan HALAL JAKIM dari AWANG Brand Malaysia.',
+    url: 'https://awangbrand.com/products',
+    images: [{ url: '/og-image.webp', width: 1200, height: 630, alt: 'Katalog Pes Masakan AWANG Brand Malaysia' }],
   },
-  alternates: { canonical: 'https://keywellarshakainnovation.com/products' },
+  alternates: { canonical: 'https://awangbrand.com/products' },
 }
 
 export const dynamic = 'force-dynamic'

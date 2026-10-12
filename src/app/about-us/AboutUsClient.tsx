@@ -142,16 +142,14 @@ export function AboutUsClient() {
         </div>
       </section>
       {/* ==========================================
-          BAGIAN 3: STATS & METRICS SECTION (ANIMATED COUNTER & /about1.webp)
+          BAGIAN 3: STATS & METRICS SECTION (MENGGUNAKAN FONT BAWAAN WEBSITE)
       ========================================== */}
       <section className="w-full max-w-[1200px] mx-auto pb-16 sm:pb-24 px-6 text-[#111111]">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
 
           <div className="lg:col-span-7 flex flex-col sm:flex-row sm:items-center gap-6 md:gap-8">
-            <h2
-              className="text-6xl sm:text-7xl md:text-8xl font-black text-[#111111] tracking-tight leading-none shrink-0"
-              style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
-            >
+            {/* Menggunakan font default website (font-sans) tanpa tambahan font lain */}
+            <h2 className="text-5xl sm:text-6xl md:text-7xl font-bold font-sans text-[#111111] tracking-tight leading-none shrink-0">
               <Counter target={10} suffix="M+" />
             </h2>
 
@@ -183,10 +181,7 @@ export function AboutUsClient() {
         <div className="grid grid-cols-3 gap-6 sm:gap-12 text-left">
 
           <div className="flex flex-col">
-            <span
-              className="text-3xl sm:text-4xl md:text-5xl font-black text-[#111111] mb-1"
-              style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
-            >
+            <span className="text-3xl sm:text-4xl md:text-5xl font-bold font-sans text-[#111111] mb-1">
               <Counter target={150} suffix="+" />
             </span>
             <span className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase text-gray-500 tracking-wider">
@@ -195,10 +190,7 @@ export function AboutUsClient() {
           </div>
 
           <div className="flex flex-col">
-            <span
-              className="text-3xl sm:text-4xl md:text-5xl font-black text-[#111111] mb-1"
-              style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
-            >
+            <span className="text-3xl sm:text-4xl md:text-5xl font-bold font-sans text-[#111111] mb-1">
               <Counter target={10} suffix="+" />
             </span>
             <span className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase text-gray-500 tracking-wider">
@@ -207,10 +199,7 @@ export function AboutUsClient() {
           </div>
 
           <div className="flex flex-col">
-            <span
-              className="text-3xl sm:text-4xl md:text-5xl font-black text-[#111111] mb-1"
-              style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
-            >
+            <span className="text-3xl sm:text-4xl md:text-5xl font-bold font-sans text-[#111111] mb-1">
               <Counter target={100} suffix="%" />
             </span>
             <span className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase text-gray-500 tracking-wider">

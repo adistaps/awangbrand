@@ -12,22 +12,22 @@ import { TestimonialsSection } from '@/components/Homepage/TestimonialsSection'
 import { BrandsSection } from '@/components/Homepage/BrandsSection'
 
 export const metadata: Metadata = {
-  title: 'Awang Brand - Cita Rasa Istimewa Alami',
-  description: 'AWANG — Produk saus, bumbu, dan resep hidangan berkualitas terbaik untuk keluarga Indonesia.',
+  title: 'AWANG Brand  — Pes Masakan Autentik & Perencah Warisan Melayu',
+  description: 'AWANG Brand — Pengeluar pes masakan autentik warisan Melayu terkemuka di Malaysia. 100% ramuan asli semulajadi, disahkan Halal JAKIM, mudah dan lazat untuk seisi keluarga.',
   alternates: { canonical: 'https://awangbrand.com' },
 }
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'PT. AWANG Indonesia',
+  name: 'AWANG Brand Malaysia',
   url: 'https://awangbrand.com',
   logo: 'https://awangbrand.com/icon.webp',
-  description: 'Produk saus, bumbu, dan resep hidangan berkualitas terbaik di Indonesia.',
+  description: 'Pengeluar pes masakan autentik warisan Melayu dan perencah masakan berkualiti tinggi di Malaysia.',
   address: {
     '@type': 'PostalAddress',
-    addressCountry: 'ID',
-    addressLocality: 'Indonesia',
+    addressCountry: 'MY',
+    addressLocality: 'Malaysia',
   },
 }
 

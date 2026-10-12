@@ -1,9 +1,27 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Package, Inbox, Mail, Star, Plus, Eye } from 'lucide-react'
+import {
+  Package,
+  Inbox,
+  Mail,
+  Star,
+  Plus,
+  Eye,
+  TrendingUp,
+  ArrowRight,
+  Activity,
+  Wallet,
+  Store,
+  DollarSign,
+  ArrowUpRight,
+} from 'lucide-react'
 import { SubmissionsChart } from '@/components/admin/SubmissionsChart'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata = {
+  title: 'Dashboard | AWANG Brand Admin',
+}
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
@@ -16,9 +34,9 @@ export default async function AdminDashboardPage() {
     { count: newContacts },
     { data: recentQuotes },
     { data: recentContacts },
-    { data: viewsRaw },
     { data: quotesRaw },
     { data: contactsRaw },
+    { data: cashflowRaw },
   ] = await Promise.all([
     supabase.from('products').select('*', { count: 'exact', head: true }),
     supabase.from('products').select('*', { count: 'exact', head: true }).eq('status', 'published'),
@@ -27,20 +45,88 @@ export default async function AdminDashboardPage() {
     supabase.from('contact_submissions').select('*', { count: 'exact', head: true }).eq('status', 'new'),
     supabase.from('quote_submissions').select('*').order('created_at', { ascending: false }).limit(5),
     supabase.from('contact_submissions').select('*').order('created_at', { ascending: false }).limit(5),
-    supabase.from('product_views').select('viewed_at').order('viewed_at', { ascending: false }).limit(500),
     supabase.from('quote_submissions').select('created_at'),
     supabase.from('contact_submissions').select('created_at'),
+    supabase.from('cashflow_transactions').select('amount, type, channel, store_name, transaction_date, description').order('transaction_date', { ascending: false }),
   ])
 
+  // Hitung metrik cashflow
+  let totalIncome = 0
+  let offlineIncome = 0
+  let totalExpense = 0
+  const recentCashflow = (cashflowRaw || []).slice(0, 5)
+
+  ;(cashflowRaw || []).forEach((item: any) => {
+    const amt = Number(item.amount) || 0
+    if (item.type === 'income') {
+      totalIncome += amt
+      if (item.channel === 'offline_store' || item.channel === 'supermarket' || item.channel === 'distributor') {
+        offlineIncome += amt
+      }
+    } else {
+      totalExpense += amt
+    }
+  })
+
+  const netCashflow = totalIncome - totalExpense
+
+  const formatRM = (val: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'MYR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(val)
+  }
+
   const stats = [
-    { label: 'Total Produk', value: totalProducts || 0, icon: Package, color: 'bg-blue-500' },
-    { label: 'Produk Tayang', value: publishedProducts || 0, icon: Eye, color: 'bg-emerald-500' },
-    { label: 'Produk Featured', value: featuredProducts || 0, icon: Star, color: 'bg-amber-500' },
-    { label: 'Quote Baru', value: newQuotes || 0, icon: Inbox, color: 'bg-red-500' },
-    { label: 'Pesan Baru', value: newContacts || 0, icon: Mail, color: 'bg-purple-500' },
+    {
+      label: 'Pendapatan Kas',
+      value: formatRM(totalIncome),
+      sublabel: 'Penjualan masuk',
+      icon: Wallet,
+      gradient: 'from-emerald-500 to-emerald-600',
+      bg: 'bg-emerald-50',
+      textColor: 'text-emerald-600',
+    },
+    {
+      label: 'Penjualan Offline',
+      value: formatRM(offlineIncome),
+      sublabel: 'Toko mitra & ritel',
+      icon: Store,
+      gradient: 'from-blue-500 to-blue-600',
+      bg: 'bg-blue-50',
+      textColor: 'text-blue-600',
+    },
+    {
+      label: 'Total Produk',
+      value: totalProducts || 0,
+      sublabel: `${publishedProducts || 0} tayang`,
+      icon: Package,
+      gradient: 'from-[#C8102E] to-[#a00b22]',
+      bg: 'bg-red-50',
+      textColor: 'text-[#C8102E]',
+    },
+    {
+      label: 'Quote Masuk',
+      value: newQuotes || 0,
+      sublabel: 'Permintaan baru',
+      icon: Inbox,
+      gradient: 'from-amber-500 to-amber-600',
+      bg: 'bg-amber-50',
+      textColor: 'text-amber-600',
+    },
+    {
+      label: 'Pesan Kontak',
+      value: newContacts || 0,
+      sublabel: 'Pesan belum dibalas',
+      icon: Mail,
+      gradient: 'from-purple-500 to-purple-600',
+      bg: 'bg-purple-50',
+      textColor: 'text-purple-600',
+    },
   ]
 
-  // Group submissions per month for chart (last 6 months)
   function groupByMonth(rows: { created_at: string }[] | null) {
     const map: Record<string, number> = {}
     const now = new Date()
@@ -61,73 +147,190 @@ export default async function AdminDashboardPage() {
   const contactByMonth = groupByMonth(contactsRaw)
   const labels = Object.keys(quoteByMonth)
 
+  const quickActions = [
+    { href: '/admin/cashflow', label: 'Catat Penjualan', icon: Wallet, description: 'Cashflow & omzet' },
+    { href: '/admin/products/new', label: 'Tambah Produk', icon: Plus, description: 'Produk baru' },
+    { href: '/admin/recipes/new', label: 'Tambah Resep', icon: Plus, description: 'Resep baru' },
+    { href: '/admin/brands', label: 'Brand & Mitra', icon: Store, description: 'Integrasi ritel' },
+  ]
+
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
+    <div className="space-y-8">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-[#0A1628]">Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">Ringkasan aktivitas website Keywell Arshaka Innovation</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0A1628] tracking-tight">Dashboard</h1>
+          <p className="text-xs sm:text-sm text-gray-400 mt-1 flex items-center gap-1.5">
+            <Activity size={13} className="text-[#C8102E]" />
+            Ringkasan omzet penjualan, produk & aktivitas AWANG Brand
+          </p>
         </div>
-        <Link
-          href="/admin/products/new"
-          className="flex items-center gap-2 bg-[#F5A200] hover:bg-[#D98B00] text-white text-sm font-bold px-4 py-2.5 rounded-lg transition-colors"
-        >
-          <Plus size={16} /> Tambah Produk
-        </Link>
+        <div className="flex items-center gap-2.5">
+          <Link
+            href="/admin/cashflow"
+            className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-[#0A1628] border border-gray-200 text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 shrink-0"
+          >
+            <Wallet size={15} className="text-[#C8102E]" />
+            <span>Lihat Cashflow</span>
+          </Link>
+          <Link
+            href="/admin/products/new"
+            className="inline-flex items-center justify-center gap-2 bg-[#C8102E] hover:bg-[#a00b22] !text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 shrink-0"
+          >
+            <Plus size={16} className="!text-white text-white" />
+            <span className="!text-white text-white">Tambah Produk</span>
+          </Link>
+        </div>
       </div>
 
-      {/* Stats grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-        {stats.map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-            <div className={`w-9 h-9 rounded-lg ${color} text-white flex items-center justify-center mb-3`}>
-              <Icon size={18} />
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4">
+        {stats.map(({ label, value, sublabel, icon: Icon, gradient, textColor }) => (
+          <div
+            key={label}
+            className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-gray-100 hover:shadow-md transition-all hover:-translate-y-0.5 group"
+          >
+            <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br ${gradient} text-white flex items-center justify-center mb-3 shadow-xs group-hover:scale-110 transition-transform`}>
+              <Icon size={17} />
             </div>
-            <p className="text-2xl font-extrabold text-[#0A1628]">{value}</p>
-            <p className="text-xs text-gray-500 mt-1">{label}</p>
+            <p className="text-xl sm:text-2xl font-extrabold text-[#0A1628] leading-tight truncate">{value}</p>
+            <p className={`text-xs font-semibold mt-1 ${textColor}`}>{label}</p>
+            <p className="text-[10px] text-gray-400 mt-0.5">{sublabel}</p>
           </div>
         ))}
       </div>
 
-      {/* Chart */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-8">
-        <h2 className="font-bold text-[#0A1628] mb-4">Submission 6 Bulan Terakhir</h2>
-        <SubmissionsChart
-          labels={labels}
-          quotes={Object.values(quoteByMonth)}
-          contacts={Object.values(contactByMonth)}
-        />
-      </div>
+      {/* Cashflow & Penjualan Terkini Row */}
+      <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-xs border border-gray-100">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
+          <div>
+            <h2 className="font-bold text-[#0A1628] text-base flex items-center gap-2">
+              <Wallet size={17} className="text-[#C8102E]" />
+              Penjualan & Cashflow Terkini
+            </h2>
+            <p className="text-xs text-gray-400 mt-0.5">Transaksi masuk dari toko offline, ritel modern, dan kanal penjualan</p>
+          </div>
+          <Link
+            href="/admin/cashflow"
+            className="text-xs font-bold text-[#C8102E] hover:underline flex items-center gap-1 self-start sm:self-auto"
+          >
+            Buka Manajemen Cashflow <ArrowRight size={13} />
+          </Link>
+        </div>
 
-      {/* Quick actions */}
-      <div className="grid md:grid-cols-4 gap-3 mb-8">
-        <Link href="/admin/products/new" className="bg-white border border-gray-100 rounded-xl p-4 text-sm font-semibold text-[#0A1628] hover:border-[#F5A200] transition-colors shadow-sm">
-          + Tambah Produk
-        </Link>
-        <Link href="/admin/testimonials" className="bg-white border border-gray-100 rounded-xl p-4 text-sm font-semibold text-[#0A1628] hover:border-[#F5A200] transition-colors shadow-sm">
-          + Tambah Testimoni
-        </Link>
-        <Link href="/admin/brands" className="bg-white border border-gray-100 rounded-xl p-4 text-sm font-semibold text-[#0A1628] hover:border-[#F5A200] transition-colors shadow-sm">
-          + Tambah Brand
-        </Link>
-        <Link href="/admin/quote-submissions" className="bg-white border border-gray-100 rounded-xl p-4 text-sm font-semibold text-[#0A1628] hover:border-[#F5A200] transition-colors shadow-sm">
-          Lihat Quote Baru →
-        </Link>
-      </div>
-
-      {/* Recent activity */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h2 className="font-bold text-[#0A1628] mb-4">Quote Terbaru</h2>
-          <div className="space-y-3">
-            {(recentQuotes || []).length === 0 && <p className="text-sm text-gray-400">Belum ada quote masuk.</p>}
-            {(recentQuotes || []).map((q) => (
-              <div key={q.id} className="flex items-center justify-between text-sm border-b border-gray-50 pb-2 last:border-0">
-                <div>
-                  <p className="font-semibold text-[#0A1628]">{q.name}</p>
-                  <p className="text-xs text-gray-500">{q.category || '-'}</p>
+        {recentCashflow.length === 0 ? (
+          <div className="text-center py-8 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
+            <Store size={28} className="text-gray-300 mx-auto mb-2" />
+            <p className="text-xs text-gray-400">Belum ada catatan penjualan cashflow.</p>
+            <Link
+              href="/admin/cashflow"
+              className="inline-block mt-2 text-xs font-bold text-[#C8102E] hover:underline"
+            >
+              + Catat Penjualan Sekarang
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {recentCashflow.map((cf: any, idx: number) => {
+              const isIncome = cf.type === 'income'
+              return (
+                <div key={idx} className="p-3.5 rounded-xl border border-gray-100 bg-gray-50/30 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[11px] font-semibold text-gray-500 truncate">
+                      {cf.store_name || cf.channel}
+                    </span>
+                    <span className="text-[10px] text-gray-400">
+                      {new Date(cf.transaction_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                    </span>
+                  </div>
+                  <p className="text-xs font-semibold text-[#0A1628] truncate mb-1">{cf.description}</p>
+                  <p className={`text-sm font-extrabold ${isIncome ? 'text-emerald-600' : 'text-rose-600'}`}>
+                    {isIncome ? '+' : '-'} {formatRM(Number(cf.amount))}
+                  </p>
                 </div>
-                <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${q.status === 'new' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-500'}`}>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Chart + Quick Actions row */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Chart */}
+        <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="font-bold text-[#0A1628] text-base">Aktivitas 6 Bulan Terakhir</h2>
+              <p className="text-xs text-gray-400 mt-0.5">Quote & pesan kontak masuk</p>
+            </div>
+            <span className="flex items-center gap-1 text-xs font-semibold text-emerald-500 bg-emerald-50 px-2.5 py-1 rounded-full">
+              <TrendingUp size={11} /> Live
+            </span>
+          </div>
+          <SubmissionsChart
+            labels={labels}
+            quotes={Object.values(quoteByMonth)}
+            contacts={Object.values(contactByMonth)}
+          />
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <h2 className="font-bold text-[#0A1628] text-base mb-1">Aksi Cepat</h2>
+          <p className="text-xs text-gray-400 mb-5">Shortcut navigasi admin</p>
+          <div className="space-y-3">
+            {quickActions.map(({ href, label, icon: Icon, description }) => (
+              <Link
+                key={href}
+                href={href}
+                className="flex items-center justify-between p-3.5 rounded-xl bg-gray-50 hover:bg-red-50 hover:border-red-100 border border-transparent transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#C8102E]/10 text-[#C8102E] flex items-center justify-center group-hover:bg-[#C8102E] group-hover:text-white transition-all">
+                    <Icon size={14} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#0A1628]">{label}</p>
+                    <p className="text-[11px] text-gray-400">{description}</p>
+                  </div>
+                </div>
+                <ArrowRight size={14} className="text-gray-300 group-hover:text-[#C8102E] transition-colors" />
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Activity */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Recent Quotes */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="font-bold text-[#0A1628] text-base">Quote Terbaru</h2>
+            <Link href="/admin/quote-submissions" className="text-[11px] font-semibold text-[#C8102E] hover:underline flex items-center gap-1">
+              Lihat Semua <ArrowRight size={11} />
+            </Link>
+          </div>
+          <div className="space-y-3">
+            {(recentQuotes || []).length === 0 && (
+              <div className="text-center py-6">
+                <Inbox size={28} className="text-gray-200 mx-auto mb-2" />
+                <p className="text-sm text-gray-400">Belum ada quote masuk.</p>
+              </div>
+            )}
+            {(recentQuotes || []).map((q) => (
+              <div key={q.id} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
+                <div>
+                  <p className="text-sm font-semibold text-[#0A1628]">{q.name}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{q.category || '—'}</p>
+                </div>
+                <span
+                  className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
+                    q.status === 'new'
+                      ? 'bg-red-100 text-[#C8102E]'
+                      : 'bg-gray-100 text-gray-500'
+                  }`}
+                >
                   {q.status}
                 </span>
               </div>
@@ -135,17 +338,34 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-          <h2 className="font-bold text-[#0A1628] mb-4">Pesan Kontak Terbaru</h2>
+        {/* Recent Contacts */}
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="font-bold text-[#0A1628] text-base">Pesan Kontak Terbaru</h2>
+            <Link href="/admin/contact-submissions" className="text-[11px] font-semibold text-[#C8102E] hover:underline flex items-center gap-1">
+              Lihat Semua <ArrowRight size={11} />
+            </Link>
+          </div>
           <div className="space-y-3">
-            {(recentContacts || []).length === 0 && <p className="text-sm text-gray-400">Belum ada pesan masuk.</p>}
+            {(recentContacts || []).length === 0 && (
+              <div className="text-center py-6">
+                <Mail size={28} className="text-gray-200 mx-auto mb-2" />
+                <p className="text-sm text-gray-400">Belum ada pesan masuk.</p>
+              </div>
+            )}
             {(recentContacts || []).map((c) => (
-              <div key={c.id} className="flex items-center justify-between text-sm border-b border-gray-50 pb-2 last:border-0">
-                <div>
-                  <p className="font-semibold text-[#0A1628]">{c.email}</p>
-                  <p className="text-xs text-gray-500 line-clamp-1 max-w-[200px]">{c.comment}</p>
+              <div key={c.id} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
+                <div className="min-w-0 flex-1 mr-3">
+                  <p className="text-sm font-semibold text-[#0A1628] truncate">{c.email}</p>
+                  <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{c.comment}</p>
                 </div>
-                <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${c.status === 'new' ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-500'}`}>
+                <span
+                  className={`text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0 ${
+                    c.status === 'new'
+                      ? 'bg-red-100 text-[#C8102E]'
+                      : 'bg-gray-100 text-gray-500'
+                  }`}
+                >
                   {c.status}
                 </span>
               </div>

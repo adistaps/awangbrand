@@ -7,11 +7,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     data: { user },
   } = await supabase.auth.getUser()
 
-  console.log("AdminLayout session user:", user ? user.email : "null (Not Logged In)")
-
   // Login page renders its own standalone layout (no sidebar)
   if (!user) {
-    return <div className="min-h-screen bg-[#F8F9FA]">{children}</div>
+    return <div className="min-h-screen bg-white">{children}</div>
   }
 
   const { count: newQuoteCount } = await supabase

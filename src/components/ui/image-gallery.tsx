@@ -58,14 +58,14 @@ export default function ImageGallery({
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         .img-gallery-wrap * { font-family: 'Poppins', sans-serif; }
         
-        /* Item tidak aktif: portrait sangat ramping */
+        /* Item tidak aktif: Dibuat jauh lebih ramping/tipis khusus mobile (45px) */
         .img-gallery-item {
-          flex: 0 0 80px;
+          flex: 0 0 45px;
           transition: flex 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         }
         @media (min-width: 640px) {
           .img-gallery-item {
-            flex: 0 0 90px;
+            flex: 0 0 70px;
           }
         }
         @media (min-width: 1024px) {
@@ -74,7 +74,7 @@ export default function ImageGallery({
           }
         }
         
-        /* Item aktif: mengisi seluruh sisa ruang horizontal (landscape memanjang) */
+        /* Item aktif: mengisi seluruh sisa ruang horizontal dengan jelas */
         .img-gallery-item.is-active {
           flex: 1 1 0%;
         }
@@ -90,7 +90,7 @@ export default function ImageGallery({
 
                 {/* Full width galeri tanpa max-w pembatas */}
                 <div
-                    className="flex items-stretch gap-3 md:gap-4 h-[320px] sm:h-[420px] md:h-[520px] lg:h-[580px] w-full overflow-hidden"
+                    className="flex items-stretch gap-2 sm:gap-4 h-[320px] sm:h-[420px] md:h-[520px] lg:h-[580px] w-full overflow-hidden"
                     onMouseEnter={handleMouseEnterGallery}
                     onMouseLeave={handleMouseLeaveGallery}
                 >
@@ -112,11 +112,11 @@ export default function ImageGallery({
                                     loading="lazy"
                                 />
 
-                                {/* Overlay gelap untuk card tidak aktif */}
+                                {/* Overlay gelap lebih pekat untuk card tidak aktif agar card aktif semakin kontras & jelas */}
                                 <div
                                     className={cn(
                                         "absolute inset-0 bg-black transition-opacity duration-500",
-                                        isActive ? "opacity-0" : "opacity-50"
+                                        isActive ? "opacity-0" : "opacity-75"
                                     )}
                                 />
 
@@ -132,11 +132,11 @@ export default function ImageGallery({
                                 {img.title && (
                                     <div
                                         className={cn(
-                                            "absolute inset-x-0 bottom-0 px-5 pb-5 pt-10 transition-all duration-500",
+                                            "absolute inset-x-0 bottom-0 px-4 sm:px-5 pb-4 sm:pb-5 pt-10 transition-all duration-500",
                                             isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
                                         )}
                                     >
-                                        <p className="text-white font-bold text-base sm:text-lg leading-snug line-clamp-2 drop-shadow-lg">
+                                        <p className="text-white font-bold text-sm sm:text-lg leading-snug line-clamp-2 drop-shadow-lg">
                                             {img.title}
                                         </p>
                                     </div>

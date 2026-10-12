@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/admin/', '/auth/', '/api/'],
       },
     ],
-    sitemap: 'https://keywellarshakainnovation.com/sitemap.xml',
-    host: 'https://keywellarshakainnovation.com',
+    sitemap: 'https://awangbrand.com/sitemap.xml',
+    host: 'https://awangbrand.com',
   }
 }

@@ -31,9 +31,9 @@ export const translations = {
     features_desc: 'Kami berkomitmen menyediakan peralatan terbaik didukung layanan purna jual yang andal.',
 
     // Intro Section
-    intro_tag: 'TENTANG KEYWELL',
+    intro_tag: 'TENTANG AWANG BRAND',
     intro_title: 'Mitra Terpercaya Peralatan Industri Masa Depan',
-    intro_desc: 'PT. Keywell Arshaka Innovation adalah distributor terkemuka di Indonesia yang menyediakan peralatan industri & power tools berkualitas tinggi.',
+    intro_desc: 'AWANG Brand adalah distributor terkemuka di Indonesia yang menyediakan peralatan industri & power tools berkualitas tinggi.',
 
     // Featured Products
     featured_tag: 'PRODUK UNGGULAN',
@@ -67,7 +67,7 @@ export const translations = {
 
     // About Us Page
     about_hero_title: 'Inovasi & Kualitas Tanpa Batas',
-    about_hero_subtitle: 'Mengenal lebih dekat PT. Keywell Arshaka Innovation sebagai pelopor penyedia power tools profesional.',
+    about_hero_subtitle: 'Mengenal lebih dekat AWANG Brand sebagai pelopor penyedia power tools profesional.',
     about_vision_title: 'Visi Kami',
     about_vision_desc: 'Menjadi mitra penyedia peralatan industri terdepan dan paling terpercaya di kawasan Asia Tenggara.',
     about_mission_title: 'Misi Kami',
@@ -85,7 +85,7 @@ export const translations = {
     specifications: 'Spesifikasi Produk',
 
     // Why Choose Us Page
-    why_hero_title: 'Mengapa Memilih Keywell?',
+    why_hero_title: 'Mengapa Memilih AWANG Brand?',
     why_hero_subtitle: 'Keunggulan yang membuat kami menjadi pilihan utama berbagai industri di Indonesia.',
 
     // Contact Page
@@ -130,9 +130,9 @@ export const translations = {
     features_desc: 'We are committed to providing the best equipment backed by reliable after-sales support.',
 
     // Intro Section
-    intro_tag: 'ABOUT KEYWELL',
+    intro_tag: 'ABOUT AWANG BRAND',
     intro_title: 'Your Trusted Partner for Future Industrial Equipment',
-    intro_desc: 'PT. Keywell Arshaka Innovation is a leading distributor in Indonesia providing premium quality industrial tools & power equipment.',
+    intro_desc: 'AWANG Brand is a leading distributor in Indonesia providing premium quality industrial tools & power equipment.',
 
     // Featured Products
     featured_tag: 'FEATURED PRODUCTS',
@@ -166,7 +166,7 @@ export const translations = {
 
     // About Us Page
     about_hero_title: 'Limitless Innovation & Quality',
-    about_hero_subtitle: 'Get to know PT. Keywell Arshaka Innovation as a leading professional power tools provider.',
+    about_hero_subtitle: 'Get to know AWANG Brand as a leading professional power tools provider.',
     about_vision_title: 'Our Vision',
     about_vision_desc: 'To become the leading and most trusted industrial equipment partner in Southeast Asia.',
     about_mission_title: 'Our Mission',
@@ -184,7 +184,7 @@ export const translations = {
     specifications: 'Product Specifications',
 
     // Why Choose Us Page
-    why_hero_title: 'Why Choose Keywell?',
+    why_hero_title: 'Why Choose AWANG Brand?',
     why_hero_subtitle: 'The advantages that make us the top choice for industries across Indonesia.',
 
     // Contact Page

@@ -22,10 +22,7 @@ export function ContactClient() {
           <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-white/80">
             Contact
           </span>
-          <h1
-            className="text-4xl sm:text-6xl lg:text-7xl font-black text-white uppercase tracking-tight leading-none"
-            style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
-          >
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-white uppercase tracking-tight leading-none">
             Get in touch<br />with us
           </h1>
           <p className="text-white/90 text-sm sm:text-base md:text-lg font-medium leading-relaxed max-w-lg pt-2">
@@ -53,7 +50,7 @@ export function ContactClient() {
 
         {/* Judul Section Utama */}
         <div>
-          <h2 className="text-3xl sm:text-5xl font-black text-[#111111] uppercase tracking-tight" style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}>
+          <h2 className="text-3xl sm:text-5xl font-bold text-[#111111] uppercase tracking-tight">
             Contact us
           </h2>
         </div>

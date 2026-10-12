@@ -24,21 +24,21 @@ export function RecipesTable({ recipes }: { recipes: any[] }) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-xs">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm text-gray-600">
-          <thead className="bg-gray-50 text-xs uppercase text-gray-500 font-bold border-b border-gray-200">
+    <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-xs">
+      <div className="overflow-x-auto w-full">
+        <table className="w-full text-left text-sm min-w-[700px]">
+          <thead className="bg-gray-50/75 text-xs uppercase text-gray-500 font-semibold border-b border-gray-100">
             <tr>
-              <th className="px-6 py-4">Foto</th>
-              <th className="px-6 py-4">Judul Resep</th>
-              <th className="px-6 py-4">Kategori</th>
-              <th className="px-6 py-4">Waktu / Porsi</th>
-              <th className="px-6 py-4">Produk Terkait</th>
-              <th className="px-6 py-4 text-center">Status</th>
-              <th className="px-6 py-4 text-right">Aksi</th>
+              <th className="px-5 py-3.5">Foto</th>
+              <th className="px-5 py-3.5">Judul Resep</th>
+              <th className="px-5 py-3.5">Kategori</th>
+              <th className="px-5 py-3.5">Waktu / Porsi</th>
+              <th className="px-5 py-3.5">Produk Terkait</th>
+              <th className="px-5 py-3.5 text-center">Status</th>
+              <th className="px-5 py-3.5 text-right">Aksi</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-50">
             {list.length === 0 ? (
               <tr>
                 <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
@@ -47,9 +47,9 @@ export function RecipesTable({ recipes }: { recipes: any[] }) {
               </tr>
             ) : (
               list.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50/80 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
+                  <td className="px-5 py-3.5">
+                    <div className="w-11 h-11 rounded-xl overflow-hidden bg-gray-100 border border-gray-100 shrink-0">
                       <img
                         src={item.main_image || '/placeholder-recipe.jpg'}
                         alt={item.title}
@@ -57,56 +57,56 @@ export function RecipesTable({ recipes }: { recipes: any[] }) {
                       />
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="font-bold text-gray-900">{item.title}</div>
-                    <div className="text-xs text-gray-400">/recipes/{item.slug}</div>
+                  <td className="px-5 py-3.5">
+                    <div className="font-semibold text-[#0A1628] truncate max-w-[200px]">{item.title}</div>
+                    <div className="text-[11px] text-gray-400">/recipes/{item.slug}</div>
                   </td>
-                  <td className="px-6 py-4">
-                    <span className="inline-block bg-stone-100 text-stone-700 text-xs font-semibold px-2.5 py-1 rounded-full">
+                  <td className="px-5 py-3.5">
+                    <span className="inline-block bg-stone-100 text-stone-700 text-[11px] font-semibold px-2.5 py-1 rounded-full">
                       {item.category || 'Main Course'}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-xs font-medium text-gray-600">
-                    <div>{item.prep_time || '15 MIN'}</div>
-                    <div className="text-gray-400">{item.servings || '4 Porsi'}</div>
+                  <td className="px-5 py-3.5 text-xs text-gray-600">
+                    <div className="font-medium text-gray-800">{item.prep_time || '15 MIN'}</div>
+                    <div className="text-gray-400 text-[11px]">{item.servings || '4 Porsi'}</div>
                   </td>
-                  <td className="px-6 py-4 text-xs text-gray-600">
-                    {item.featured_product?.name || '-'}
+                  <td className="px-5 py-3.5 text-xs text-gray-600">
+                    {item.featured_product?.name || '—'}
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td className="px-5 py-3.5 text-center">
                     <span
-                      className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase ${
+                      className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider ${
                         item.status === 'published'
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : 'bg-amber-100 text-amber-700'
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/50'
+                          : 'bg-amber-50 text-amber-700 border border-amber-200/50'
                       }`}
                     >
                       {item.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
+                  <td className="px-5 py-3.5 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
                       <Link
                         href={`/recipes/${item.slug}`}
                         target="_blank"
-                        className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                        className="p-1.5 text-gray-400 hover:text-[#0A1628] hover:bg-gray-100 rounded-lg transition-colors"
                         title="Lihat Halaman"
                       >
-                        <ExternalLink size={16} />
+                        <ExternalLink size={15} />
                       </Link>
                       <Link
                         href={`/admin/recipes/${item.id}/edit`}
-                        className="p-2 text-blue-600 hover:text-blue-800 transition-colors"
+                        className="p-1.5 text-gray-400 hover:text-[#C8102E] hover:bg-red-50 rounded-lg transition-colors"
                         title="Edit Resep"
                       >
-                        <Edit size={16} />
+                        <Edit size={15} />
                       </Link>
                       <button
                         onClick={() => handleDelete(item.id)}
-                        className="p-2 text-red-500 hover:text-red-700 transition-colors cursor-pointer"
+                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                         title="Hapus Resep"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={15} />
                       </button>
                     </div>
                   </td>

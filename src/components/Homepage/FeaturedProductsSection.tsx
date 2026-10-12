@@ -9,19 +9,20 @@ export async function FeaturedProductsSection() {
   if (!products || products.length === 0) return null
 
   return (
-    <section className="bg-[#C8102E] py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12 lg:px-16 w-full">
+    // KHUSUS MOBILE: Menambahkan max-md:-mb-[1px] untuk menarik section bawahnya sedikit ke atas agar menutupi celah garis tipis
+    <section className="bg-[#C8102E] py-8 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12 lg:px-16 w-full relative max-md:-mb-[1px]">
       <div className="max-w-[1400px] mx-auto">
         {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-8 sm:mb-12 gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-6 sm:mb-12 gap-4">
           <div>
-            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-white uppercase tracking-tight">
+            <h2 className="text-2xl sm:text-5xl md:text-6xl font-black text-white uppercase tracking-tight">
               TASTE THE HEAT
             </h2>
           </div>
         </div>
 
         {/* Grid khusus Featured Products menggunakan FeaturedProductCard dari /components/ui */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {products.map((p) => (
             <FeaturedProductCard
               key={p.id}

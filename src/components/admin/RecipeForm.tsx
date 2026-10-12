@@ -124,51 +124,52 @@ export function RecipeForm({ initialData, products }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 bg-white p-8 rounded-xl border border-gray-200 shadow-xs">
-      <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-        <Link href="/admin/recipes" className="inline-flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-gray-900">
+    <form onSubmit={handleSubmit} className="space-y-8 bg-white p-5 sm:p-8 rounded-2xl border border-gray-100 shadow-xs max-w-4xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5">
+        <Link href="/admin/recipes" className="inline-flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-gray-900 transition-colors">
           <ArrowLeft size={16} /> Kembali ke daftar resep
         </Link>
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center gap-2 bg-[#D92B2E] hover:bg-[#b82124] text-white text-sm font-bold px-6 py-2.5 rounded-lg transition-colors cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 bg-[#C8102E] hover:bg-[#a00b22] !text-white text-xs sm:text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer disabled:opacity-60"
         >
-          <Save size={16} /> {loading ? 'Menyimpan...' : 'Simpan Resep'}
+          <Save size={16} className="!text-white" />
+          <span className="!text-white text-white">{loading ? 'Menyimpan...' : 'Simpan Resep'}</span>
         </button>
       </div>
 
       {/* Basic Info */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
-          <label className="block text-xs font-bold uppercase text-gray-700 mb-2">Judul Resep *</label>
+          <label className="block text-xs font-bold uppercase text-gray-700 mb-1.5">Judul Resep *</label>
           <input
             type="text"
             required
             value={title}
             onChange={handleTitleChange}
-            placeholder="cth: Air Fryer Hawaiian Chicken Tacos"
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#D92B2E]"
+            placeholder="cth: Rendang Daging Tok Warisan"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] transition-colors"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase text-gray-700 mb-2">URL Slug *</label>
+          <label className="block text-xs font-bold uppercase text-gray-700 mb-1.5">URL Slug *</label>
           <input
             type="text"
             required
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-gray-50 focus:outline-none focus:border-[#D92B2E]"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:outline-none focus:border-[#C8102E] transition-colors"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase text-gray-700 mb-2">Kategori</label>
+          <label className="block text-xs font-bold uppercase text-gray-700 mb-1.5">Kategori</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#D92B2E]"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:border-[#C8102E] transition-colors"
           >
             <option value="Main Course">Main Course</option>
             <option value="Appetizer">Appetizer</option>
@@ -181,11 +182,11 @@ export function RecipeForm({ initialData, products }: Props) {
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase text-gray-700 mb-2">Produk Rekomendasi Terkait</label>
+          <label className="block text-xs font-bold uppercase text-gray-700 mb-1.5">Produk Rekomendasi Terkait</label>
           <select
             value={featuredProductId}
             onChange={(e) => setFeaturedProductId(e.target.value)}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#D92B2E]"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:border-[#C8102E] transition-colors"
           >
             <option value="">-- Tidak ada produk terpaut --</option>
             {products.map((p) => (
@@ -198,45 +199,45 @@ export function RecipeForm({ initialData, products }: Props) {
       </div>
 
       {/* Timing & Servings */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <div>
-          <label className="block text-xs font-bold uppercase text-gray-700 mb-2">Prep Time</label>
+          <label className="block text-xs font-bold uppercase text-gray-700 mb-1.5">Prep Time</label>
           <input
             type="text"
             value={prepTime}
             onChange={(e) => setPrepTime(e.target.value)}
             placeholder="15 MIN"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
           />
         </div>
         <div>
-          <label className="block text-xs font-bold uppercase text-gray-700 mb-2">Cook Time</label>
+          <label className="block text-xs font-bold uppercase text-gray-700 mb-1.5">Cook Time</label>
           <input
             type="text"
             value={cookTime}
             onChange={(e) => setCookTime(e.target.value)}
-            placeholder="15 MIN"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            placeholder="30 MIN"
+            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
           />
         </div>
         <div>
-          <label className="block text-xs font-bold uppercase text-gray-700 mb-2">Servings</label>
+          <label className="block text-xs font-bold uppercase text-gray-700 mb-1.5">Servings</label>
           <input
             type="text"
             value={servings}
             onChange={(e) => setServings(e.target.value)}
-            placeholder="4 Servings"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            placeholder="4 Porsi"
+            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
           />
         </div>
         <div>
-          <label className="block text-xs font-bold uppercase text-gray-700 mb-2">Calories</label>
+          <label className="block text-xs font-bold uppercase text-gray-700 mb-1.5">Calories</label>
           <input
             type="text"
             value={calories}
             onChange={(e) => setCalories(e.target.value)}
-            placeholder="380 Calories"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            placeholder="380 Kalori"
+            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
           />
         </div>
       </div>
@@ -244,23 +245,24 @@ export function RecipeForm({ initialData, products }: Props) {
       {/* Description & Image */}
       <div className="space-y-4">
         <div>
-          <label className="block text-xs font-bold uppercase text-gray-700 mb-2">URL Foto Utama</label>
+          <label className="block text-xs font-bold uppercase text-gray-700 mb-1.5">URL Foto Utama Resep</label>
           <input
             type="url"
             value={mainImage}
             onChange={(e) => setMainImage(e.target.value)}
             placeholder="https://images.unsplash.com/..."
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase text-gray-700 mb-2">Deskripsi Singkat</label>
+          <label className="block text-xs font-bold uppercase text-gray-700 mb-1.5">Deskripsi Singkat</label>
           <textarea
             rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm"
+            placeholder="Kisah atau deskripsi ringkas kenikmatan sajian ini..."
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
           />
         </div>
       </div>
@@ -272,7 +274,7 @@ export function RecipeForm({ initialData, products }: Props) {
           <button
             type="button"
             onClick={addIngredient}
-            className="inline-flex items-center gap-1 text-xs font-bold text-[#D92B2E] hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-bold text-[#C8102E] hover:underline cursor-pointer"
           >
             <Plus size={14} /> Tambah Bahan
           </button>
@@ -284,13 +286,13 @@ export function RecipeForm({ initialData, products }: Props) {
               value={ing}
               onChange={(e) => handleIngredientChange(idx, e.target.value)}
               placeholder={`Bahan ${idx + 1}`}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="flex-1 px-3.5 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
             />
             {ingredients.length > 1 && (
               <button
                 type="button"
                 onClick={() => removeIngredient(idx)}
-                className="p-2 text-red-500 hover:text-red-700"
+                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
               >
                 <Trash2 size={16} />
               </button>
@@ -306,26 +308,26 @@ export function RecipeForm({ initialData, products }: Props) {
           <button
             type="button"
             onClick={addInstruction}
-            className="inline-flex items-center gap-1 text-xs font-bold text-[#D92B2E] hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-bold text-[#C8102E] hover:underline cursor-pointer"
           >
             <Plus size={14} /> Tambah Langkah
           </button>
         </div>
         {instructions.map((ins, idx) => (
-          <div key={idx} className="flex items-center gap-2">
-            <span className="text-xs font-bold text-gray-400 w-12 text-center">Step {idx + 1}</span>
+          <div key={idx} className="flex items-start gap-2">
+            <span className="text-xs font-bold text-gray-400 w-12 text-center pt-2.5">Step {idx + 1}</span>
             <textarea
               rows={2}
               value={ins}
               onChange={(e) => handleInstructionChange(idx, e.target.value)}
               placeholder={`Instruksi langkah ${idx + 1}`}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="flex-1 px-3.5 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
             />
             {instructions.length > 1 && (
               <button
                 type="button"
                 onClick={() => removeInstruction(idx)}
-                className="p-2 text-red-500 hover:text-red-700"
+                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors mt-1 cursor-pointer"
               >
                 <Trash2 size={16} />
               </button>
@@ -335,24 +337,24 @@ export function RecipeForm({ initialData, products }: Props) {
       </div>
 
       {/* Recipe Tips & Status */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t border-gray-100">
         <div>
-          <label className="block text-xs font-bold uppercase text-gray-700 mb-2">Recipe Tip (Opsional)</label>
+          <label className="block text-xs font-bold uppercase text-gray-700 mb-1.5">Tips Memasak (Opsional)</label>
           <textarea
             rows={2}
             value={tips}
             onChange={(e) => setTips(e.target.value)}
-            placeholder="Tip khusus memasak..."
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm"
+            placeholder="cth: Tumis bumbu dengan api sedang agar aroma rempah semerbak sempurna..."
+            className="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
           />
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase text-gray-700 mb-2">Status Publikasi</label>
+          <label className="block text-xs font-bold uppercase text-gray-700 mb-1.5">Status Publikasi</label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value as 'published' | 'draft')}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:border-[#C8102E]"
           >
             <option value="published">Published (Tampil di Web)</option>
             <option value="draft">Draft (Disembunyikan)</option>

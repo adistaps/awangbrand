@@ -19,7 +19,7 @@ export function SubmissionsChart({
     <div>
       <div className="flex items-center gap-4 mb-4 text-xs font-semibold">
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded-sm bg-[#F5A200] inline-block" /> Quote
+          <span className="w-3 h-3 rounded-sm bg-[#C8102E] inline-block" /> Quote
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-sm bg-[#0A1628] inline-block" /> Kontak
@@ -32,7 +32,7 @@ export function SubmissionsChart({
           const x = i * (groupWidth + gap)
           return (
             <g key={label}>
-              <rect x={x} y={height - qHeight} width={barWidth} height={qHeight} rx={3} fill="#F5A200" />
+              <rect x={x} y={height - qHeight} width={barWidth} height={qHeight} rx={3} fill="#C8102E" />
               <rect x={x + barWidth + 6} y={height - cHeight} width={barWidth} height={cHeight} rx={3} fill="#0A1628" />
               <text x={x + groupWidth / 2 - 3} y={height + 20} textAnchor="middle" fontSize="11" fill="#6B7280">
                 {label}

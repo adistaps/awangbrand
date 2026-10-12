@@ -53,66 +53,73 @@ export function SubmissionsTable({
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="p-4 border-b border-gray-100 flex justify-end">
+    <div className="bg-white rounded-2xl shadow-xs border border-gray-100 overflow-hidden">
+      <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-3">
+        <span className="text-xs text-gray-400 font-medium">{items.length} data ditemukan</span>
         <button
           onClick={exportCsv}
-          className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-[#0A1628] border border-gray-200 px-3 py-2 rounded-lg"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-700 hover:text-[#C8102E] border border-gray-200 hover:border-red-200 px-3.5 py-2 rounded-xl transition-all cursor-pointer bg-white shadow-xs"
         >
-          <Download size={14} /> Export CSV
+          <Download size={13} /> Export CSV
         </button>
       </div>
-      <table className="w-full text-sm">
-        <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
-          <tr>
-            {columns.map((c) => (
-              <th key={c.key} className="p-3 text-left">
-                {c.label}
-              </th>
-            ))}
-            <th className="p-3 text-left">Status</th>
-            <th className="p-3 text-left">Tanggal</th>
-            <th className="p-3 text-right">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((row) => (
-            <tr key={row.id} className="border-t border-gray-50 hover:bg-gray-50/50">
-              {columns.map((c) => (
-                <td key={c.key} className="p-3 text-[#0A1628] max-w-[200px] truncate">
-                  {String(row[c.key] ?? '-')}
-                </td>
-              ))}
-              <td className="p-3">
-                <select
-                  value={row.status}
-                  onChange={(e) => updateStatus(row.id, e.target.value as 'new' | 'contacted' | 'closed')}
-                  className={`text-xs font-bold px-2 py-1 rounded-full border-0 focus:outline-none ${
-                    row.status === 'new' ? 'bg-red-100 text-red-600' : row.status === 'contacted' ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 text-gray-500'
-                  }`}
-                >
-                  <option value="new">Baru</option>
-                  <option value="contacted">Dihubungi</option>
-                  <option value="closed">Selesai</option>
-                </select>
-              </td>
-              <td className="p-3 text-gray-400 text-xs">{new Date(row.created_at).toLocaleDateString('id-ID')}</td>
-              <td className="p-3 text-right">
-                <button onClick={() => handleDelete(row.id)} className="text-gray-400 hover:text-red-500">
-                  <Trash2 size={14} />
-                </button>
-              </td>
-            </tr>
-          ))}
-          {items.length === 0 && (
+      <div className="overflow-x-auto w-full">
+        <table className="w-full text-sm min-w-[650px]">
+          <thead className="bg-gray-50/75 text-gray-500 text-xs uppercase border-b border-gray-100">
             <tr>
-              <td colSpan={columns.length + 3} className="p-8 text-center text-gray-400">
-                Belum ada data.
-              </td>
+              {columns.map((c) => (
+                <th key={c.key} className="p-3.5 text-left font-semibold">
+                  {c.label}
+                </th>
+              ))}
+              <th className="p-3.5 text-left font-semibold">Status</th>
+              <th className="p-3.5 text-left font-semibold">Tanggal</th>
+              <th className="p-3.5 text-right font-semibold">Aksi</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-gray-50">
+            {items.map((row) => (
+              <tr key={row.id} className="hover:bg-slate-50/60 transition-colors">
+                {columns.map((c) => (
+                  <td key={c.key} className="p-3.5 text-[#0A1628] max-w-[200px] truncate">
+                    {String(row[c.key] ?? '—')}
+                  </td>
+                ))}
+                <td className="p-3.5">
+                  <select
+                    value={row.status}
+                    onChange={(e) => updateStatus(row.id, e.target.value as 'new' | 'contacted' | 'closed')}
+                    className={`text-[11px] font-bold px-2.5 py-1 rounded-full border-0 focus:outline-none cursor-pointer ${
+                      row.status === 'new'
+                        ? 'bg-red-50 text-[#C8102E] border border-red-200/60'
+                        : row.status === 'contacted'
+                        ? 'bg-amber-50 text-amber-700 border border-amber-200/60'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}
+                  >
+                    <option value="new">Baru</option>
+                    <option value="contacted">Dihubungi</option>
+                    <option value="closed">Selesai</option>
+                  </select>
+                </td>
+                <td className="p-3.5 text-gray-400 text-xs whitespace-nowrap">{new Date(row.created_at).toLocaleDateString('id-ID')}</td>
+                <td className="p-3.5 text-right">
+                  <button onClick={() => handleDelete(row.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer" title="Hapus">
+                    <Trash2 size={14} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {items.length === 0 && (
+              <tr>
+                <td colSpan={columns.length + 3} className="p-8 text-center text-gray-400 text-sm">
+                  Belum ada data masuk.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

@@ -10,7 +10,7 @@ export function buildQuoteWhatsAppMessage(data: {
   category?: string
   message?: string
 }) {
-  return `Halo Keywell Arshaka Innovation, saya ingin request quote:\n\nNama: ${data.name}\nEmail: ${data.email}\nKategori: ${data.category || '-'}\nDetail: ${data.message || '-'}`
+  return `Halo AWANG Brand, saya ingin request quote:\n\nNama: ${data.name}\nEmail: ${data.email}\nKategori: ${data.category || '-'}\nDetail: ${data.message || '-'}`
 }
 
 export function buildContactWhatsAppMessage(data: {
@@ -18,5 +18,5 @@ export function buildContactWhatsAppMessage(data: {
   website?: string
   comment: string
 }) {
-  return `Halo Keywell Arshaka Innovation, saya ingin menghubungi tim Anda:\n\nEmail: ${data.email}\nWebsite: ${data.website || '-'}\nPesan: ${data.comment}`
+  return `Halo AWANG Brand, saya ingin menghubungi tim Anda:\n\nEmail: ${data.email}\nWebsite: ${data.website || '-'}\nPesan: ${data.comment}`
 }

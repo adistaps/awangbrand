@@ -48,44 +48,44 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 max-w-xl">
-      <div className="flex gap-2 mb-6">
+    <div className="bg-white rounded-2xl shadow-xs border border-gray-100 p-5 sm:p-6 max-w-xl">
+      <div className="flex flex-col sm:flex-row gap-2.5 mb-6">
         <input
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           placeholder="Nama kategori baru..."
-          className="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#F5A200]"
+          className="flex-1 px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] transition-colors"
           onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
         />
         <button
           onClick={handleAdd}
           disabled={saving}
-          className="flex items-center gap-1.5 bg-[#F5A200] hover:bg-[#D98B00] text-white text-sm font-bold px-4 rounded-lg transition-colors disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-1.5 bg-[#C8102E] hover:bg-[#a00b22] text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 disabled:opacity-60 cursor-pointer shrink-0"
         >
-          <Plus size={16} /> Tambah
+          <Plus size={16} /> Tambah Kategori
         </button>
       </div>
 
       <div className="space-y-2">
         {categories.map((cat) => (
-          <div key={cat.id} className="flex items-center justify-between border border-gray-100 rounded-lg px-4 py-2.5">
+          <div key={cat.id} className="flex items-center justify-between border border-gray-100 bg-gray-50/40 rounded-xl px-4 py-3 hover:bg-gray-50 transition-colors">
             {editingId === cat.id ? (
               <input
                 value={editingName}
                 onChange={(e) => setEditingName(e.target.value)}
-                className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm mr-2 focus:outline-none focus:border-[#F5A200]"
+                className="flex-1 px-3 py-1.5 border border-[#C8102E] rounded-lg text-sm mr-2 focus:outline-none bg-white"
                 autoFocus
               />
             ) : (
-              <span className="text-sm font-medium text-[#0A1628]">{cat.name}</span>
+              <span className="text-sm font-semibold text-[#0A1628]">{cat.name}</span>
             )}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {editingId === cat.id ? (
                 <>
-                  <button onClick={() => handleUpdate(cat.id)} className="text-emerald-500 hover:text-emerald-700">
+                  <button onClick={() => handleUpdate(cat.id)} className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Simpan">
                     <Check size={16} />
                   </button>
-                  <button onClick={() => setEditingId(null)} className="text-gray-400 hover:text-gray-600">
+                  <button onClick={() => setEditingId(null)} className="p-1.5 text-gray-400 hover:bg-gray-100 rounded-lg transition-colors" title="Batal">
                     <X size={16} />
                   </button>
                 </>
@@ -96,11 +96,12 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
                       setEditingId(cat.id)
                       setEditingName(cat.name)
                     }}
-                    className="text-gray-400 hover:text-[#F5A200]"
+                    className="p-1.5 text-gray-400 hover:text-[#C8102E] hover:bg-red-50 rounded-lg transition-colors"
+                    title="Edit"
                   >
                     <Pencil size={14} />
                   </button>
-                  <button onClick={() => handleDelete(cat.id)} className="text-gray-400 hover:text-red-500">
+                  <button onClick={() => handleDelete(cat.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
                     <Trash2 size={14} />
                   </button>
                 </>
@@ -108,7 +109,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
             </div>
           </div>
         ))}
-        {categories.length === 0 && <p className="text-sm text-gray-400 text-center py-4">Belum ada kategori.</p>}
+        {categories.length === 0 && <p className="text-sm text-gray-400 text-center py-6">Belum ada kategori.</p>}
       </div>
     </div>
   )

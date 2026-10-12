@@ -19,7 +19,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const savedLang = localStorage.getItem('keywell_lang') as Language
+    const savedLang = localStorage.getItem('awangbrand_lang') as Language
     if (savedLang === 'id' || savedLang === 'en') {
       setLanguageState(savedLang)
     }
@@ -28,7 +28,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)
-    localStorage.setItem('keywell_lang', lang)
+    localStorage.setItem('awangbrand_lang', lang)
   }
 
   const t = (key: TranslationKey | string, fallback?: string): string => {

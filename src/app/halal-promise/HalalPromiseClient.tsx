@@ -9,48 +9,39 @@ export function HalalPromiseClient() {
     <main className="bg-white min-h-screen font-sans pt-0 pb-24 text-slate-900">
 
       {/* ==========================================
-          HERO SECTION (GAMBAR BESAR & MENEMPEL DI BAWAH)
+          HERO SECTION (IKON KIRI & KANAN MENEMPEL DI TEPI)
       ========================================== */}
-      <section className="bg-[#C8102E] text-white pt-28 sm:pt-36 pb-0 px-6 relative overflow-hidden flex items-end justify-center min-h-[480px] sm:min-h-[580px]">
-        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-end relative z-10">
+      <section className="bg-[#C8102E] text-white pt-28 sm:pt-36 pb-12 sm:pb-16 px-6 relative overflow-hidden flex items-center justify-center min-h-[420px] sm:min-h-[520px]">
 
-          {/* Kiri: Gambar People.webp (Lebih Besar & Menempel Bawah) */}
-          <div className="md:col-span-4 flex justify-center md:justify-start order-2 md:order-1 -mb-1 sm:-mb-2">
-            <div className="relative w-72 sm:w-96 lg:w-[460px] aspect-[4/5] sm:aspect-square">
-              <Image
-                src="/people.webp"
-                alt="AWANG People"
-                fill
-                className="object-contain object-bottom drop-shadow-xl"
-                priority
-              />
-            </div>
-          </div>
-
-          {/* Tengah: Hanya Tulisan OUR HALAL PROMISES */}
-          <div className="md:col-span-4 text-center order-1 md:order-2 self-center pb-12 sm:pb-20">
-            <h1
-              className="text-4xl sm:text-5xl lg:text-6xl font-black text-white uppercase tracking-tight leading-tight drop-shadow-md"
-              style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
-            >
-              OUR HALAL PROMISES
-            </h1>
-          </div>
-
-          {/* Kanan: Gambar Mascot.webp (Lebih Besar & Menempel Bawah) */}
-          <div className="md:col-span-4 flex justify-center md:justify-end order-3 -mb-1 sm:-mb-2">
-            <div className="relative w-72 sm:w-96 lg:w-[460px] aspect-[4/5] sm:aspect-square">
-              <Image
-                src="/mascot.webp"
-                alt="Halal Mascot AWANG"
-                fill
-                className="object-contain object-bottom drop-shadow-xl"
-                priority
-              />
-            </div>
-          </div>
-
+        {/* Gambar Kiri (People) - Menempel di kiri, boleh terpotong/separuh */}
+        <div className="absolute left-[-60px] sm:left-0 bottom-0 w-48 sm:w-72 lg:w-96 aspect-[4/5] z-0 pointer-events-none opacity-100 sm:opacity-100">
+          <Image
+            src="/people.webp"
+            alt="AWANG People"
+            fill
+            className="object-contain object-bottom drop-shadow-xl"
+            priority
+          />
         </div>
+
+        {/* Gambar Kanan (Mascot) - Menempel di kanan, boleh terpotong/separuh */}
+        <div className="absolute right-[-60px] sm:right-0 bottom-0 w-48 sm:w-72 lg:w-96 aspect-[4/5] z-0 pointer-events-none opacity-100 sm:opacity-100">
+          <Image
+            src="/mascot.webp"
+            alt="Halal Mascot AWANG"
+            fill
+            className="object-contain object-bottom drop-shadow-xl"
+            priority
+          />
+        </div>
+
+        {/* Tengah: Judul Utama */}
+        <div className="max-w-3xl mx-auto text-center relative z-10 px-4">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white uppercase tracking-tight leading-tight drop-shadow-md">
+            OUR HALAL PROMISES
+          </h1>
+        </div>
+
       </section>
 
       {/* ==========================================
@@ -83,15 +74,15 @@ export function HalalPromiseClient() {
       </section>
 
       {/* ==========================================
-          PILLARS / BADGES SECTION (INTERACTIVE CARDS)
+          PILLARS / BADGES SECTION (3 CARDS)
       ========================================== */}
       <section className="max-w-5xl mx-auto px-6 mt-16 pt-12 border-t border-stone-200">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-center">
 
           {/* Card 1 */}
-          <div className="p-8 rounded-2xl bg-stone-50 border border-stone-200/80 flex flex-col items-center space-y-3 transition-all duration-300 hover:-translate-y-2 hover:border-[#C8102E] hover:shadow-lg cursor-pointer">
+          <div className="p-6 sm:p-8 rounded-2xl bg-stone-50 border border-stone-200/80 flex flex-col items-center space-y-3 transition-all duration-300 hover:-translate-y-1 hover:border-[#C8102E] hover:shadow-md cursor-pointer">
             <ShieldCheck className="w-10 h-10 text-[#C8102E] mb-1" />
-            <h3 className="font-extrabold text-lg text-[#111111] uppercase tracking-wide">
+            <h3 className="font-bold text-lg text-[#111111] uppercase tracking-wide">
               JAKIM Certified
             </h3>
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-medium">
@@ -100,10 +91,11 @@ export function HalalPromiseClient() {
           </div>
 
           {/* Card 2 */}
-          <div className="p-8 rounded-2xl bg-stone-50 border border-stone-200/80 flex flex-col items-center space-y-3 transition-all duration-300 hover:-translate-y-2 hover:border-[#C8102E] hover:shadow-lg cursor-pointer">
+          <div className="p-6 sm:p-8 rounded-2xl bg-stone-50 border border-stone-200/80 flex flex-col items-center space-y-3 transition-all duration-300 hover:-translate-y-1 hover:border-[#C8102E] hover:shadow-md cursor-pointer">
             <Award className="w-10 h-10 text-[#C8102E] mb-1" />
-            <h3 className="font-extrabold text-lg text-[#111111] uppercase tracking-wide">
-              100% Natural Ingredients
+            <h3 className="font-bold text-lg text-[#111111] uppercase tracking-wide flex flex-col items-center">
+              <span>100%</span>
+              <span>Natural Ingredients</span>
             </h3>
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-medium">
               Crafted from authentic, fresh local spices without artificial preservatives or coloring.
@@ -111,9 +103,9 @@ export function HalalPromiseClient() {
           </div>
 
           {/* Card 3 */}
-          <div className="p-8 rounded-2xl bg-stone-50 border border-stone-200/80 flex flex-col items-center space-y-3 transition-all duration-300 hover:-translate-y-2 hover:border-[#C8102E] hover:shadow-lg cursor-pointer">
+          <div className="p-6 sm:p-8 rounded-2xl bg-stone-50 border border-stone-200/80 flex flex-col items-center space-y-3 transition-all duration-300 hover:-translate-y-1 hover:border-[#C8102E] hover:shadow-md cursor-pointer">
             <CheckCircle2 className="w-10 h-10 text-[#C8102E] mb-1" />
-            <h3 className="font-extrabold text-lg text-[#111111] uppercase tracking-wide">
+            <h3 className="font-bold text-lg text-[#111111] uppercase tracking-wide">
               Hygienic Standards
             </h3>
             <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-medium">

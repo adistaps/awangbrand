@@ -58,7 +58,7 @@ export default async function RecipeDetailPage({
     .limit(4)
 
   return (
-    <main className="bg-[#FDFBF7] font-sans min-h-screen pt-24 pb-20">
+    <main className="bg-white font-sans min-h-screen">
       <RecipeDetailClient recipe={recipe as Recipe} relatedRecipes={relatedRecipes as Recipe[]} slug={slug} />
     </main>
   )
