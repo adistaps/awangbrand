@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Sidebar } from './Sidebar'
 import { Menu, X, LogOut, UserCircle } from 'lucide-react'
@@ -47,22 +46,22 @@ export function AdminLayoutClient({
         <div className="fixed inset-0 z-50 flex lg:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-[#0A1628]/40 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 bg-[#0A1628]/50 backdrop-blur-xs transition-opacity"
             onClick={() => setSidebarOpen(false)}
           />
           {/* Sidebar drawer content */}
-          <div className="relative flex w-64 max-w-xs flex-1 flex-col bg-[#0A1628] h-full shadow-xl">
-            <div className="absolute top-4 right-4 z-10">
+          <div className="relative flex w-72 max-w-[85vw] flex-1 flex-col bg-[#C8102E] h-full shadow-2xl z-10">
+            <div className="absolute top-3.5 right-3 z-20">
               <button
                 type="button"
-                className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-white/10 transition-colors focus:outline-none"
+                className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors focus:outline-none cursor-pointer"
                 onClick={() => setSidebarOpen(false)}
               >
-                <span className="sr-only">Close sidebar</span>
-                <X className="h-6 w-6 text-white" aria-hidden="true" />
+                <span className="sr-only">Tutup menu</span>
+                <X className="h-5 w-5 text-white" aria-hidden="true" />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 h-full min-h-0 flex flex-col">
               <Sidebar
                 newQuoteCount={newQuoteCount}
                 newContactCount={newContactCount}
@@ -74,66 +73,54 @@ export function AdminLayoutClient({
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 w-full bg-slate-50/50">
-        {/* Mobile Header */}
-        <header className="flex h-16 items-center justify-between border-b border-gray-100 bg-white/95 backdrop-blur-md px-4 shadow-xs lg:hidden shrink-0 sticky top-0 z-30">
-          <div className="flex items-center gap-3">
+      <div className="flex-1 flex flex-col min-w-0 w-full bg-white">
+        {/* Mobile Header with Active Account & Logout */}
+        <header className="flex h-16 items-center justify-between border-b border-gray-100 bg-white/95 backdrop-blur-md px-3 sm:px-4 shadow-xs lg:hidden shrink-0 sticky top-0 z-30">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               type="button"
-              className="text-gray-600 hover:text-gray-900 focus:outline-none p-2 rounded-xl hover:bg-gray-100 transition-colors"
+              className="text-gray-600 hover:text-gray-900 focus:outline-none p-1.5 sm:p-2 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer shrink-0"
               onClick={() => setSidebarOpen(true)}
               aria-label="Buka menu navigasi"
             >
               <Menu className="h-5 w-5" />
             </button>
-            <div className="flex items-center">
+            <div className="flex items-center shrink-0">
               <Image
                 src="/logo.webp"
                 alt="AWANG Logo"
-                width={120}
-                height={32}
-                className="h-8 w-auto object-contain"
+                width={100}
+                height={28}
+                className="h-7 sm:h-8 w-auto object-contain"
                 priority
               />
             </div>
           </div>
-        </header>
 
-        {/* Desktop Top Navbar Header */}
-        <header className="hidden lg:flex h-16 items-center justify-between border-b border-gray-100 bg-white/95 backdrop-blur-md px-8 shadow-xs shrink-0 sticky top-0 z-30">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-gray-400">Portal Administrasi</span>
-            <span className="text-gray-300">/</span>
-            <span className="text-xs font-bold text-[#0A1628]">AWANG Brand Official</span>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Link
-              href="/"
-              target="_blank"
-              className="text-xs font-semibold text-gray-500 hover:text-[#C8102E] px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors"
+          {/* User Account & Logout for Mobile */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <div
+              className="flex items-center gap-1.5 text-gray-700 bg-gray-50 border border-gray-100 px-2 sm:px-2.5 py-1.5 rounded-xl max-w-[120px] sm:max-w-[170px]"
+              title={userEmail || 'Akun Admin'}
             >
-              Lihat Website ↗
-            </Link>
-            <div className="h-4 w-px bg-gray-200" />
-            <div className="flex items-center gap-2.5">
-              <UserCircle size={18} className="text-gray-400" />
-              <span className="text-xs font-medium text-gray-600 max-w-[160px] truncate">
-                {userEmail || '—'}
+              <UserCircle size={15} className="text-gray-400 shrink-0" />
+              <span className="text-[11px] sm:text-xs font-semibold truncate text-[#0A1628]">
+                {userEmail ? userEmail.split('@')[0] : 'Admin'}
               </span>
             </div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-[#C8102E] px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+              className="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-[#C8102E] bg-red-50 hover:bg-red-100 border border-red-100/60 px-2 sm:px-2.5 py-1.5 rounded-xl transition-all cursor-pointer active:scale-95"
+              title="Keluar / Logout"
             >
-              <LogOut size={14} />
-              Keluar
+              <LogOut size={13} />
+              <span>Keluar</span>
             </button>
           </div>
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 sm:p-6 md:p-8 lg:p-10 overflow-x-hidden w-full">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 md:p-8 lg:p-10 overflow-x-hidden w-full bg-white">{children}</main>
       </div>
     </div>
   )

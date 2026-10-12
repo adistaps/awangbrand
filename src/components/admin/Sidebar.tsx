@@ -75,7 +75,7 @@ export function Sidebar({
       </div>
 
       {/* Navigasi Utama */}
-      <nav className="relative z-10 flex-1 py-4 pl-4 lg:pr-0 pr-4 space-y-1 overflow-y-auto overflow-x-hidden">
+      <nav className="relative z-10 flex-1 min-h-0 py-4 pl-4 lg:pr-0 pr-4 space-y-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
         {navItems.map(({ href, label, icon: Icon, exact }) => {
           const active = exact ? pathname === href : pathname.startsWith(href)
           const badge =
