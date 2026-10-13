@@ -55,16 +55,23 @@ export function ProductForm({
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
+  const [isSlugCustomized, setIsSlugCustomized] = useState(false)
+
   function slugify(text: string) {
     return text
       .toLowerCase()
       .trim()
       .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '')
   }
 
   function handleNameChange(name: string) {
-    setValues((v) => ({ ...v, name, slug: isEdit ? v.slug : slugify(name) }))
+    setValues((v) => ({
+      ...v,
+      name,
+      slug: isSlugCustomized ? v.slug : slugify(name),
+    }))
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -153,11 +160,29 @@ export function ProductForm({
           />
         </div>
         <div>
-          <label className="text-xs font-semibold text-gray-700 mb-1.5 block">Slug (URL)</label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-xs font-semibold text-gray-700">Slug (URL)</label>
+            {isSlugCustomized && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSlugCustomized(false)
+                  setValues((v) => ({ ...v, slug: slugify(v.name) }))
+                }}
+                className="text-[11px] text-[#C8102E] hover:underline font-medium"
+              >
+                Reset otomatis
+              </button>
+            )}
+          </div>
           <input
             required
             value={values.slug}
-            onChange={(e) => setValues((v) => ({ ...v, slug: slugify(e.target.value) }))}
+            onChange={(e) => {
+              setIsSlugCustomized(true)
+              setValues((v) => ({ ...v, slug: slugify(e.target.value) }))
+            }}
+            placeholder="otomatis-dari-nama-produk"
             className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] bg-gray-50/50 transition-colors"
           />
         </div>
