@@ -13,6 +13,13 @@ export function ProductsGrid({
   showFilters?: boolean
 }) {
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL')
+  const [visibleCount, setVisibleCount] = useState<number>(8)
+
+  // Reset pagination saat kategori berganti
+  function handleCategoryChange(cat: string) {
+    setSelectedCategory(cat)
+    setVisibleCount(8)
+  }
 
   // Mendapatkan daftar kategori unik dari data produk
   const categoriesList = useMemo(() => {
@@ -28,6 +35,10 @@ export function ProductsGrid({
     if (selectedCategory === 'ALL') return products
     return products.filter((p) => p.cat === selectedCategory)
   }, [products, selectedCategory])
+
+  const displayedProducts = useMemo(() => {
+    return filteredProducts.slice(0, visibleCount)
+  }, [filteredProducts, visibleCount])
 
   if (products.length === 0) {
     return <p className="text-gray-400 text-center py-20">Belum ada produk yang dipublikasikan.</p>
@@ -47,7 +58,7 @@ export function ProductsGrid({
               return (
                 <button
                   key={category}
-                  onClick={() => setSelectedCategory(category)}
+                  onClick={() => handleCategoryChange(category)}
                   className={`px-5 py-2 rounded-full font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${isActive
                       ? 'bg-[#C8102E] text-white shadow-sm'
                       : 'bg-gray-100 text-[#4A1521]/70 hover:bg-gray-200 hover:text-[#4A1521]'
@@ -68,7 +79,7 @@ export function ProductsGrid({
           className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10"
         >
           <AnimatePresence mode="popLayout">
-            {filteredProducts.map(({ name, img, slug }) => (
+            {displayedProducts.map(({ name, img, slug }) => (
               <motion.div
                 layout
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -128,6 +139,21 @@ export function ProductsGrid({
             ))}
           </AnimatePresence>
         </motion.div>
+
+        {/* Tombol Load More */}
+        {visibleCount < filteredProducts.length && (
+          <div className="mt-12 sm:mt-16 flex flex-col items-center justify-center gap-2">
+            <button
+              onClick={() => setVisibleCount((prev) => prev + 8)}
+              className="px-8 py-3.5 rounded-full bg-[#C8102E] hover:bg-[#a60c24] text-white font-black text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
+            >
+              Muat Lebih Banyak ({filteredProducts.length - visibleCount} lagi)
+            </button>
+            <span className="text-xs text-gray-400 mt-1">
+              Menampilkan {displayedProducts.length} dari {filteredProducts.length} produk
+            </span>
+          </div>
+        )}
 
         {filteredProducts.length === 0 && (
           <p className="text-gray-400 text-center py-20">Tidak ada produk dalam kategori ini.</p>

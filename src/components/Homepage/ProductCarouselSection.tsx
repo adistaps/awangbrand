@@ -19,9 +19,9 @@ export function ProductCarouselSection() {
           .from('products')
           .select('id, name, slug, main_image')
           .eq('status', 'published')
-          .eq('is_featured', true)
+          .eq('is_carousel', true)
           .order('created_at', { ascending: false })
-          .limit(10)
+          .limit(8)
 
         setProducts(data || [])
       } catch (err) {

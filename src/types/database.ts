@@ -22,6 +22,7 @@ export interface Product {
   allergen_info?: string | null
   how_to_use?: string | null
   is_featured: boolean
+  is_carousel?: boolean
   status: 'draft' | 'published'
   sort_order?: number
   created_at: string

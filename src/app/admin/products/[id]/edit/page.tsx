@@ -34,6 +34,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           tokopedia_url: product.tokopedia_url || '',
           lazada_url: product.lazada_url || '',
           is_featured: product.is_featured,
+          is_carousel: !!product.is_carousel,
           status: product.status,
         }}
 

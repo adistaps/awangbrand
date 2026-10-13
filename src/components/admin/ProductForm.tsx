@@ -2,6 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Check } from 'lucide-react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFire, faSliders } from '@fortawesome/free-solid-svg-icons'
 import { createClient } from '@/lib/supabase/client'
 import { ImageUploader } from './ImageUploader'
 import { GalleryUploader, type GalleryImage } from './GalleryUploader'
@@ -19,6 +22,7 @@ interface ProductFormValues {
   tokopedia_url: string
   lazada_url: string
   is_featured: boolean
+  is_carousel: boolean
   status: 'draft' | 'published'
 }
 
@@ -47,7 +51,8 @@ export function ProductForm({
       tokopedia_url: '',
       lazada_url: '',
       is_featured: false,
-      status: 'draft',
+      is_carousel: false,
+      status: 'published',
     }
   )
   const [gallery, setGallery] = useState<GalleryImage[]>(initialGallery)
@@ -81,6 +86,24 @@ export function ProductForm({
 
     const supabase = createClient()
 
+    if (values.is_featured && (!isEdit || !initialValues?.is_featured)) {
+      const { count } = await supabase.from('products').select('*', { count: 'exact', head: true }).eq('is_featured', true)
+      if ((count || 0) >= 4) {
+        setError('Maksimal 4 produk untuk section "TASTE THE HEAT" (Featured Grid). Silakan nonaktifkan produk lain terlebih dahulu!')
+        setSaving(false)
+        return
+      }
+    }
+
+    if (values.is_carousel && (!isEdit || !initialValues?.is_carousel)) {
+      const { count } = await supabase.from('products').select('*', { count: 'exact', head: true }).eq('is_carousel', true)
+      if ((count || 0) >= 8) {
+        setError('Maksimal 8 produk untuk section "TEMUKAN PILIHANMU" (Product Carousel). Silakan nonaktifkan produk lain terlebih dahulu!')
+        setSaving(false)
+        return
+      }
+    }
+
     const payload = {
       name: values.name,
       slug: values.slug,
@@ -91,6 +114,7 @@ export function ProductForm({
       tokopedia_url: values.tokopedia_url || null,
       lazada_url: values.lazada_url || null,
       is_featured: values.is_featured,
+      is_carousel: values.is_carousel,
       status: values.status,
     }
 
@@ -265,15 +289,71 @@ export function ProductForm({
         </div>
       </div>
 
-      <label className="flex items-center gap-2.5 text-sm font-medium text-gray-700 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={values.is_featured}
-          onChange={(e) => setValues((v) => ({ ...v, is_featured: e.target.checked }))}
-          className="w-4 h-4 accent-[#C8102E] rounded"
-        />
-        Tampilkan di section produk unggulan homepage (Featured)
-      </label>
+      <div className="space-y-3">
+        {/* Checkbox 1: TASTE THE HEAT (Featured Grid) */}
+        <div className="bg-red-50/40 p-4 rounded-2xl border border-red-100">
+          <label className="flex items-start gap-3.5 cursor-pointer select-none">
+            <div className="relative flex items-center justify-center shrink-0 mt-0.5">
+              <input
+                type="checkbox"
+                checked={values.is_featured}
+                onChange={(e) => setValues((v) => ({ ...v, is_featured: e.target.checked }))}
+                className="sr-only peer"
+              />
+              <div className="w-5 h-5 rounded-full border-2 border-[#C8102E] bg-white transition-all flex items-center justify-center shadow-xs peer-focus-visible:ring-2 peer-focus-visible:ring-[#C8102E]/30">
+                <Check
+                  size={13}
+                  strokeWidth={3}
+                  className={`text-emerald-600 transition-transform duration-150 ${
+                    values.is_featured ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
+                  }`}
+                />
+              </div>
+            </div>
+            <div>
+              <span className="text-sm font-semibold text-[#C8102E] flex items-center gap-2">
+                <FontAwesomeIcon icon={faFire} className="text-[#C8102E]" />
+                Section &ldquo;TASTE THE HEAT&rdquo; (Featured Grid)
+              </span>
+              <span className="text-xs text-gray-500 block mt-0.5">
+                Centang jika produk ini ingin ditampilkan di grid unggulan berlatar merah.
+              </span>
+            </div>
+          </label>
+        </div>
+
+        {/* Checkbox 2: TEMUKAN PILIHANMU (Product Carousel) */}
+        <div className="bg-amber-50/40 p-4 rounded-2xl border border-amber-100">
+          <label className="flex items-start gap-3.5 cursor-pointer select-none">
+            <div className="relative flex items-center justify-center shrink-0 mt-0.5">
+              <input
+                type="checkbox"
+                checked={values.is_carousel}
+                onChange={(e) => setValues((v) => ({ ...v, is_carousel: e.target.checked }))}
+                className="sr-only peer"
+              />
+              <div className="w-5 h-5 rounded-full border-2 border-[#C8102E] bg-white transition-all flex items-center justify-center shadow-xs peer-focus-visible:ring-2 peer-focus-visible:ring-[#C8102E]/30">
+                <Check
+                  size={13}
+                  strokeWidth={3}
+                  className={`text-emerald-600 transition-transform duration-150 ${
+                    values.is_carousel ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
+                  }`}
+                />
+              </div>
+            </div>
+            <div>
+              <span className="text-sm font-semibold text-[#0A1628] flex items-center gap-2">
+                <FontAwesomeIcon icon={faSliders} className="text-amber-600" />
+                Section &ldquo;TEMUKAN PILIHANMU&rdquo; (Product Carousel Pop-out)
+              </span>
+              <span className="text-xs text-gray-500 block mt-0.5">
+                Centang jika produk ini ingin ditampilkan di carousel scroll horizontal homepage.
+              </span>
+            </div>
+          </label>
+        </div>
+      </div>
 
       <ImageUploader
         bucket="product-thumbnails"
