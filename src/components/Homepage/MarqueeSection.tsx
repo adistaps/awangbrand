@@ -69,7 +69,7 @@ export function MarqueeSection() {
                   variants={letterVariants} // Menggunakan animasi Spring
                   initial="initial"
                   animate="animate"
-                  className="inline-block text-[11vw] sm:text-[10vw] md:text-[9.5vw] font-black uppercase leading-none tracking-tighter"
+                  className="inline-block text-[11vw] sm:text-[10vw] md:text-[9.5vw] font-black uppercase leading-none tracking-tighter font-heinz"
                 >
                   <motion.span
                     // Animasi warna teks dipisah ke dalam child

@@ -57,7 +57,6 @@ export function Navbar() {
   const isHomePage = pathname === '/'
 
   const nav = [
-    ['Home', '/'],
     ['About', '/about-us'],
     ['Products', '/products'],
     ['Recipes', '/recipes'],
@@ -143,7 +142,8 @@ export function Navbar() {
               <img
                 src="/logo.webp"
                 alt="AWANG"
-                className="h-10 sm:h-12 w-auto object-contain brightness-0 invert"
+                className="h-10 sm:h-12 w-auto object-contain"
+                style={{ filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.85)) drop-shadow(0 0 16px rgba(255,255,255,0.5))' }}
               />
             </Link>
           </div>

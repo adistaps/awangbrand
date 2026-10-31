@@ -15,13 +15,10 @@ export function ContactClient() {
       {/* ==========================================
           HERO SECTION (SPLIT LAYOUT MERAH & CONTACTUS.webp)
       ========================================== */}
-      <section className="bg-[#C8102E] text-white w-full min-h-[480px] sm:min-h-[560px] grid grid-cols-1 lg:grid-cols-12 items-end">
+      <section className="bg-[#C8102E] text-white w-full min-h-[560px] sm:min-h-[640px] lg:min-h-[680px] grid grid-cols-1 lg:grid-cols-12 items-end overflow-visible">
 
         {/* Kolom Kiri: Copywriting Header */}
         <div className="lg:col-span-6 p-8 sm:p-14 md:p-20 xl:p-24 flex flex-col justify-center space-y-3 sm:space-y-4 pt-28 sm:pt-36 lg:pt-20 self-center">
-          <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-white/80">
-            Contact
-          </span>
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-white uppercase tracking-tight leading-none">
             Get in touch<br />with us
           </h1>
@@ -30,15 +27,18 @@ export function ContactClient() {
           </p>
         </div>
 
-        {/* Kolom Kanan: Gambar Contactus.webp (Diturunkan Overlap ke Bawah Hero) */}
-        <div className="lg:col-span-6 h-[460px] sm:h-[540px] lg:h-[620px] relative w-full flex items-end justify-center -mb-16 sm:-mb-24 lg:-mb-32 z-10">
-          <Image
-            src="/contactus.webp"
-            alt="Contact AWANG Team"
-            fill
-            className="object-contain object-bottom drop-shadow-xl"
-            priority
-          />
+        {/* Kolom Kanan: Mascot (full visible, tidak terpotong) */}
+        <div className="lg:col-span-6 relative w-full flex items-end justify-center pt-10 lg:pt-0" style={{ height: '540px' }}>
+          <div className="relative h-full mx-auto" style={{ width: '72%', maxHeight: '540px' }}>
+            <Image
+              src="/mascot.webp"
+              alt="Contact AWANG Team"
+              fill
+              className="object-contain object-bottom drop-shadow-2xl"
+              style={{ objectPosition: 'center bottom' }}
+              priority
+            />
+          </div>
         </div>
 
       </section>

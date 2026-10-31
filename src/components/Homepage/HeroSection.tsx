@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowDown } from 'lucide-react'
 
 // Letakkan foto di folder /public: hero1.webp, hero2.webp, hero3.webp
-const SLIDES = ['/hero1.webp', '/hero2.webp', '/hero3.webp']
+const SLIDES = ['/hero1.webp', '/hero4.webp', '/hero3.webp']
 
 // Lama tiap foto tampil (ms)
 const SLIDE_DURATION = 3500

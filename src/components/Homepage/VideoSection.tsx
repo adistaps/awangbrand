@@ -1,59 +1,36 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import Image from 'next/image'
 
-interface VideoSectionProps {
-  videoSrc?: string
-  posterSrc?: string
-}
-
-export function VideoSection({
-  videoSrc = '/video.webm', // Ganti dengan file video kamu di folder public
-  posterSrc,
-}: VideoSectionProps) {
+export function VideoSection() {
   return (
-    < section className="relative w-full h-[70vh] sm:h-[85vh] md:h-[95vh] lg:h-[110vh] bg-black overflow-hidden" >
-      {/* Video Background */}
-      < video
-        autoPlay
-        loop
-        muted
-        playsInline
-        poster={posterSrc}
-        className="w-full h-full object-cover"
-      >
-        <source src={videoSrc} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video >
+    <section className="relative w-full h-[70vh] sm:h-[80vh] md:h-[90vh] overflow-hidden bg-black">
+      {/* Background foto dengan zoom in/out looping */}
+      <div className="absolute inset-0 animate-zoom-loop">
+        <Image
+          src="/hero2.webp"
+          alt="AWANG Brand background"
+          fill
+          className="object-cover"
+          priority
+        />
+      </div>
 
-      {/* Teks Kiri */}
-      < div className="absolute inset-0 flex items-center" >
-        <div className="px-6 sm:px-10 md:px-16 lg:px-20 max-w-[650px]">
-          {/* Eyebrow / label kecil */}
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: 'easeOut', delay: 0.1 }}
-            className="text-xs sm:text-sm font-semibold uppercase tracking-[0.2em] text-[#E3000F] mb-3 sm:mb-4"
-          >
-          </motion.p>
+      {/* Overlay gelap supaya icon tetap terbaca */}
+      <div className="absolute inset-0 bg-black/0" />
 
-          {/* Judul utama - Copywriting diubah ke Bahasa Inggris dengan teks yang lebih tegas */}
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: 'easeOut', delay: 0.25 }}
-            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.05] tracking-tight mb-4 sm:mb-6"
-          >
-            Crafted with <br />
-            <span className="text-[#E3000F]">Love</span>,<br />
-            Served with Pride.
-          </motion.h2>
-
+      {/* Icon.webp di tengah atas foto */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative w-44 h-44 sm:w-60 sm:h-60 md:w-72 md:h-72 lg:w-96 lg:h-96 drop-shadow-2xl">
+          <Image
+            src="/logo.webp"
+            alt="AWANG Brand Icon"
+            fill
+            className="object-contain"
+            priority
+          />
         </div>
-      </div >
-    </section >
+      </div>
+    </section>
   )
 }

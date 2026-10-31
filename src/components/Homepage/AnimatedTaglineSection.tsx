@@ -73,21 +73,21 @@ export function AnimatedTaglineSection() {
           <AnimatedFallingText
             text="SIZZLE"
             baseDelay={0}
-            className="text-6xl sm:text-6xl md:text-7xl lg:text-[6rem] xl:text-[7.5rem] font-black uppercase tracking-tighter leading-[0.9] text-[#4A0D18]"
+            className="text-6xl sm:text-6xl md:text-7xl lg:text-[6rem] xl:text-[7.5rem] font-black uppercase tracking-tighter leading-[0.9] text-[#4A0D18] font-heinz"
           />
 
           {/* Baris 2 - KHUSUS MOBILE: Memperbesar ukuran dari text-5xl ke text-7xl */}
           <AnimatedFallingText
             text="SLURP"
             baseDelay={0.4}
-            className="text-7xl sm:text-7xl md:text-8xl lg:text-[7rem] xl:text-[9rem] font-black uppercase tracking-tighter leading-[0.9] text-white my-1"
+            className="text-7xl sm:text-7xl md:text-8xl lg:text-[7rem] xl:text-[9rem] font-black uppercase tracking-tighter leading-[0.9] text-white my-1 font-heinz"
           />
 
           {/* Baris 3 - KHUSUS MOBILE: Memperbesar ukuran dari text-4xl ke text-6xl */}
           <AnimatedFallingText
             text="REPEAT"
             baseDelay={0.8}
-            className="text-6xl sm:text-6xl md:text-7xl lg:text-[6rem] xl:text-[7.5rem] font-black uppercase tracking-tighter leading-[0.9] text-[#4A0D18]"
+            className="text-6xl sm:text-6xl md:text-7xl lg:text-[6rem] xl:text-[7.5rem] font-black uppercase tracking-tighter leading-[0.9] text-[#4A0D18] font-heinz"
           />
         </div>
 

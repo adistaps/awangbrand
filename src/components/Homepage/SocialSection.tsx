@@ -1,110 +1,112 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
-// Data video dari folder public
-const socialVideos = [
+// 5 Video TikTok Resmi AWANG Brand
+const tiktokVideos = [
   {
-    id: 1,
-    videoSrc: '/video/video1.mp4',
-    instagramUrl: 'https://www.instagram.com/reel/DeG1EhHO2zl/',
+    id: '7611107188828065044',
+    url: 'https://www.tiktok.com/@awangbrand_official/video/7611107188828065044',
+    title: 'AWANG Brand Official Video 1',
   },
   {
-    id: 2,
-    videoSrc: '/video/video2.mp4',
-    instagramUrl: 'https://www.instagram.com/reel/Dd0094BOu7l/',
+    id: '7204052765557918982',
+    url: 'https://www.tiktok.com/@awangbrand_official/video/7204052765557918982',
+    title: 'AWANG Brand Official Video 2',
   },
   {
-    id: 3,
-    videoSrc: '/video/video3.mp4',
-    instagramUrl: 'https://www.instagram.com/reel/DdviTv7Or-6/',
+    id: '7696464259382824244',
+    url: 'https://www.tiktok.com/@awangbrand_official/video/7696464259382824244',
+    title: 'AWANG Brand Official Video 3',
   },
   {
-    id: 4,
-    videoSrc: '/video/video4.mp4',
-    instagramUrl: 'https://www.instagram.com/reel/DdYdCPOOa5u/',
+    id: '7696463884009655604',
+    url: 'https://www.tiktok.com/@awangbrand_official/video/7696463884009655604',
+    title: 'AWANG Brand Official Video 4',
+  },
+  {
+    id: '7693494568842448129',
+    url: 'https://www.tiktok.com/@awangbrand_official/video/7693494568842448129',
+    title: 'AWANG Brand Official Video 5',
   },
 ]
 
-// Ikon Instagram (SVG)
-function InstagramIcon({ className = 'w-5 h-5' }: { className?: string }) {
+// Ikon TikTok (SVG)
+function TikTokIcon({ className = 'w-5 h-5' }: { className?: string }) {
   return (
     <svg className={`fill-current ${className}`} viewBox="0 0 24 24">
-      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.86.12V9.42a6.34 6.34 0 0 0-.86-.06 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.75a8.18 8.18 0 0 0 4.77 1.52V6.82a4.83 4.83 0 0 1-1-.13z" />
     </svg>
   )
 }
 
-// Ikon Play
-function PlayIcon() {
-  return (
-    <svg className="w-14 h-14 fill-current text-white drop-shadow-lg" viewBox="0 0 24 24">
-      <path d="M8 5v14l11-7z" />
-    </svg>
-  )
-}
-
-// Komponen VideoCard
-function VideoCard({ item, idx }: { item: typeof socialVideos[0]; idx: number }) {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  const handlePlay = () => {
-    setIsPlaying(true)
-    if (videoRef.current) {
-      videoRef.current.play()
-    }
-  }
+// Komponen Card Video TikTok (Hanya merender iframe saat section sudah masuk viewport)
+function TikTokCard({
+  item,
+  idx,
+  shouldRender,
+}: {
+  item: typeof tiktokVideos[0]
+  idx: number
+  shouldRender: boolean
+}) {
+  const [isLoaded, setIsLoaded] = useState(false)
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.3 }}
-      transition={{ duration: 0.4, delay: idx * 0.1 }}
-      className="w-[260px] sm:w-[320px] lg:w-[270px] h-[460px] sm:h-[560px] lg:h-[445px] rounded-3xl lg:rounded-2xl overflow-hidden relative bg-black group/card flex-shrink-0 snap-start snap-always"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.4, delay: idx * 0.08 }}
+      className="w-[275px] sm:w-[310px] md:w-[325px] aspect-[9/16] rounded-xl sm:rounded-2xl overflow-hidden relative flex-shrink-0 snap-start snap-always"
     >
-      <video
-        ref={videoRef}
-        preload="metadata"
-        loop
-        playsInline
-        controls={isPlaying}
-        className="w-full h-full object-cover"
-      >
-        <source src={item.videoSrc} type="video/mp4" />
-      </video>
+      {shouldRender ? (
+        <>
+          {/* Skeleton placeholder selagi iframe TikTok memuat */}
+          {!isLoaded && (
+            <div className="absolute inset-0 bg-neutral-900 flex flex-col items-center justify-center p-6 text-center space-y-3 animate-pulse">
+              <div className="w-14 h-14 rounded-full bg-neutral-800 flex items-center justify-center">
+                <TikTokIcon className="w-7 h-7 text-white/50" />
+              </div>
+              <span className="text-white/40 text-xs font-semibold uppercase tracking-wider">
+                Memuat Video TikTok...
+              </span>
+            </div>
+          )}
 
-      {!isPlaying && (
-        <div
-          className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/30 to-black/80 flex items-center justify-center cursor-pointer transition-opacity duration-300 group-hover/card:bg-black/40 z-10"
-          onClick={handlePlay}
-        >
-          <button
-            type="button"
-            aria-label="Play video"
-            className="relative z-10 w-20 h-20 lg:w-20 lg:h-20 rounded-full bg-white/25 backdrop-blur-md border-2 border-white/60 flex items-center justify-center transition-all duration-300 group-hover/card:scale-110 group-hover/card:bg-white/35 active:scale-95 shadow-xl"
-          >
-            <PlayIcon />
-          </button>
-
-          <span className="absolute bottom-14 left-0 right-0 text-center text-white/80 text-[11px] font-semibold tracking-widest uppercase z-10">
-            Tap to Play
+          <iframe
+            src={`https://www.tiktok.com/player/v1/${item.id}?autoplay=0&music_info=0&description=0`}
+            title={item.title}
+            className="w-full h-full border-0 rounded-xl sm:rounded-2xl block"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            loading="lazy"
+            onLoad={() => setIsLoaded(true)}
+          />
+        </>
+      ) : (
+        /* Placeholder ringan sebelum user scroll ke section ini */
+        <div className="w-full h-full bg-neutral-900/60 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center p-6 text-center space-y-3">
+          <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
+            <TikTokIcon className="w-6 h-6 text-white/60" />
+          </div>
+          <span className="text-white/40 text-xs font-medium uppercase tracking-wider">
+            TikTok Video
           </span>
         </div>
       )}
 
+      {/* Tombol shortcut link langsung ke TikTok */}
       <a
-        href={item.instagramUrl}
+        href={item.url}
         target="_blank"
         rel="noopener noreferrer"
-        aria-label="Lihat di Instagram"
-        className="absolute top-4 right-4 lg:top-3 lg:right-3 z-20 w-10 h-10 lg:w-8 lg:h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/20 hover:bg-gradient-to-br hover:from-purple-600 hover:to-orange-400 transition-all duration-300"
-        onClick={(e) => e.stopPropagation()}
+        aria-label="Lihat video di TikTok"
+        className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-black/60 hover:bg-black text-white backdrop-blur-md flex items-center justify-center border border-white/20 transition-transform hover:scale-110 shadow-md"
       >
-        <InstagramIcon className="w-5 h-5 lg:w-4 lg:h-4 text-white" />
+        <TikTokIcon className="w-3.5 h-3.5 text-white" />
       </a>
     </motion.div>
   )
@@ -113,17 +115,27 @@ function VideoCard({ item, idx }: { item: typeof socialVideos[0]; idx: number })
 export function SocialSection() {
   const [activeDot, setActiveDot] = useState(0)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+
+  // Pantau apakah user sudah scroll sampai ke section Social
+  const isInView = useInView(sectionRef, { once: true, margin: '250px 0px 250px 0px' })
+  const [hasEnteredView, setHasEnteredView] = useState(false)
+
+  useEffect(() => {
+    if (isInView) {
+      setHasEnteredView(true)
+    }
+  }, [isInView])
 
   const handleScroll = useCallback(() => {
     if (scrollContainerRef.current) {
       const container = scrollContainerRef.current
-      const scrollLeft = container.scrollLeft
-      const itemWidth = container.querySelector('.snap-start')?.clientWidth || 0
-      const gap = 16
-
-      if (itemWidth > 0) {
-        const index = Math.round(scrollLeft / (itemWidth + gap))
-        setActiveDot(index)
+      const maxScroll = container.scrollWidth - container.clientWidth
+      if (maxScroll > 0) {
+        // Cukup 2 state halaman (page 1: video 1-4, page 2: video 5)
+        const progress = container.scrollLeft / maxScroll
+        const dotIndex = progress > 0.35 ? 1 : 0
+        setActiveDot(dotIndex)
       }
     }
   }, [])
@@ -141,76 +153,84 @@ export function SocialSection() {
     }
   }, [handleScroll])
 
-  const scrollToItem = (index: number) => {
+  const scrollToSlide = (dotIdx: number) => {
     if (scrollContainerRef.current) {
       const container = scrollContainerRef.current
-      const itemWidth = container.querySelector('.snap-start')?.clientWidth || 0
-      const gap = 16
+      const maxScroll = container.scrollWidth - container.clientWidth
       container.scrollTo({
-        left: index * (itemWidth + gap),
+        left: dotIdx * maxScroll,
         behavior: 'smooth',
       })
     }
   }
 
   return (
-    <section className="relative w-full bg-[#C8102E] py-16 sm:py-20 md:py-24 overflow-hidden">
+    <section
+      ref={sectionRef}
+      className="relative w-full bg-[#C8102E] py-16 sm:py-20 md:py-24 overflow-hidden"
+    >
       <div className="w-full max-w-[1400px] mx-auto text-center">
 
         {/* Header Section */}
         <div className="flex flex-col items-center justify-center mb-10 px-4 sm:px-6 md:px-12">
           <div className="w-12 h-12 rounded-full bg-[#8B0000] flex items-center justify-center mb-4 shadow-inner">
-            <InstagramIcon className="w-5 h-5 text-white" />
+            <TikTokIcon className="w-5 h-5 text-white" />
           </div>
 
-          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black text-white uppercase tracking-tight leading-none">
-            IKUTI KAMI DI INSTAGRAM
+          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black text-white uppercase tracking-tight leading-none font-heinz">
+            IKUTI KAMI DI TIKTOK
           </h2>
-          <p className="text-white/70 text-base sm:text-lg lg:text-base mt-4 font-medium max-w-2xl">
-            @awangbrand — Resep, tips & di balik dapur AWANG
+          <p className="text-white/80 text-base sm:text-lg mt-4 font-medium max-w-2xl">
+            @awangbrand_official — Inspirasi resep lezat, kreasi masakan & keseruan dapur AWANG
           </p>
         </div>
 
-        {/* Carousel Produk */}
+        {/* Carousel Video TikTok */}
         <div className="relative w-full">
           <div
             ref={scrollContainerRef}
-            className="flex flex-nowrap lg:flex-wrap items-center lg:justify-center gap-4 sm:gap-6 py-4 px-4 sm:px-6 md:px-12 overflow-x-auto lg:overflow-x-visible scrollbar-hide snap-x snap-mandatory scroll-smooth"
+            className="flex items-center gap-4 sm:gap-6 py-4 px-4 sm:px-6 md:px-12 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {socialVideos.map((item, idx) => (
-              <VideoCard key={item.id} item={item} idx={idx} />
+            {tiktokVideos.map((item, idx) => (
+              <TikTokCard
+                key={item.id}
+                item={item}
+                idx={idx}
+                shouldRender={hasEnteredView}
+              />
             ))}
           </div>
         </div>
 
-        {/* Dots Navigation */}
-        <div className="flex lg:hidden items-center justify-center gap-2.5 mt-6 mb-2">
-          {socialVideos.map((_, idx) => (
+        {/* Dots Navigation (Tampil di Desktop & Mobile) */}
+        <div className="flex items-center justify-center gap-2.5 mt-6 mb-2">
+          {[0, 1].map((idx) => (
             <button
               key={idx}
-              onClick={() => scrollToItem(idx)}
-              aria-label={`Scroll to video ${idx + 1}`}
+              type="button"
+              onClick={() => scrollToSlide(idx)}
+              aria-label={`Halaman video ${idx + 1}`}
               className={cn(
-                "w-2.5 h-2.5 rounded-full transition-all duration-300",
+                "rounded-full transition-all duration-300 cursor-pointer",
                 activeDot === idx
-                  ? "bg-white scale-125 shadow-md"
-                  : "bg-white/30 hover:bg-white/50"
+                  ? "w-8 h-2.5 bg-white shadow-sm"
+                  : "w-2.5 h-2.5 bg-white/40 hover:bg-white/70"
               )}
             />
           ))}
         </div>
 
-        {/* CTA ke Instagram - Diperkecil ukurannya (w-auto) dan diposisikan pas di tengah */}
-        <div className="mt-10 px-4 flex justify-center items-center w-full">
+        {/* CTA ke Akun TikTok Resmi AWANG */}
+        <div className="mt-8 sm:mt-10 px-4 flex justify-center items-center w-full">
           <a
-            href="https://www.instagram.com/awangbrand/"
+            href="https://www.tiktok.com/@awangbrand_official"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2.5 bg-white text-[#C8102E] font-extrabold text-sm sm:text-base px-6 py-3.5 sm:px-8 sm:py-4 rounded-full hover:bg-white/90 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-md w-auto"
           >
-            <InstagramIcon className="w-5 h-5 text-[#C8102E]" />
-            Ikuti @awangbrand
+            <TikTokIcon className="w-5 h-5 text-[#C8102E]" />
+            Follow @awangbrand_official
           </a>
         </div>
 

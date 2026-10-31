@@ -1,43 +1,52 @@
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { getHomeRecipes } from '@/lib/queries'
-import ImageGallery, { GalleryImage } from '@/components/ui/image-gallery'
+import PolaroidLineCarousel, { Slide } from '@/components/ui/polaroid-line-carousel'
 
 export async function RecipesBentoSection() {
-  const recipes = await getHomeRecipes(4)
+  const recipes = await getHomeRecipes(6)
 
   if (!recipes || recipes.length === 0) return null
 
-  // Transformasi data resep menjadi format GalleryImage — sertakan title dari backend
-  const recipeGalleryImages: GalleryImage[] = recipes.map((recipe) => ({
-    src: recipe.main_image || '/placeholder-recipe.jpg',
-    alt: recipe.title,
+  // Transformasi data resep ke format Slide Polaroid
+  const recipeSlides: Slide[] = recipes.map((recipe) => ({
+    image: recipe.main_image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop',
     title: recipe.title,
+    caption: recipe.description || 'Resep lezat otentik dengan pes masakan AWANG.',
+    href: `/recipes/${recipe.slug}`,
   }))
 
   return (
-    <section className="bg-[#FAF6ED] py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-12 lg:px-16 w-full">
-      <div className="max-w-[1400px] mx-auto">
-        {/* Header — font size sama dengan ProductCarouselSection */}
-        <div className="text-center mb-10 sm:mb-14">
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-[#C8102E] uppercase tracking-tight mb-2">
+    <section className="bg-[#FAF6ED] py-16 sm:py-20 md:py-24 px-0 w-full overflow-hidden">
+      <div className="w-full">
+        {/* Header Section */}
+        <div className="text-center mb-6 sm:mb-10 px-4 sm:px-6">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-[#C8102E] uppercase tracking-tight mb-2 font-heinz">
             COOK SOMETHING GOOD
           </h2>
           <p className="text-sm sm:text-base text-neutral-600 font-medium">
-            Crowd-pleasing recipes you can only find here.
+            Resep pilihan istimewa yang mudah dibuat di rumah dengan produk AWANG.
           </p>
         </div>
 
-        {/* Image Gallery dengan autoplay stabil & judul tiap card */}
-        <ImageGallery
-          images={recipeGalleryImages}
-          showHeader={false}
-          autoPlayInterval={3000}
-          className="p-0"
-        />
+        {/* 21st.dev Polaroid Line Carousel - Memenuhi Lebar Section Tanpa Kotak Pembungkus */}
+        <div className="w-full relative">
+          <PolaroidLineCarousel
+            slides={recipeSlides}
+            height="560px"
+            cardWidth={390}
+            sag={38}
+            swing={1.05}
+            autoplay={4000}
+            string="#8a7f72"
+            background="transparent"
+            ink="#1A1A1A"
+            showBar={false}
+          />
+        </div>
 
         {/* Tombol Lihat Semua Resep */}
-        <div className="mt-10 text-center">
+        <div className="mt-8 text-center px-4">
           <Link
             href="/recipes"
             className="inline-flex items-center gap-2 bg-[#C8102E] hover:bg-[#a60c24] text-white !text-white font-extrabold text-sm uppercase px-8 py-3.5 rounded-full transition-all hover:scale-105 active:scale-95 shadow-md"

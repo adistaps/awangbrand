@@ -65,8 +65,7 @@ export function AboutUsClient() {
           <div className="lg:col-span-6 flex flex-col text-left justify-center pl-0 sm:pl-6 lg:pl-12">
 
             <h1
-              className="text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-wider mb-2 text-white leading-tight"
-              style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
+              className="text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-wider mb-2 text-white leading-tight font-heinz"
             >
               WHO WE ARE
             </h1>

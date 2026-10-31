@@ -91,8 +91,7 @@ function Timeline({ items }: { items: TimelineItem[] }) {
                                                 ({item.date})
                                             </span>
                                             <h3
-                                                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-wide text-white uppercase drop-shadow-sm leading-tight"
-                                                style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
+                                                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-wide text-white uppercase drop-shadow-sm leading-tight font-heinz"
                                             >
                                                 {item.title}
                                             </h3>
@@ -129,8 +128,7 @@ function Timeline({ items }: { items: TimelineItem[] }) {
                                                 ({item.date})
                                             </span>
                                             <h3
-                                                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-wide text-white uppercase drop-shadow-sm leading-tight"
-                                                style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
+                                                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-wide text-white uppercase drop-shadow-sm leading-tight font-heinz"
                                             >
                                                 {item.title}
                                             </h3>
@@ -159,8 +157,7 @@ export function TimelineBlock01() {
 
                     <div className="space-y-2 sm:space-y-3">
                         <h2
-                            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-wider text-white uppercase drop-shadow-md"
-                            style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
+                            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-wider text-white uppercase drop-shadow-md font-heinz"
                         >
                             A Story Of Growth
                         </h2>
