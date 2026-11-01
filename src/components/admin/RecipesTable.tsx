@@ -4,12 +4,12 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Recipe } from '@/types/database'
-import { Edit, Trash2, ExternalLink } from 'lucide-react'
+import { Edit, Trash2, ExternalLink, Star } from 'lucide-react'
 
 export function RecipesTable({ recipes }: { recipes: any[] }) {
   const router = useRouter()
   const [list, setList] = useState(recipes)
+  const [busy, setBusy] = useState(false)
 
   async function handleDelete(id: string) {
     if (!confirm('Apakah Anda yakin ingin menghapus resep ini?')) return
@@ -23,10 +23,36 @@ export function RecipesTable({ recipes }: { recipes: any[] }) {
     }
   }
 
+  async function handleToggleFeatured(id: string, currentFeatured: boolean) {
+    if (!currentFeatured) {
+      const currentCount = list.filter((r) => r.is_featured).length
+      if (currentCount >= 4) {
+        alert(
+          'Maksimal 4 resep untuk section "TASTE THE HEAT" (Featured Grid). Silakan nonaktifkan resep lain terlebih dahulu!'
+        )
+        return
+      }
+    }
+    setBusy(true)
+    const supabase = createClient()
+    const { error } = await supabase
+      .from('recipes')
+      .update({ is_featured: !currentFeatured })
+      .eq('id', id)
+    if (!error) {
+      setList((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, is_featured: !currentFeatured } : r))
+      )
+    } else {
+      alert('Gagal mengubah status featured: ' + error.message)
+    }
+    setBusy(false)
+  }
+
   return (
     <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-xs">
       <div className="overflow-x-auto w-full">
-        <table className="w-full text-left text-sm min-w-[700px]">
+        <table className="w-full text-left text-sm min-w-[800px]">
           <thead className="bg-gray-50/75 text-xs uppercase text-gray-500 font-semibold border-b border-gray-100">
             <tr>
               <th className="px-5 py-3.5">Foto</th>
@@ -34,6 +60,7 @@ export function RecipesTable({ recipes }: { recipes: any[] }) {
               <th className="px-5 py-3.5">Kategori</th>
               <th className="px-5 py-3.5">Waktu / Porsi</th>
               <th className="px-5 py-3.5">Produk Terkait</th>
+              <th className="px-5 py-3.5 text-center whitespace-nowrap">Homepage</th>
               <th className="px-5 py-3.5 text-center">Status</th>
               <th className="px-5 py-3.5 text-right">Aksi</th>
             </tr>
@@ -41,8 +68,8 @@ export function RecipesTable({ recipes }: { recipes: any[] }) {
           <tbody className="divide-y divide-gray-50">
             {list.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
-                  Belum ada resep. Silakan klik tombol "Tambah Resep Baru".
+                <td colSpan={8} className="px-6 py-12 text-center text-gray-400">
+                  Belum ada resep. Silakan klik tombol &quot;Tambah Resep Baru&quot;.
                 </td>
               </tr>
             ) : (
@@ -73,6 +100,32 @@ export function RecipesTable({ recipes }: { recipes: any[] }) {
                   <td className="px-5 py-3.5 text-xs text-gray-600">
                     {item.featured_product?.name || '—'}
                   </td>
+
+                  {/* Toggle Featured */}
+                  <td className="px-5 py-3.5 text-center">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => handleToggleFeatured(item.id, item.is_featured)}
+                      title={
+                        item.is_featured
+                          ? "Keluarkan dari section 'Taste The Heat' (Featured Grid)"
+                          : "Tampilkan di section 'Taste The Heat' (Featured Grid)"
+                      }
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer whitespace-nowrap shrink-0 disabled:opacity-50 ${
+                        item.is_featured
+                          ? 'bg-red-50 border-red-200 text-[#C8102E] hover:bg-red-100 shadow-xs'
+                          : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <Star
+                        size={12}
+                        className={item.is_featured ? 'text-[#C8102E] fill-[#C8102E]' : 'text-gray-400'}
+                      />
+                      <span>Taste Heat: {item.is_featured ? 'On' : 'Off'}</span>
+                    </button>
+                  </td>
+
                   <td className="px-5 py-3.5 text-center">
                     <span
                       className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider ${

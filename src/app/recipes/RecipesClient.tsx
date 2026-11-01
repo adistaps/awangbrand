@@ -75,15 +75,6 @@ export function RecipesClient() {
             DISCOVER AUTHENTIC <br className="hidden md:inline" />
             <span className="md:whitespace-nowrap">FLAVOURS & EASY HOME RECIPES</span>
           </h1>
-
-          <div className="pt-1 sm:pt-2">
-            <Link
-              href={`/recipes/${displayList[0]?.slug || 'garlic-lemon-shrimp'}`}
-              className="inline-flex items-center gap-1.5 sm:gap-2 bg-[#4A1521] text-white font-bold px-5 py-2 sm:px-8 sm:py-3 rounded-full hover:bg-[#2b0c13] transition-all text-[11px] sm:text-sm uppercase tracking-wide shadow-md active:scale-95"
-            >
-              Get Recipe <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            </Link>
-          </div>
         </div>
 
         <div className="relative w-full max-w-5xl flex justify-center z-10 px-2 -mt-16 sm:-mt-24 pointer-events-none">

@@ -1,40 +1,69 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ShoppingCart } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+import { ShoppingCart, Check, X } from 'lucide-react'
+
+export interface CategoryItem {
+  id: string
+  name: string
+  slug: string
+  image_url?: string | null
+}
+
 export function ProductsGrid({
   products,
+  categories = [],
   showFilters = true,
 }: {
   products: { slug: string; name: string; img: string; cat: string }[]
+  categories?: CategoryItem[]
   showFilters?: boolean
 }) {
-  const [selectedCategory, setSelectedCategory] = useState<string>('ALL')
+  const searchParams = useSearchParams()
+  const initialCategoryParam = searchParams.get('category')
+
+  // Set multiple selected categories (array of names in uppercase)
+  // Default kosong [] -> Berarti semua produk ditampilkan
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [visibleCount, setVisibleCount] = useState<number>(8)
 
-  // Reset pagination saat kategori berganti
-  function handleCategoryChange(cat: string) {
-    setSelectedCategory(cat)
+  // Tangkap query param dari URL jika datang dari klik Carousel Beranda
+  useEffect(() => {
+    if (initialCategoryParam) {
+      setSelectedCategories([initialCategoryParam.toUpperCase()])
+    }
+  }, [initialCategoryParam])
+
+  // Toggle kategori: bisa pilih lebih dari 1 kategori
+  function toggleCategory(catName: string) {
+    const upper = catName.toUpperCase()
+    setSelectedCategories((prev) => {
+      if (prev.includes(upper)) {
+        return prev.filter((c) => c !== upper)
+      } else {
+        return [...prev, upper]
+      }
+    })
     setVisibleCount(8)
   }
 
-  // Mendapatkan daftar kategori unik dari data produk
-  const categoriesList = useMemo(() => {
-    const cats = new Set<string>()
-    products.forEach((p) => {
-      if (p.cat && p.cat.trim() !== '') cats.add(p.cat)
-    })
-    return ['ALL', ...Array.from(cats)]
-  }, [products])
+  // Clear all filters
+  function clearAllFilters() {
+    setSelectedCategories([])
+    setVisibleCount(8)
+  }
 
-  // Memfilter produk berdasarkan kategori terpilih
+  // Filter produk berdasarkan kategori yang terpilih
   const filteredProducts = useMemo(() => {
-    if (selectedCategory === 'ALL') return products
-    return products.filter((p) => p.cat === selectedCategory)
-  }, [products, selectedCategory])
+    if (selectedCategories.length === 0) return products
+    return products.filter((p) =>
+      selectedCategories.includes(p.cat.toUpperCase())
+    )
+  }, [products, selectedCategories])
 
   const displayedProducts = useMemo(() => {
     return filteredProducts.slice(0, visibleCount)
@@ -44,35 +73,122 @@ export function ProductsGrid({
     return <p className="text-gray-400 text-center py-20">Belum ada produk yang dipublikasikan.</p>
   }
 
-  const hasCategories = showFilters && categoriesList.length > 1
+  // Filter categories to only display categories that have an image or have products
+  const displayCategories = categories.length > 0 ? categories : []
 
   return (
     <div className="w-full">
-      {/* Filter Kategori Minimalis (Tanpa Garis Bawah) */}
-      {hasCategories && (
-        <div className="w-full flex justify-center mb-8 sm:mb-12">
-          <div className="flex items-center gap-3 sm:gap-4 overflow-x-auto pb-2 scrollbar-none px-4 max-w-full">
-            {categoriesList.map((category) => {
-              const isActive = selectedCategory === category
+      {/* =========================================================
+          FILTER KATEGORI CIRCULAR HEINZ STYLE
+      ========================================================= */}
+      {showFilters && displayCategories.length > 0 && (
+        <div className="w-full mb-10 sm:mb-14">
+          {/* Container bulatan kategori: rapi & sejajar di mobile maupun desktop */}
+          <div className="flex items-start justify-center gap-3 sm:gap-8 md:gap-10 overflow-x-auto pb-4 pt-3 px-2 sm:px-4 scrollbar-none">
+            {displayCategories.map((cat) => {
+              const isSelected = selectedCategories.includes(cat.name.toUpperCase())
+              const img =
+                cat.image_url ||
+                'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800&auto=format&fit=crop'
 
               return (
                 <button
-                  key={category}
-                  onClick={() => handleCategoryChange(category)}
-                  className={`px-5 py-2 rounded-full font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 cursor-pointer whitespace-nowrap ${isActive
-                      ? 'bg-[#C8102E] text-white shadow-sm'
-                      : 'bg-gray-100 text-[#4A1521]/70 hover:bg-gray-200 hover:text-[#4A1521]'
-                    }`}
+                  key={cat.id}
+                  type="button"
+                  onClick={() => toggleCategory(cat.name)}
+                  className="group flex flex-col items-center cursor-pointer shrink-0 w-[96px] sm:w-[130px] md:w-[150px] focus:outline-none"
                 >
-                  {category === 'ALL' ? 'Semua Produk' : category}
+                  {/* Lingkaran Luar (Ring Merah Terang Awang bila terpilih) */}
+                  <div
+                    className={`relative w-20 h-20 sm:w-28 sm:h-28 md:w-34 md:h-34 rounded-full p-1 sm:p-2 transition-all duration-300 flex items-center justify-center ${
+                      isSelected
+                        ? 'ring-2 ring-[#C8102E] ring-offset-2 ring-offset-white scale-105'
+                        : 'group-hover:scale-105'
+                    }`}
+                  >
+                    {/* Lingkaran Dalam Warna Merah Brand Awang (#C8102E) */}
+                    <div className="w-full h-full rounded-full bg-[#C8102E] flex items-center justify-center overflow-hidden relative shadow-inner p-1.5 sm:p-2.5">
+                      {/* Foto Kategori / Produk Kategori PNG */}
+                      <img
+                        src={img}
+                        alt={cat.name}
+                        className="w-full h-full object-contain drop-shadow-md transition-transform duration-500 group-hover:scale-110"
+                      />
+                    </div>
+
+                    {/* Checkmark Badge Merah di Pojok Kanan Atas saat terpilih */}
+                    {isSelected && (
+                      <div className="absolute top-0 right-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#C8102E] border-2 border-white text-white flex items-center justify-center shadow-md animate-in zoom-in-50 duration-200">
+                        <Check size={11} strokeWidth={3} />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Label Nama Kategori di Bawah Lingkaran (rapi tidak kepotong) */}
+                  <span
+                    className={`mt-2 sm:mt-3 text-[11px] sm:text-xs md:text-sm font-extrabold tracking-tight transition-colors text-center leading-tight line-clamp-2 px-0.5 ${
+                      isSelected
+                        ? 'text-[#C8102E] font-black'
+                        : 'text-[#1A1A1A] group-hover:text-[#C8102E]'
+                    }`}
+                  >
+                    {cat.name}
+                  </span>
                 </button>
               )
             })}
           </div>
+
+          {/* Baris Informasi Showing Product & Filter Active Badges */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-6 border-t border-gray-100 mt-2 px-2">
+            {/* Teks Showing Products */}
+            <p className="text-xs sm:text-sm text-gray-500 font-medium">
+              Showing{' '}
+              <span className="font-bold text-[#1A1A1A]">
+                {Math.min(visibleCount, filteredProducts.length)}
+              </span>{' '}
+              of <span className="font-bold text-[#1A1A1A]">{products.length}</span> products
+            </p>
+
+            {/* Badges Filter Aktif & Tombol Clear All */}
+            {selectedCategories.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                {selectedCategories.map((catName) => {
+                  // Cari nama asli dengan capitalization
+                  const matchedCat = categories.find(
+                    (c) => c.name.toUpperCase() === catName
+                  )
+                  const displayName = matchedCat ? matchedCat.name : catName
+
+                  return (
+                    <button
+                      key={catName}
+                      type="button"
+                      onClick={() => toggleCategory(catName)}
+                      className="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-[#C8102E] border border-red-200/60 text-xs font-bold px-3 py-1.5 rounded-md transition-colors"
+                    >
+                      <X size={12} />
+                      <span>{displayName}</span>
+                    </button>
+                  )
+                })}
+
+                <button
+                  type="button"
+                  onClick={clearAllFilters}
+                  className="text-xs font-extrabold text-[#C8102E] hover:text-[#9e0b23] underline underline-offset-4 ml-1 cursor-pointer transition-colors"
+                >
+                  Clear all filters
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
-      {/* Area Utama Grid Produk */}
+      {/* =========================================================
+          AREA UTAMA GRID PRODUK
+      ========================================================= */}
       <div className="w-full min-w-0">
         <motion.div
           layout
@@ -92,10 +208,9 @@ export function ProductsGrid({
                   href={`/products/${slug}`}
                   className="group relative flex flex-col items-center w-full cursor-pointer"
                 >
-                  {/* Container Gambar Produk dengan Efek Splash Abstrak Merah saat Hover/Touch */}
+                  {/* Container Gambar Produk dengan Efek Splash Abstrak Merah saat Hover */}
                   <div className="relative w-full aspect-[4/5] flex items-center justify-center p-4 overflow-hidden rounded-2xl bg-transparent transition-transform duration-500 group-hover:-translate-y-2">
-
-                    {/* SVG Splash Abstrak Merah (Muncul Pas Hover/Touch) */}
+                    {/* SVG Splash Abstrak Merah */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none scale-75 group-hover:scale-110 transition-transform duration-500">
                       <svg
                         viewBox="0 0 200 200"
@@ -123,7 +238,7 @@ export function ProductsGrid({
                     </div>
                   </div>
 
-                  {/* Informasi Produk (Rata Tengah + Ikon Keranjang Belanja) */}
+                  {/* Informasi Produk */}
                   <div className="mt-3 w-full flex items-center justify-center gap-2 sm:gap-3 px-2">
                     <h3 className="text-xs sm:text-sm md:text-base font-extrabold text-[#111111] text-center uppercase tracking-tight leading-snug">
                       {name}
@@ -156,7 +271,17 @@ export function ProductsGrid({
         )}
 
         {filteredProducts.length === 0 && (
-          <p className="text-gray-400 text-center py-20">Tidak ada produk dalam kategori ini.</p>
+          <div className="text-center py-20 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200 mt-6">
+            <p className="text-gray-500 font-semibold text-sm sm:text-base">
+              Tidak ada produk yang cocok dengan kategori yang dipilih.
+            </p>
+            <button
+              onClick={clearAllFilters}
+              className="mt-3 inline-block px-5 py-2 bg-[#C8102E] text-white text-xs sm:text-sm font-bold rounded-full hover:bg-[#a60c24] transition-colors cursor-pointer"
+            >
+              Reset Semua Filter
+            </button>
+          </div>
         )}
       </div>
     </div>

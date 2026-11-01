@@ -6,7 +6,9 @@ import type { Recipe } from '@/types/database'
  */
 export async function getHomeRecipes(limit = 6): Promise<Recipe[]> {
   const supabase = await createClient()
-  const { data: recipes } = await supabase
+
+  // Ambil resep pilihan (is_featured = true) terlebih dahulu
+  const { data: featuredRecipes } = await supabase
     .from('recipes')
     .select('*, featured_product:products(*)')
     .eq('status', 'published')
@@ -14,7 +16,30 @@ export async function getHomeRecipes(limit = 6): Promise<Recipe[]> {
     .order('created_at', { ascending: false })
     .limit(limit)
 
-  return (recipes as Recipe[]) || []
+  let list = (featuredRecipes as Recipe[]) || []
+
+  // Jika resep berstatus is_featured kurang dari limit (misal baru ada 1 atau 0),
+  // ambil resep berstatus published lainnya sebagai pelengkap agar carousel tali gantungan polaroid tampil penuh
+  if (list.length < limit) {
+    const existingIds = list.map((r) => r.id)
+    let query = supabase
+      .from('recipes')
+      .select('*, featured_product:products(*)')
+      .eq('status', 'published')
+      .order('created_at', { ascending: false })
+      .limit(limit - list.length)
+
+    if (existingIds.length > 0) {
+      query = query.not('id', 'in', `(${existingIds.join(',')})`)
+    }
+
+    const { data: moreRecipes } = await query
+    if (moreRecipes && moreRecipes.length > 0) {
+      list = [...list, ...(moreRecipes as Recipe[])]
+    }
+  }
+
+  return list
 }
 
 /**

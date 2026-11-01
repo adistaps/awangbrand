@@ -34,20 +34,26 @@ export const dynamic = 'force-dynamic'
 
 export default async function Page() {
   const supabase = await createClient()
-  const { data: products } = await supabase
-    .from('products')
-    .select('id, name, slug, main_image, category:categories(name)')
-    .eq('status', 'published')
-    .order('created_at', { ascending: false })
+
+  const [{ data: products }, { data: categories }] = await Promise.all([
+    supabase
+      .from('products')
+      .select('id, name, slug, main_image, category:categories(name)')
+      .eq('status', 'published')
+      .order('created_at', { ascending: false }),
+
+    supabase
+      .from('categories')
+      .select('id, name, slug, image_url')
+      .order('name', { ascending: true }),
+  ])
 
   return (
     <main className="bg-white font-sans">
-
       {/* ==========================================
           HERO SECTION CUSTOM (RASIO VERTIKAL & SIZES FIXED)
       ========================================== */}
       <section className="relative w-full bg-[#C8102E] text-white pt-28 sm:pt-36 pb-16 sm:pb-24 px-6 sm:px-12 md:px-16 overflow-hidden flex items-center min-h-[600px]">
-
         {/* Ornamen Bintik-Bintik Maroon Padat */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
           <svg className="absolute top-0 right-0 w-full lg:w-1/2 h-full opacity-90" viewBox="0 0 500 500" fill="none">
@@ -124,10 +130,8 @@ export default async function Page() {
         </div>
 
         <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
-
           {/* Kolom Kiri: Gambar Vertikal product.webp (Diperbesar) */}
           <div className="lg:col-span-6 relative flex justify-center items-center order-2 lg:order-1">
-            {/* Mengubah max-w-[480px] menjadi max-w-[620px] dan tingginya menjadi h-[580px] sm:h-[700px] */}
             <div className="relative w-full max-w-[620px] aspect-[3/4] h-[580px] sm:h-[700px]">
               <Image
                 src="/product.webp"
@@ -149,22 +153,30 @@ export default async function Page() {
               Featuring authentic Malay heritage pastes crafted with 100% natural spices for effortless, burst-of-flavour home cooking.
             </p>
           </div>
-
         </div>
       </section>
 
-      {/* PRODUCTS GRID SECTION */}
+      {/* PRODUCTS GRID SECTION WITH CATEGORIES */}
       <section className="py-8 md:py-16 px-3 sm:px-6 lg:px-4 w-full max-w-[1440px] mx-auto bg-white">
         <ProductsGrid
+          categories={(categories || []).map((c) => ({
+            id: c.id,
+            name: c.name,
+            slug: c.slug,
+            image_url: c.image_url,
+          }))}
           products={(products || []).map((p) => ({
             slug: p.slug,
             name: p.name,
-            img: p.main_image || 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800&auto=format&fit=crop',
-            cat: (p.category as unknown as { name: string } | null)?.name?.toUpperCase() || 'PRODUCT',
+            img:
+              p.main_image ||
+              'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800&auto=format&fit=crop',
+            cat:
+              (p.category as unknown as { name: string } | null)?.name?.toUpperCase() ||
+              'PRODUCT',
           }))}
         />
       </section>
-
     </main>
   )
 }

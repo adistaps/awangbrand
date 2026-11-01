@@ -1,12 +1,10 @@
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
-import { FeaturedProductCard } from '@/components/ui/FeaturedProductCard'
-import { getFeaturedProducts } from '@/lib/queries'
+import { FeaturedItemCard } from '@/components/ui/FeaturedItemCard'
+import { getFeaturedItems } from '@/lib/queries/featured'
 
 export async function FeaturedProductsSection() {
-  const products = await getFeaturedProducts(4)
+  const items = await getFeaturedItems(4)
 
-  if (!products || products.length === 0) return null
+  if (!items || items.length === 0) return null
 
   return (
     // KHUSUS MOBILE: Menambahkan max-md:-mb-[1px] untuk menarik section bawahnya sedikit ke atas agar menutupi celah garis tipis
@@ -21,15 +19,13 @@ export async function FeaturedProductsSection() {
           </div>
         </div>
 
-        {/* Grid khusus Featured Products menggunakan FeaturedProductCard dari /components/ui */}
+        {/* Grid Featured: Produk & Resep Campuran */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-          {products.map((p) => (
-            <FeaturedProductCard
-              key={p.id}
-              slug={p.slug}
-              name={p.name}
-              img={p.main_image || 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800&auto=format&fit=crop'}
-              category={(p as any).category?.name || (p as any).category || ''}
+          {items.map((item, i) => (
+            <FeaturedItemCard
+              key={`${item.type}-${item.id}`}
+              item={item}
+              index={i}
             />
           ))}
         </div>

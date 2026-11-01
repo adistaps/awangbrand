@@ -321,38 +321,6 @@ export function ProductForm({
             </div>
           </label>
         </div>
-
-        {/* Checkbox 2: TEMUKAN PILIHANMU (Product Carousel) */}
-        <div className="bg-amber-50/40 p-4 rounded-2xl border border-amber-100">
-          <label className="flex items-start gap-3.5 cursor-pointer select-none">
-            <div className="relative flex items-center justify-center shrink-0 mt-0.5">
-              <input
-                type="checkbox"
-                checked={values.is_carousel}
-                onChange={(e) => setValues((v) => ({ ...v, is_carousel: e.target.checked }))}
-                className="sr-only peer"
-              />
-              <div className="w-5 h-5 rounded-full border-2 border-[#C8102E] bg-white transition-all flex items-center justify-center shadow-xs peer-focus-visible:ring-2 peer-focus-visible:ring-[#C8102E]/30">
-                <Check
-                  size={13}
-                  strokeWidth={3}
-                  className={`text-emerald-600 transition-transform duration-150 ${
-                    values.is_carousel ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
-                  }`}
-                />
-              </div>
-            </div>
-            <div>
-              <span className="text-sm font-semibold text-[#0A1628] flex items-center gap-2">
-                <FontAwesomeIcon icon={faSliders} className="text-amber-600" />
-                Section &ldquo;TEMUKAN PILIHANMU&rdquo; (Product Carousel Pop-out)
-              </span>
-              <span className="text-xs text-gray-500 block mt-0.5">
-                Centang jika produk ini ingin ditampilkan di carousel scroll horizontal homepage.
-              </span>
-            </div>
-          </label>
-        </div>
       </div>
 
       <ImageUploader

@@ -4,8 +4,6 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Pencil, Trash2, ExternalLink, Search, Star, Check, Minus } from 'lucide-react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSliders } from '@fortawesome/free-solid-svg-icons'
 import type { Product, Category } from '@/types/database'
 
 export function ProductsTable({
@@ -75,21 +73,6 @@ export function ProductsTable({
     setBusy(true)
     const supabase = createClient()
     await supabase.from('products').update({ is_featured: !currentFeatured }).eq('id', id)
-    setBusy(false)
-    window.location.reload()
-  }
-
-  async function handleToggleCarousel(id: string, currentCarousel?: boolean) {
-    if (!currentCarousel) {
-      const currentCount = products.filter((p) => p.is_carousel).length
-      if (currentCount >= 8) {
-        alert('Maksimal 8 produk untuk section "TEMUKAN PILIHANMU" (Product Carousel). Silakan nonaktifkan produk lain terlebih dahulu!')
-        return
-      }
-    }
-    setBusy(true)
-    const supabase = createClient()
-    await supabase.from('products').update({ is_carousel: !currentCarousel }).eq('id', id)
     setBusy(false)
     window.location.reload()
   }
@@ -262,54 +245,29 @@ export function ProductsTable({
                       {p.status}
                     </span>
                   </td>
-                  <td className="p-3.5 whitespace-nowrap">
-                    <div className="flex items-center gap-1.5 whitespace-nowrap">
-                      {/* Toggle 1: Taste The Heat */}
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => handleToggleFeatured(p.id, p.is_featured)}
-                        title={
-                          p.is_featured
-                            ? "Keluarkan dari section 'Taste The Heat' (Featured Grid)"
-                            : "Tampilkan di section 'Taste The Heat' (Featured Grid)"
-                        }
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                          p.is_featured
-                            ? 'bg-red-50 border-red-200 text-[#C8102E] hover:bg-red-100 shadow-xs'
-                            : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                        }`}
-                      >
-                        <Star
-                          size={12}
-                          className={p.is_featured ? 'text-[#C8102E] fill-[#C8102E]' : 'text-gray-400'}
-                        />
-                        <span>Taste Heat: {p.is_featured ? 'On' : 'Off'}</span>
-                      </button>
-
-                      {/* Toggle 2: Temukan Pilihanmu Carousel */}
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => handleToggleCarousel(p.id, p.is_carousel)}
-                        title={
-                          p.is_carousel
-                            ? "Keluarkan dari section 'Temukan Pilihanmu' (Carousel Pop-out)"
-                            : "Tampilkan di section 'Temukan Pilihanmu' (Carousel Pop-out)"
-                        }
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer whitespace-nowrap shrink-0 ${
-                          p.is_carousel
-                            ? 'bg-amber-50 border-amber-200 text-amber-800 hover:bg-amber-100 shadow-xs'
-                            : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
-                        }`}
-                      >
-                        <FontAwesomeIcon
-                          icon={faSliders}
-                          className={`text-xs ${p.is_carousel ? 'text-amber-600' : 'text-gray-400'}`}
-                        />
-                        <span>Carousel: {p.is_carousel ? 'On' : 'Off'}</span>
-                      </button>
-                    </div>
+                  <td className="p-3.5 whitespace-nowrap text-center">
+                    {/* Toggle Taste The Heat */}
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => handleToggleFeatured(p.id, p.is_featured)}
+                      title={
+                        p.is_featured
+                          ? "Keluarkan dari section 'Taste The Heat' (Featured Grid)"
+                          : "Tampilkan di section 'Taste The Heat' (Featured Grid)"
+                      }
+                      className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                        p.is_featured
+                          ? 'bg-red-50 border-red-200 text-[#C8102E] hover:bg-red-100 shadow-xs'
+                          : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <Star
+                        size={12}
+                        className={p.is_featured ? 'text-[#C8102E] fill-[#C8102E]' : 'text-gray-400'}
+                      />
+                      <span>Taste Heat: {p.is_featured ? 'On' : 'Off'}</span>
+                    </button>
                   </td>
                   <td className="p-3.5">
                     <div className="flex items-center justify-end gap-1.5">
