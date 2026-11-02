@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
-import { ShoppingCart, Check, X } from 'lucide-react'
+import { ShoppingCart, Check, X, UtensilsCrossed, Flame, ChefHat, Leaf, Sparkles, Star, Apple, Coffee } from 'lucide-react'
 
 export interface CategoryItem {
   id: string
@@ -73,7 +73,7 @@ export function ProductsGrid({
     if (initialCategoryParam && categoryGroups.length > 0) {
       const matched = categoryGroups.find(
         (cg) => cg.slug.toLowerCase() === initialCategoryParam.toLowerCase() ||
-                cg.name.toLowerCase() === initialCategoryParam.toLowerCase()
+          cg.name.toLowerCase() === initialCategoryParam.toLowerCase()
       )
       if (matched) {
         setActiveCategoryTab(matched.id)
@@ -141,6 +141,9 @@ export function ProductsGrid({
   // Active subcategories list to display
   const subcategoriesToDisplay = currentCategoryGroup?.subcategories || []
 
+  // Ikon berotasi untuk tab kategori
+  const TAB_ICONS = [UtensilsCrossed, Flame, ChefHat, Leaf, Sparkles, Star, Apple, Coffee]
+
   return (
     <div className="w-full">
       {/* =========================================================
@@ -148,17 +151,18 @@ export function ProductsGrid({
       ========================================================= */}
       {showFilters && categoryGroups.length > 0 && (
         <div className="w-full mb-10 sm:mb-14">
-          
-          {/* BARIS ATAS: "Filter by" di kiri & TAB KATEGORI di kanan */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200/80 pb-3 mb-8 sm:mb-12">
-            <h2 className="text-xl sm:text-2xl font-black text-[#590014] tracking-tight font-heinz">
+
+          {/* BARIS ATAS: "Filter by" di kiri & TAB KATEGORI sejajar di tengah */}
+          <div className="relative flex flex-col md:flex-row md:items-center pb-3 mb-8 sm:mb-12">
+            <h2 className="text-xl sm:text-2xl font-black text-[#590014] tracking-tight font-heinz shrink-0 md:absolute md:left-0 mb-4 md:mb-0">
               Filter by
             </h2>
 
-            {/* Tab Kategori Utama */}
-            <div className="flex items-center gap-6 sm:gap-10 overflow-x-auto scrollbar-none py-1">
-              {categoryGroups.map((group) => {
+            {/* Tab Kategori Utama sejajar di tengah */}
+            <div className="flex items-center justify-start md:justify-center gap-6 sm:gap-10 overflow-x-auto scrollbar-none py-1 w-full">
+              {categoryGroups.map((group, tabIdx) => {
                 const isActive = activeCategoryTab === group.id
+                const TabIcon = TAB_ICONS[tabIdx % TAB_ICONS.length]
 
                 return (
                   <button
@@ -168,10 +172,10 @@ export function ProductsGrid({
                       setActiveCategoryTab(group.id)
                       // Pertahankan subkategori atau reset jika ingin filter per tab
                     }}
-                    className={`relative pb-3 flex items-center gap-2 text-sm sm:text-base font-bold whitespace-nowrap transition-colors cursor-pointer ${
-                      isActive ? 'text-[#590014]' : 'text-neutral-500 hover:text-[#590014]'
-                    }`}
+                    className={`relative pb-3 flex items-center gap-2 text-sm sm:text-base font-bold whitespace-nowrap transition-colors cursor-pointer ${isActive ? 'text-[#590014]' : 'text-neutral-500 hover:text-[#590014]'
+                      }`}
                   >
+                    <TabIcon size={16} className="shrink-0" />
                     <span>{group.name}</span>
                     {isActive && (
                       <motion.div
@@ -188,7 +192,7 @@ export function ProductsGrid({
           {/* BARIS TENGAH: LINGKARAN MAROON SUBKATEGORI */}
           {subcategoriesToDisplay.length > 0 && (
             <div className="w-full mb-8">
-              <div className="flex items-start justify-center gap-4 sm:gap-8 md:gap-10 overflow-x-auto pb-4 pt-2 px-2 scrollbar-none">
+              <div className="flex items-start justify-center gap-6 sm:gap-10 md:gap-14 overflow-x-auto pb-4 pt-2 px-2 scrollbar-none">
                 {subcategoriesToDisplay.map((sub) => {
                   const isSelected = selectedSubcategories.includes(sub.id)
                   const img =
@@ -200,17 +204,16 @@ export function ProductsGrid({
                       key={sub.id}
                       type="button"
                       onClick={() => toggleSubcategory(sub.id)}
-                      className="group flex flex-col items-center cursor-pointer shrink-0 w-[85px] sm:w-[110px] md:w-[130px] focus:outline-none"
+                      className="group flex flex-col items-center cursor-pointer shrink-0 w-[150px] sm:w-[170px] md:w-[185px] focus:outline-none"
                     >
-                      {/* Lingkaran Luar Maroon (#590014 / Dark Burgundy khas Heinz) */}
+                      {/* Lingkaran Subkategori Besar */}
                       <div
-                        className={`relative w-20 h-20 sm:w-26 sm:h-26 md:w-30 md:h-30 rounded-full p-1 sm:p-1.5 transition-all duration-300 flex items-center justify-center ${
-                          isSelected
-                            ? 'ring-3 ring-[#CC0000] ring-offset-2 ring-offset-[#FAF6ED] scale-105'
-                            : 'group-hover:scale-105'
-                        }`}
+                        className={`relative w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44 rounded-full p-1 sm:p-1.5 transition-all duration-300 flex items-center justify-center ${isSelected
+                          ? 'ring-4 ring-[#CC0000] ring-offset-2 ring-offset-white scale-105'
+                          : 'group-hover:scale-105'
+                          }`}
                       >
-                        <div className="w-full h-full rounded-full bg-[#590014] flex items-center justify-center overflow-hidden relative shadow-md p-2">
+                        <div className="w-full h-full rounded-full bg-[#CC0000] flex items-center justify-center overflow-hidden relative shadow-md p-2">
                           <img
                             src={img}
                             alt={sub.name}
@@ -228,9 +231,8 @@ export function ProductsGrid({
 
                       {/* Label Subkategori */}
                       <span
-                        className={`mt-2.5 text-xs sm:text-sm font-bold tracking-tight text-center leading-tight line-clamp-2 transition-colors ${
-                          isSelected ? 'text-[#590014] font-black' : 'text-[#4A0A1A] group-hover:text-[#CC0000]'
-                        }`}
+                        className={`mt-2.5 text-xs sm:text-sm font-bold tracking-tight text-center leading-tight line-clamp-2 transition-colors ${isSelected ? 'text-[#590014] font-black' : 'text-[#4A0A1A] group-hover:text-[#CC0000]'
+                          }`}
                       >
                         {sub.name}
                       </span>
