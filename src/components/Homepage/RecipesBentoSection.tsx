@@ -1,16 +1,38 @@
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
 import { getHomeRecipes } from '@/lib/queries'
+import { createClient } from '@/lib/supabase/server'
 import PolaroidLineCarousel, { Slide } from '@/components/ui/polaroid-line-carousel'
 
 export async function RecipesBentoSection() {
-  const recipes = await getHomeRecipes(6)
+  const supabase = await createClient()
+
+  const [recipes, { data: titleSetting }, { data: subtitleSetting }] = await Promise.all([
+    getHomeRecipes(6),
+    supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'homepage_cook_good_title')
+      .maybeSingle(),
+    supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'homepage_cook_good_subtitle')
+      .maybeSingle(),
+  ])
 
   if (!recipes || recipes.length === 0) return null
 
+  const title = titleSetting?.value || 'COOK SOMETHING GOOD'
+  const subtitle =
+    subtitleSetting?.value ||
+    'Resep pilihan istimewa yang mudah dibuat di rumah dengan produk AWANG.'
+
   // Transformasi data resep ke format Slide Polaroid
   const recipeSlides: Slide[] = recipes.map((recipe) => ({
-    image: recipe.main_image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop',
+    image:
+      recipe.main_image ||
+      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=800&auto=format&fit=crop',
     title: recipe.title,
     caption: recipe.description || 'Resep lezat otentik dengan pes masakan AWANG.',
     href: `/recipes/${recipe.slug}`,
@@ -19,17 +41,17 @@ export async function RecipesBentoSection() {
   return (
     <section className="bg-[#FAF6ED] py-16 sm:py-20 md:py-24 px-0 w-full overflow-hidden">
       <div className="w-full">
-        {/* Header Section */}
+        {/* Header Section terintegrasi dengan CMS */}
         <div className="text-center mb-6 sm:mb-10 px-4 sm:px-6">
           <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-[#C8102E] uppercase tracking-tight mb-2 font-heinz">
-            COOK SOMETHING GOOD
+            {title}
           </h2>
           <p className="text-sm sm:text-base text-neutral-600 font-medium">
-            Resep pilihan istimewa yang mudah dibuat di rumah dengan produk AWANG.
+            {subtitle}
           </p>
         </div>
 
-        {/* 21st.dev Polaroid Line Carousel - Memenuhi Lebar Section Tanpa Kotak Pembungkus */}
+        {/* 21st.dev Polaroid Line Carousel */}
         <div className="w-full relative">
           <PolaroidLineCarousel
             slides={recipeSlides}

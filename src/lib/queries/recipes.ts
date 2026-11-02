@@ -2,7 +2,9 @@ import { createClient } from '@/lib/supabase/server'
 import type { Recipe } from '@/types/database'
 
 /**
- * Mengambil resep pilihan untuk tampilan Beranda
+ * Mengambil resep pilihan untuk tampilan Beranda "COOK SOMETHING GOOD"
+ * Mengutamakan resep yang bertanda is_featured = true, dan diurutkan
+ * sesuai home_carousel_sort ASC lalu created_at DESC.
  */
 export async function getHomeRecipes(limit = 6): Promise<Recipe[]> {
   const supabase = await createClient()
@@ -13,6 +15,7 @@ export async function getHomeRecipes(limit = 6): Promise<Recipe[]> {
     .select('*, featured_product:products(*)')
     .eq('status', 'published')
     .eq('is_featured', true)
+    .order('home_carousel_sort', { ascending: true })
     .order('created_at', { ascending: false })
     .limit(limit)
 

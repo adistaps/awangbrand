@@ -16,11 +16,13 @@ import {
   UserCircle,
   TrendingUp,
   Wallet,
+  Sparkles,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
+  { href: '/admin/homepage', label: 'Homepage CMS', icon: Sparkles },
   { href: '/admin/cashflow', label: 'Cashflow & Penjualan', icon: Wallet },
   { href: '/admin/products', label: 'Produk', icon: Package },
   { href: '/admin/recipes', label: 'Resep', icon: Tags },

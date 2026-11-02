@@ -1,8 +1,21 @@
 import { FeaturedItemCard } from '@/components/ui/FeaturedItemCard'
 import { getFeaturedItems } from '@/lib/queries/featured'
+import { createClient } from '@/lib/supabase/server'
 
 export async function FeaturedProductsSection() {
-  const items = await getFeaturedItems(4)
+  const supabase = await createClient()
+
+  // Ambil judul kustom dari site_settings jika diubah via CMS
+  const [{ data: titleSetting }, items] = await Promise.all([
+    supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'homepage_taste_the_heat_title')
+      .maybeSingle(),
+    getFeaturedItems(4),
+  ])
+
+  const sectionTitle = titleSetting?.value || 'TASTE THE HEAT'
 
   if (!items || items.length === 0) return null
 
@@ -13,13 +26,13 @@ export async function FeaturedProductsSection() {
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-6 sm:mb-12 gap-4">
           <div>
-            <h2 className="text-2xl sm:text-5xl md:text-6xl font-black text-white uppercase tracking-tight">
-              TASTE THE HEAT
+            <h2 className="text-2xl sm:text-5xl md:text-6xl font-black text-white uppercase tracking-tight font-heinz">
+              {sectionTitle}
             </h2>
           </div>
         </div>
 
-        {/* Grid Featured: Produk & Resep Campuran */}
+        {/* Grid Featured: Produk & Resep Campuran dengan Badge Trending / Favorite */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
           {items.map((item, i) => (
             <FeaturedItemCard

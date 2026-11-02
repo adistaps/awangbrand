@@ -24,10 +24,8 @@ const SLIDES: Slide[] = [
   { type: 'brand', duration: 4500 },
 ]
 
-// Teks slide brand (kosongkan PRE_TEXT / TAGLINE kalau tidak dipakai)
+// Teks slide brand
 const PRE_TEXT = 'FLAVOUR YOU CAN TRUST, ONLY AT'
-const LINE_1 = 'AWANG'
-const LINE_2 = 'BRAND'
 const TAGLINE = 'PREMIUM HALAL, CRAFTED WITH HERITAGE'
 
 function BrandSlide() {
@@ -43,7 +41,7 @@ function BrandSlide() {
         {/* KALIMAT PEMBUKA */}
         {PRE_TEXT && (
           <motion.h2
-            className={`${heinz.className} text-white tracking-wide leading-tight text-balance text-lg sm:text-3xl lg:text-4xl`}
+            className={`${heinz.className} text-white tracking-wide leading-tight text-balance text-lg sm:text-3xl lg:text-4xl mb-6 sm:mb-8`}
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
@@ -52,52 +50,25 @@ function BrandSlide() {
           </motion.h2>
         )}
 
-        {/* AWANG (atas) + BRAND (bawah), keduanya melengkung */}
+        {/* LOGO AWANG BRAND (putih, tanpa shadow) */}
         <motion.div
-          className="w-full"
+          className="w-full flex justify-center"
           initial={{ opacity: 0, y: 80 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
         >
-          <svg
-            viewBox="0 -30 1000 480"
-            className="w-full h-auto max-h-[50vh] overflow-visible"
-            role="img"
-            aria-label={`${LINE_1} ${LINE_2}`}
-          >
-            <defs>
-              <path id="arc-1" d="M 40,230 Q 500,10 960,230" fill="none" />
-              <path id="arc-2" d="M 40,430 Q 500,210 960,430" fill="none" />
-            </defs>
-            <text
-              className={heinz.className}
-              fill="#ffffff"
-              fontSize="190"
-              letterSpacing="4"
-              textAnchor="middle"
-            >
-              <textPath href="#arc-1" startOffset="50%">
-                {LINE_1}
-              </textPath>
-            </text>
-            <text
-              className={heinz.className}
-              fill="#ffffff"
-              fontSize="190"
-              letterSpacing="4"
-              textAnchor="middle"
-            >
-              <textPath href="#arc-2" startOffset="50%">
-                {LINE_2}
-              </textPath>
-            </text>
-          </svg>
+          <img
+            src="/logo.webp"
+            alt="AWANG Brand"
+            className="w-[260px] sm:w-[380px] md:w-[440px] lg:w-[500px] h-auto object-contain brightness-0 invert select-none"
+            draggable={false}
+          />
         </motion.div>
 
         {/* TAGLINE */}
         {TAGLINE && (
           <motion.p
-            className={`${heinz.className} text-white/95 text-balance tracking-[0.12em] sm:tracking-[0.2em] text-[11px] sm:text-xl mt-2 sm:mt-3 px-2`}
+            className={`${heinz.className} text-white/95 text-balance tracking-[0.12em] sm:tracking-[0.2em] text-[11px] sm:text-xl mt-6 sm:mt-8 px-2`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7, ease: 'easeOut' }}

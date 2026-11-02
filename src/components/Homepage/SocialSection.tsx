@@ -4,8 +4,14 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
-// 5 Video TikTok Resmi AWANG Brand
-const tiktokVideos = [
+export interface TikTokVideoItem {
+  id: string
+  url: string
+  title: string
+}
+
+// Fallback 5 Video TikTok Resmi AWANG Brand jika database belum ada
+const defaultTiktokVideos: TikTokVideoItem[] = [
   {
     id: '7611107188828065044',
     url: 'https://www.tiktok.com/@awangbrand_official/video/7611107188828065044',
@@ -42,13 +48,12 @@ function TikTokIcon({ className = 'w-5 h-5' }: { className?: string }) {
   )
 }
 
-// Komponen Card Video TikTok (Hanya merender iframe saat section sudah masuk viewport)
 function TikTokCard({
   item,
   idx,
   shouldRender,
 }: {
-  item: typeof tiktokVideos[0]
+  item: TikTokVideoItem
   idx: number
   shouldRender: boolean
 }) {
@@ -87,7 +92,6 @@ function TikTokCard({
           />
         </>
       ) : (
-        /* Placeholder ringan sebelum user scroll ke section ini */
         <div className="w-full h-full bg-neutral-900/60 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center p-6 text-center space-y-3">
           <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
             <TikTokIcon className="w-6 h-6 text-white/60" />
@@ -112,7 +116,29 @@ function TikTokCard({
   )
 }
 
-export function SocialSection() {
+interface SocialSectionProps {
+  initialVideos?: TikTokVideoItem[]
+  title?: string
+  subtitle?: string
+  accountUrl?: string
+}
+
+export function SocialSection({
+  initialVideos = defaultTiktokVideos,
+  title = 'IKUTI KAMI DI TIKTOK',
+  subtitle = '@awangbrand_official — Inspirasi resep lezat, kreasi masakan & keseruan dapur AWANG',
+  accountUrl = 'https://www.tiktok.com/@awangbrand_official',
+}: SocialSectionProps) {
+  const [videos, setVideos] = useState<TikTokVideoItem[]>(
+    initialVideos && initialVideos.length > 0 ? initialVideos : defaultTiktokVideos
+  )
+
+  useEffect(() => {
+    if (initialVideos && initialVideos.length > 0) {
+      setVideos(initialVideos)
+    }
+  }, [initialVideos])
+
   const [activeDot, setActiveDot] = useState(0)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
@@ -132,7 +158,6 @@ export function SocialSection() {
       const container = scrollContainerRef.current
       const maxScroll = container.scrollWidth - container.clientWidth
       if (maxScroll > 0) {
-        // Cukup 2 state halaman (page 1: video 1-4, page 2: video 5)
         const progress = container.scrollLeft / maxScroll
         const dotIndex = progress > 0.35 ? 1 : 0
         setActiveDot(dotIndex)
@@ -170,18 +195,17 @@ export function SocialSection() {
       className="relative w-full bg-[#C8102E] py-16 sm:py-20 md:py-24 overflow-hidden"
     >
       <div className="w-full max-w-[1400px] mx-auto text-center">
-
-        {/* Header Section */}
+        {/* Header Section terhubung dengan CMS */}
         <div className="flex flex-col items-center justify-center mb-10 px-4 sm:px-6 md:px-12">
           <div className="w-12 h-12 rounded-full bg-[#8B0000] flex items-center justify-center mb-4 shadow-inner">
             <TikTokIcon className="w-5 h-5 text-white" />
           </div>
 
           <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black text-white uppercase tracking-tight leading-none font-heinz">
-            IKUTI KAMI DI TIKTOK
+            {title}
           </h2>
           <p className="text-white/80 text-base sm:text-lg mt-4 font-medium max-w-2xl">
-            @awangbrand_official — Inspirasi resep lezat, kreasi masakan & keseruan dapur AWANG
+            {subtitle}
           </p>
         </div>
 
@@ -192,7 +216,7 @@ export function SocialSection() {
             className="flex items-center gap-4 sm:gap-6 py-4 px-4 sm:px-6 md:px-12 overflow-x-auto scrollbar-hide snap-x snap-mandatory scroll-smooth"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {tiktokVideos.map((item, idx) => (
+            {videos.map((item, idx) => (
               <TikTokCard
                 key={item.id}
                 item={item}
@@ -203,7 +227,7 @@ export function SocialSection() {
           </div>
         </div>
 
-        {/* Dots Navigation (Tampil di Desktop & Mobile) */}
+        {/* Dots Navigation */}
         <div className="flex items-center justify-center gap-2.5 mt-6 mb-2">
           {[0, 1].map((idx) => (
             <button
@@ -212,10 +236,10 @@ export function SocialSection() {
               onClick={() => scrollToSlide(idx)}
               aria-label={`Halaman video ${idx + 1}`}
               className={cn(
-                "rounded-full transition-all duration-300 cursor-pointer",
+                'rounded-full transition-all duration-300 cursor-pointer',
                 activeDot === idx
-                  ? "w-8 h-2.5 bg-white shadow-sm"
-                  : "w-2.5 h-2.5 bg-white/40 hover:bg-white/70"
+                  ? 'w-8 h-2.5 bg-white shadow-sm'
+                  : 'w-2.5 h-2.5 bg-white/40 hover:bg-white/70'
               )}
             />
           ))}
@@ -224,16 +248,15 @@ export function SocialSection() {
         {/* CTA ke Akun TikTok Resmi AWANG */}
         <div className="mt-8 sm:mt-10 px-4 flex justify-center items-center w-full">
           <a
-            href="https://www.tiktok.com/@awangbrand_official"
+            href={accountUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2.5 bg-white text-[#C8102E] font-extrabold text-sm sm:text-base px-6 py-3.5 sm:px-8 sm:py-4 rounded-full hover:bg-white/90 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-md w-auto"
           >
             <TikTokIcon className="w-5 h-5 text-[#C8102E]" />
-            Follow @awangbrand_official
+            Follow {accountUrl.replace('https://www.tiktok.com/', '')}
           </a>
         </div>
-
       </div>
     </section>
   )

@@ -23,6 +23,8 @@ export interface Product {
   allergen_info?: string | null
   how_to_use?: string | null
   is_featured: boolean
+  featured_badge?: 'trending' | 'favorite' | null
+  featured_sort?: number
   is_carousel?: boolean
   status: 'draft' | 'published'
   sort_order?: number
@@ -66,6 +68,9 @@ export interface Recipe {
   tips?: string | null
   featured_product_id?: string | null
   is_featured: boolean
+  featured_badge?: 'trending' | 'favorite' | null
+  featured_sort?: number
+  home_carousel_sort?: number
   status: 'draft' | 'published'
   created_at: string
   updated_at: string
