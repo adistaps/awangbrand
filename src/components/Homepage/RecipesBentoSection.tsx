@@ -40,25 +40,25 @@ export async function RecipesBentoSection() {
       <Link
         key={recipe.id}
         href={`/recipes/${recipe.slug}`}
-        className={`group relative overflow-hidden rounded-[24px] sm:rounded-[30px] block shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${className}`}
+        className={`group relative overflow-hidden rounded-[18px] sm:rounded-[30px] block shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 ${className}`}
       >
         <Image
           src={imageSrc}
           alt={recipe.title}
           fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          sizes="(max-width: 768px) 50vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
         {/* Soft bottom dark gradient overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
 
         {/* Content container */}
-        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 flex items-end justify-between gap-3 z-10">
-          <h3 className="text-white font-extrabold text-base sm:text-lg md:text-xl leading-tight line-clamp-2 drop-shadow-sm">
+        <div className="absolute inset-x-0 bottom-0 p-3 sm:p-5 flex items-end justify-between gap-2 sm:gap-3 z-10">
+          <h3 className="text-white font-extrabold text-xs sm:text-lg md:text-xl leading-snug sm:leading-tight line-clamp-2 drop-shadow-sm">
             {recipe.title}
           </h3>
-          <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full border border-white/60 bg-white/10 backdrop-blur-xs flex items-center justify-center text-white transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:scale-105">
-            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-0.5" />
+          <div className="flex-shrink-0 w-6 h-6 sm:w-10 sm:h-10 rounded-full border border-white/60 bg-white/10 backdrop-blur-xs flex items-center justify-center text-white transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:scale-105">
+            <ChevronRight className="w-3.5 h-3.5 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-0.5" />
           </div>
         </div>
       </Link>
@@ -89,8 +89,25 @@ export async function RecipesBentoSection() {
           </p>
         </div>
 
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+        {/* Bento / Masonry Grid */}
+        {/* Mobile Layout (2 Kolom Masonry) */}
+        <div className="grid grid-cols-2 md:hidden gap-3">
+          {/* Kolom Kiri Mobile: card 0, card 2, card 4 dengan variasi tinggi */}
+          <div className="flex flex-col gap-3">
+            {renderCard(card0, 'h-[230px]')}
+            {renderCard(card2, 'h-[175px]')}
+            {renderCard(card4, 'h-[210px]')}
+          </div>
+          {/* Kolom Kanan Mobile: card 1, card 3, card 5 dengan offset tinggi */}
+          <div className="flex flex-col gap-3">
+            {renderCard(card1, 'h-[185px]')}
+            {renderCard(card3, 'h-[235px]')}
+            {renderCard(card5, 'h-[180px]')}
+          </div>
+        </div>
+
+        {/* Desktop & Tablet Layout (3 Kolom Bento) */}
+        <div className="hidden md:grid md:grid-cols-3 gap-4 sm:gap-5">
           {/* Column 1 (Left): 2 equal stacked cards */}
           <div className="flex flex-col gap-4 sm:gap-5">
             {renderCard(card0, 'h-[240px] sm:h-[280px] md:h-[290px]')}
