@@ -107,26 +107,42 @@ export function RecipesClient({
     <div className="pt-0 pb-20 bg-white font-sans">
 
       {/* TOP BANNER HERO */}
-      <section className="bg-[#CC0000] text-white pt-24 sm:pt-28 pb-8 sm:pb-12 px-6 relative flex flex-col items-center">
-        <div className="max-w-5xl mx-auto text-center space-y-3 sm:space-y-4 relative z-20">
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight uppercase text-white">
-            DISCOVER AUTHENTIC <br className="hidden md:inline" />
-            <span className="md:whitespace-nowrap">FLAVOURS &amp; EASY HOME RECIPES</span>
-          </h1>
-        </div>
+      <section className="bg-[#CC0000] text-white pt-24 sm:pt-28 md:pt-32 pb-14 sm:pb-16 md:pb-20 px-6 sm:px-8 lg:px-12 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 sm:gap-12 lg:gap-16 relative z-10">
 
-        <div className="relative w-full max-w-5xl flex justify-center z-10 px-2 -mt-16 sm:-mt-24 pointer-events-none">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/recipe.webp"
-            alt="Featured Recipe"
-            className="w-full h-auto object-contain max-h-[380px] sm:max-h-[500px] drop-shadow-2xl"
-          />
+          {/* Sisi Kiri: Judul, Deskripsi, dan Tombol CTA */}
+          <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left space-y-5 sm:space-y-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05] text-white font-heinz">
+              Zesty, Garlicky, and Grill-Ready
+            </h1>
+            <p className="text-base sm:text-lg md:text-xl text-white/95 max-w-xl font-medium leading-relaxed">
+              Elevate your dishes with authentic homemade recipes that pack a delicious, flavorful punch.
+            </p>
+            <div className="pt-2">
+              <a
+                href="#recipes-grid"
+                className="inline-flex items-center justify-center bg-[#4A0D18] hover:bg-[#380912] active:scale-95 text-white font-extrabold text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-3.5 rounded-full shadow-lg transition-all duration-300"
+              >
+                Get Recipe
+              </a>
+            </div>
+          </div>
+
+          {/* Sisi Kanan: Gambar Masakan */}
+          <div className="w-full md:w-1/2 flex justify-center md:justify-end items-center relative">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/recipe.webp"
+              alt="Featured Recipe"
+              className="w-full max-w-[460px] sm:max-w-[540px] md:max-w-none md:w-full h-auto object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-105"
+            />
+          </div>
+
         </div>
       </section>
 
       {/* MAIN RECIPES SECTION */}
-      <section className="pt-12 sm:pt-16 pb-16 px-4 sm:px-6 max-w-[1280px] mx-auto w-full relative z-20">
+      <section id="recipes-grid" className="pt-12 sm:pt-16 pb-16 px-4 sm:px-6 max-w-[1280px] mx-auto w-full relative z-20 scroll-mt-12">
 
         {/* =========================================================
             FILTER KATEGORI & SUBKATEGORI (HEINZ STYLE SCREENSHOT)
@@ -189,8 +205,8 @@ export function RecipesClient({
                         {/* Lingkaran Luar Maroon Besar */}
                         <div
                           className={`relative w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44 rounded-full p-1 sm:p-1.5 transition-all duration-300 flex items-center justify-center ${isSelected
-                              ? 'ring-4 ring-[#CC0000] ring-offset-2 ring-offset-white scale-105'
-                              : 'group-hover:scale-105'
+                            ? 'ring-4 ring-[#CC0000] ring-offset-2 ring-offset-white scale-105'
+                            : 'group-hover:scale-105'
                             }`}
                         >
                           <div className="w-full h-full rounded-full bg-[#CC0000] flex items-center justify-center overflow-hidden relative shadow-md p-2">
@@ -345,7 +361,7 @@ export function RecipesClient({
 
                   <div>
                     <span className="inline-flex items-center justify-center bg-white text-[#111111] font-bold px-5 py-2.5 rounded-full text-xs sm:text-sm group-hover:bg-[#CC0000] group-hover:text-white transition-colors duration-300">
-                      Get Recipe
+                      Let's Cook!
                     </span>
                   </div>
                 </div>
