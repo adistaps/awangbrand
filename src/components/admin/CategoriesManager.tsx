@@ -3,17 +3,45 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Trash2, Pencil, Check, X, Image as ImageIcon, Loader2 } from 'lucide-react'
-import type { Category } from '@/types/database'
+import type { CategoryGroup, Subcategory } from '@/types/database'
 
-export function CategoriesManager({ initialCategories }: { initialCategories: Category[] }) {
-  const [categories, setCategories] = useState(initialCategories)
-  const [newName, setNewName] = useState('')
-  const [newImage, setNewImage] = useState<string | null>(null)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editingName, setEditingName] = useState('')
-  const [editingImage, setEditingImage] = useState<string | null>(null)
+// State untuk edit subkategori
+interface EditingSubState {
+  groupId: string
+  subId: string
+  name: string
+  image: string | null
+}
+
+export function CategoriesManager({
+  initialHierarchy = [],
+  settingsKey = 'product_categories_hierarchy',
+  title = 'Kategori',
+}: {
+  initialCategories?: unknown[] // tetap diterima agar tidak breaking, tapi tidak dipakai
+  initialHierarchy?: CategoryGroup[]
+  settingsKey?: string
+  title?: string
+}) {
+  const [hierarchy, setHierarchy] = useState<CategoryGroup[]>(initialHierarchy)
+
+  // State tambah group baru
+  const [newGroupName, setNewGroupName] = useState('')
+
+  // State edit group
+  const [editingGroupId, setEditingGroupId] = useState<string | null>(null)
+  const [editingGroupName, setEditingGroupName] = useState('')
+
+  // State tambah sub
+  const [newSubName, setNewSubName] = useState('')
+  const [newSubImage, setNewSubImage] = useState<string | null>(null)
+  const [selectedGroupIdForSub, setSelectedGroupIdForSub] = useState<string>('')
+
+  // State edit sub
+  const [editingSub, setEditingSub] = useState<EditingSubState | null>(null)
+
   const [saving, setSaving] = useState(false)
-  const [uploadingFor, setUploadingFor] = useState<string | null>(null) // 'new' | category.id
+  const [uploadingFor, setUploadingFor] = useState<string | null>(null)
 
   function slugify(text: string) {
     return text.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-')
@@ -24,7 +52,6 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
     const ext = file.name.split('.').pop()
     const fileName = `category-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
 
-    // Coba upload ke product-images, jika bucket belum dibuat fallback ke product-thumbnails
     let bucket = 'product-images'
     let { error: uploadError } = await supabase.storage
       .from(bucket)
@@ -39,11 +66,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
     }
 
     if (uploadError) {
-      alert(
-        'Upload gagal: ' +
-          uploadError.message +
-          '\n\nPastikan bucket storage "product-images" sudah dibuat di Supabase Storage Dashboard.'
-      )
+      alert('Upload gagal: ' + uploadError.message)
       return null
     }
 
@@ -51,248 +74,150 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
     return publicUrlData.publicUrl
   }
 
-  async function handleAdd() {
-    if (!newName.trim()) return
+  async function saveHierarchy(updated: CategoryGroup[]) {
     setSaving(true)
     const supabase = createClient()
-    const { data, error } = await supabase
-      .from('categories')
-      .insert({
-        name: newName,
-        slug: slugify(newName),
-        image_url: newImage,
-      })
-      .select()
-      .single()
-    if (!error && data) {
-      setCategories((c) => [...c, data].sort((a, b) => a.name.localeCompare(b.name)))
-      setNewName('')
-      setNewImage(null)
-    } else if (error) {
-      alert('Gagal menambah kategori: ' + error.message)
-    }
-    setSaving(false)
-  }
-
-  async function handleUpdate(id: string) {
-    if (!editingName.trim()) return
-    setSaving(true)
-    const supabase = createClient()
-    const { error } = await supabase
-      .from('categories')
-      .update({
-        name: editingName,
-        slug: slugify(editingName),
-        image_url: editingImage,
-      })
-      .eq('id', id)
-
+    const { error } = await supabase.from('site_settings').upsert({
+      key: settingsKey,
+      value: JSON.stringify(updated),
+      updated_at: new Date().toISOString(),
+    })
     if (!error) {
-      setCategories((c) =>
-        c.map((cat) =>
-          cat.id === id
-            ? { ...cat, name: editingName, slug: slugify(editingName), image_url: editingImage }
-            : cat
-        )
-      )
-      setEditingId(null)
+      setHierarchy(updated)
     } else {
-      alert('Gagal update kategori: ' + error.message)
+      alert('Gagal menyimpan: ' + error.message)
     }
     setSaving(false)
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm('Hapus kategori ini? Produk terkait tidak akan terhapus, hanya kehilangan kategori.'))
-      return
-    const supabase = createClient()
-    await supabase.from('categories').delete().eq('id', id)
-    setCategories((c) => c.filter((cat) => cat.id !== id))
+  // ── GROUP ACTIONS ──────────────────────────────────────────
+
+  function handleAddGroup() {
+    if (!newGroupName.trim()) return
+    const newGroup: CategoryGroup = {
+      id: `cat-${slugify(newGroupName)}-${Date.now()}`,
+      name: newGroupName.trim(),
+      slug: slugify(newGroupName),
+      subcategories: [],
+    }
+    saveHierarchy([...hierarchy, newGroup])
+    setNewGroupName('')
+  }
+
+  function handleSaveGroupName(groupId: string) {
+    if (!editingGroupName.trim()) return
+    const updated = hierarchy.map((g) =>
+      g.id === groupId ? { ...g, name: editingGroupName.trim() } : g
+    )
+    saveHierarchy(updated)
+    setEditingGroupId(null)
+  }
+
+  function handleDeleteGroup(groupId: string) {
+    if (!confirm('Hapus kategori ini beserta semua subkategorinya?')) return
+    saveHierarchy(hierarchy.filter((g) => g.id !== groupId))
+  }
+
+  // ── SUBCATEGORY ACTIONS ────────────────────────────────────
+
+  function handleAddSubcategory(groupId: string) {
+    if (!newSubName.trim()) return
+    const newSub: Subcategory = {
+      id: `sub-${slugify(newSubName)}-${Date.now()}`,
+      name: newSubName.trim(),
+      slug: slugify(newSubName),
+      image_url: selectedGroupIdForSub === groupId ? newSubImage : null,
+    }
+    const updated = hierarchy.map((g) =>
+      g.id === groupId ? { ...g, subcategories: [...g.subcategories, newSub] } : g
+    )
+    saveHierarchy(updated)
+    setNewSubName('')
+    setNewSubImage(null)
+    setSelectedGroupIdForSub('')
+  }
+
+  function handleSaveSubcategory() {
+    if (!editingSub || !editingSub.name.trim()) return
+    const updated = hierarchy.map((g) => {
+      if (g.id !== editingSub.groupId) return g
+      return {
+        ...g,
+        subcategories: g.subcategories.map((s) =>
+          s.id === editingSub.subId
+            ? { ...s, name: editingSub.name.trim(), image_url: editingSub.image }
+            : s
+        ),
+      }
+    })
+    saveHierarchy(updated)
+    setEditingSub(null)
+  }
+
+  function handleDeleteSubcategory(groupId: string, subId: string) {
+    if (!confirm('Hapus subkategori ini?')) return
+    const updated = hierarchy.map((g) =>
+      g.id === groupId
+        ? { ...g, subcategories: g.subcategories.filter((s) => s.id !== subId) }
+        : g
+    )
+    saveHierarchy(updated)
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-xs border border-gray-100 p-5 sm:p-6 max-w-2xl">
-      {/* Form Tambah Kategori Baru */}
-      <div className="border border-gray-200 rounded-2xl p-4 mb-6 bg-gray-50/50">
-        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">
-          Tambah Kategori Baru
+    <div className="space-y-6 max-w-3xl">
+
+      {/* ── TAMBAH KATEGORI PARENT BARU ── */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs">
+        <h3 className="text-xs font-bold text-[#590014] uppercase tracking-wider mb-3">
+          + Tambah {title} Baru
         </h3>
-
-        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center mb-3">
-          {/* Upload / Preview Foto */}
-          <div className="relative shrink-0">
-            {newImage ? (
-              <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-gray-200 group bg-white">
-                <img src={newImage} alt="Preview" className="w-full h-full object-contain p-1" />
-                <button
-                  type="button"
-                  onClick={() => setNewImage(null)}
-                  className="absolute inset-0 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  title="Hapus foto"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            ) : (
-              <label
-                className={`w-16 h-16 rounded-xl border-2 border-dashed border-gray-300 hover:border-[#C8102E] bg-white flex flex-col items-center justify-center cursor-pointer transition-colors ${
-                  uploadingFor === 'new' ? 'opacity-50 pointer-events-none' : ''
-                }`}
-                title="Pilih Foto Kategori (PNG Transparan / Foto Produk)"
-              >
-                {uploadingFor === 'new' ? (
-                  <Loader2 size={16} className="animate-spin text-gray-400" />
-                ) : (
-                  <>
-                    <ImageIcon size={18} className="text-gray-400 mb-0.5" />
-                    <span className="text-[9px] font-bold text-gray-400">Foto</span>
-                  </>
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={async (e) => {
-                    const f = e.target.files?.[0]
-                    if (!f) return
-                    setUploadingFor('new')
-                    const url = await uploadImageFile(f)
-                    if (url) setNewImage(url)
-                    setUploadingFor(null)
-                  }}
-                />
-              </label>
-            )}
-          </div>
-
-          <div className="flex-1 w-full flex flex-col sm:flex-row gap-2">
-            <input
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              placeholder="Nama kategori baru (contoh: Pes Ramuan Asas)..."
-              className="flex-1 px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] transition-colors bg-white"
-              onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-            />
-            <button
-              onClick={handleAdd}
-              disabled={saving || !newName.trim()}
-              className="inline-flex items-center justify-center gap-1.5 bg-[#C8102E] hover:bg-[#a00b22] text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 disabled:opacity-50 cursor-pointer shrink-0"
-            >
-              <Plus size={16} /> Tambah
-            </button>
-          </div>
-        </div>
-        <p className="text-[11px] text-gray-400">
-          💡 Foto kategori akan ditampilkan di carousel <strong>&quot;TEMUKAN PILIHANMU&quot;</strong> beranda dan sebagai filter foto di katalog produk. Gunakan gambar berformat PNG transparan untuk hasil terbaik.
+        <p className="text-xs text-gray-400 mb-3">
+          Kelola tab kategori utama dan subkategorinya yang dapat diberi foto untuk icon filter.
         </p>
+        <div className="flex gap-2">
+          <input
+            value={newGroupName}
+            onChange={(e) => setNewGroupName(e.target.value)}
+            placeholder={`Nama ${title.toLowerCase()} baru...`}
+            className="flex-1 px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000] bg-white"
+            onKeyDown={(e) => e.key === 'Enter' && handleAddGroup()}
+          />
+          <button
+            onClick={handleAddGroup}
+            disabled={saving || !newGroupName.trim()}
+            className="bg-[#CC0000] hover:bg-[#a00b22] text-white text-sm font-bold px-5 py-2.5 rounded-xl transition-all disabled:opacity-50 cursor-pointer shrink-0"
+          >
+            {saving ? <Loader2 size={16} className="animate-spin" /> : 'Tambah'}
+          </button>
+        </div>
       </div>
 
-      {/* Daftar Kategori */}
-      <div className="space-y-2.5">
-        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-          Daftar Kategori ({categories.length})
-        </h3>
+      {/* ── LIST KATEGORI & SUBKATEGORI ── */}
+      <div className="space-y-5">
+        {hierarchy.length === 0 && (
+          <p className="text-sm text-gray-400 text-center py-10 bg-white rounded-2xl border border-gray-200">
+            Belum ada kategori. Tambahkan kategori di atas.
+          </p>
+        )}
 
-        {categories.map((cat) => {
-          const isEditing = editingId === cat.id
+        {hierarchy.map((group) => (
+          <div key={group.id} className="bg-white rounded-2xl border border-gray-200 p-5 shadow-xs">
 
-          return (
-            <div
-              key={cat.id}
-              className={`flex items-center justify-between border rounded-xl p-3 transition-colors ${
-                isEditing ? 'border-[#C8102E] bg-red-50/20' : 'border-gray-100 bg-gray-50/40 hover:bg-gray-50'
-              }`}
-            >
-              {/* Sisi Kiri: Foto + Nama */}
-              <div className="flex items-center gap-3 flex-1 min-w-0 mr-3">
-                {/* Thumbnail / Upload Foto Kategori */}
-                {isEditing ? (
-                  <div className="relative shrink-0">
-                    {editingImage ? (
-                      <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-gray-200 group bg-white">
-                        <img
-                          src={editingImage}
-                          alt="Category preview"
-                          className="w-full h-full object-contain p-0.5"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setEditingImage(null)}
-                          className="absolute inset-0 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X size={12} />
-                        </button>
-                      </div>
-                    ) : (
-                      <label
-                        className={`w-12 h-12 rounded-xl border-2 border-dashed border-gray-300 hover:border-[#C8102E] bg-white flex flex-col items-center justify-center cursor-pointer transition-colors ${
-                          uploadingFor === cat.id ? 'opacity-50 pointer-events-none' : ''
-                        }`}
-                        title="Upload foto kategori"
-                      >
-                        {uploadingFor === cat.id ? (
-                          <Loader2 size={14} className="animate-spin text-gray-400" />
-                        ) : (
-                          <ImageIcon size={16} className="text-gray-400" />
-                        )}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={async (e) => {
-                            const f = e.target.files?.[0]
-                            if (!f) return
-                            setUploadingFor(cat.id)
-                            const url = await uploadImageFile(f)
-                            if (url) setEditingImage(url)
-                            setUploadingFor(null)
-                          }}
-                        />
-                      </label>
-                    )}
-                  </div>
-                ) : (
-                  <div className="w-12 h-12 rounded-xl bg-white border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
-                    {cat.image_url ? (
-                      <img
-                        src={cat.image_url}
-                        alt={cat.name}
-                        className="w-full h-full object-contain p-1"
-                      />
-                    ) : (
-                      <ImageIcon size={18} className="text-gray-300" />
-                    )}
-                  </div>
-                )}
-
-                {/* Input atau Label Nama */}
-                <div className="flex-1 min-w-0">
-                  {isEditing ? (
-                    <input
-                      value={editingName}
-                      onChange={(e) => setEditingName(e.target.value)}
-                      className="w-full px-3 py-1.5 border border-[#C8102E] rounded-lg text-sm focus:outline-none bg-white font-semibold"
-                      autoFocus
-                    />
-                  ) : (
-                    <div>
-                      <span className="text-sm font-bold text-[#0A1628] block truncate">
-                        {cat.name}
-                      </span>
-                      <span className="text-[11px] text-gray-400 block truncate">
-                        /{cat.slug} {cat.image_url ? '· Ada foto' : '· Tanpa foto'}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Sisi Kanan: Action Buttons */}
-              <div className="flex items-center gap-1.5 shrink-0">
-                {isEditing ? (
+            {/* Header Kategori */}
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+              <div className="flex items-center gap-2 flex-1 min-w-0 mr-3">
+                {editingGroupId === group.id ? (
                   <>
+                    <input
+                      value={editingGroupName}
+                      onChange={(e) => setEditingGroupName(e.target.value)}
+                      className="flex-1 px-3 py-1.5 border border-[#CC0000] rounded-lg text-sm font-bold focus:outline-none"
+                      autoFocus
+                      onKeyDown={(e) => e.key === 'Enter' && handleSaveGroupName(group.id)}
+                    />
                     <button
-                      onClick={() => handleUpdate(cat.id)}
+                      onClick={() => handleSaveGroupName(group.id)}
                       disabled={saving}
                       className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
                       title="Simpan"
@@ -300,7 +225,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
                       <Check size={16} />
                     </button>
                     <button
-                      onClick={() => setEditingId(null)}
+                      onClick={() => setEditingGroupId(null)}
                       className="p-1.5 text-gray-400 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
                       title="Batal"
                     >
@@ -309,35 +234,238 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
                   </>
                 ) : (
                   <>
+                    <div>
+                      <h4 className="text-base font-extrabold text-[#590014]">{group.name}</h4>
+                      <span className="text-[11px] text-gray-400 font-mono">ID: {group.id}</span>
+                    </div>
                     <button
                       onClick={() => {
-                        setEditingId(cat.id)
-                        setEditingName(cat.name)
-                        setEditingImage(cat.image_url || null)
+                        setEditingGroupId(group.id)
+                        setEditingGroupName(group.name)
                       }}
-                      className="p-1.5 text-gray-400 hover:text-[#C8102E] hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                      title="Edit Nama / Foto"
+                      className="p-1.5 text-gray-400 hover:text-[#CC0000] hover:bg-red-50 rounded-lg transition-colors cursor-pointer ml-1"
+                      title="Edit nama kategori"
                     >
                       <Pencil size={14} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(cat.id)}
-                      className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
-                      title="Hapus Kategori"
-                    >
-                      <Trash2 size={14} />
                     </button>
                   </>
                 )}
               </div>
+              <button
+                onClick={() => handleDeleteGroup(group.id)}
+                className="p-1.5 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer shrink-0"
+                title="Hapus Kategori"
+              >
+                <Trash2 size={16} />
+              </button>
             </div>
-          )
-        })}
 
-        {categories.length === 0 && (
-          <p className="text-sm text-gray-400 text-center py-8">Belum ada kategori.</p>
-        )}
+            {/* Subkategori List */}
+            <div className="mb-4">
+              <h5 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2.5">
+                Subkategori ({group.subcategories.length})
+              </h5>
+
+              {group.subcategories.length === 0 ? (
+                <p className="text-xs text-gray-400 italic py-2">Belum ada subkategori.</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {group.subcategories.map((sub) => {
+                    const isEditingSub = editingSub?.groupId === group.id && editingSub?.subId === sub.id
+                    return (
+                      <div
+                        key={sub.id}
+                        className={`flex items-center gap-2 p-2.5 rounded-xl border transition-colors ${
+                          isEditingSub
+                            ? 'border-[#CC0000] bg-red-50/30'
+                            : 'border-gray-100 bg-stone-50/50 hover:bg-stone-50'
+                        }`}
+                      >
+                        {/* Foto subkategori */}
+                        {isEditingSub ? (
+                          <div className="relative shrink-0">
+                            {editingSub.image ? (
+                              <div className="relative w-9 h-9 rounded-full overflow-hidden border border-gray-200 bg-[#590014] p-1 group">
+                                <img src={editingSub.image} alt="" className="w-full h-full object-contain" />
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingSub((s) => s ? { ...s, image: null } : null)}
+                                  className="absolute inset-0 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <X size={10} />
+                                </button>
+                              </div>
+                            ) : (
+                              <label
+                                className="w-9 h-9 rounded-full border-2 border-dashed border-gray-300 hover:border-[#CC0000] bg-white flex items-center justify-center cursor-pointer transition-colors"
+                                title="Upload foto"
+                              >
+                                {uploadingFor === `edit-sub-${sub.id}` ? (
+                                  <Loader2 size={12} className="animate-spin text-gray-400" />
+                                ) : (
+                                  <ImageIcon size={12} className="text-gray-400" />
+                                )}
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={async (e) => {
+                                    const f = e.target.files?.[0]
+                                    if (!f) return
+                                    setUploadingFor(`edit-sub-${sub.id}`)
+                                    const url = await uploadImageFile(f)
+                                    if (url) setEditingSub((s) => s ? { ...s, image: url } : null)
+                                    setUploadingFor(null)
+                                  }}
+                                />
+                              </label>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="w-9 h-9 rounded-full bg-[#590014] p-1 flex items-center justify-center shrink-0 overflow-hidden">
+                            {sub.image_url ? (
+                              <img src={sub.image_url} alt={sub.name} className="w-full h-full object-contain" />
+                            ) : (
+                              <span className="text-[9px] text-white font-bold">AW</span>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Nama sub */}
+                        <div className="flex-1 min-w-0">
+                          {isEditingSub ? (
+                            <input
+                              value={editingSub.name}
+                              onChange={(e) => setEditingSub((s) => s ? { ...s, name: e.target.value } : null)}
+                              className="w-full px-2 py-1 border border-[#CC0000] rounded-lg text-xs font-bold focus:outline-none"
+                              autoFocus
+                              onKeyDown={(e) => e.key === 'Enter' && handleSaveSubcategory()}
+                            />
+                          ) : (
+                            <span className="text-xs font-bold text-stone-900 truncate block">{sub.name}</span>
+                          )}
+                        </div>
+
+                        {/* Action buttons */}
+                        <div className="flex items-center gap-1 shrink-0">
+                          {isEditingSub ? (
+                            <>
+                              <button
+                                onClick={handleSaveSubcategory}
+                                disabled={saving}
+                                className="p-1 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                                title="Simpan"
+                              >
+                                <Check size={14} />
+                              </button>
+                              <button
+                                onClick={() => setEditingSub(null)}
+                                className="p-1 text-gray-400 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                                title="Batal"
+                              >
+                                <X size={14} />
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => setEditingSub({
+                                  groupId: group.id,
+                                  subId: sub.id,
+                                  name: sub.name,
+                                  image: sub.image_url || null,
+                                })}
+                                className="p-1 text-gray-400 hover:text-[#CC0000] hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                title="Edit subkategori"
+                              >
+                                <Pencil size={12} />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteSubcategory(group.id, sub.id)}
+                                className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                                title="Hapus"
+                              >
+                                <X size={14} />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Tambah Subkategori Baru */}
+            <div className="pt-3 border-t border-gray-100 flex flex-col sm:flex-row items-center gap-2">
+              {/* Upload foto subkategori baru */}
+              <div className="relative shrink-0">
+                {selectedGroupIdForSub === group.id && newSubImage ? (
+                  <div className="relative w-9 h-9 rounded-full overflow-hidden border border-gray-200 bg-[#590014] p-1 group">
+                    <img src={newSubImage} alt="Preview" className="w-full h-full object-contain" />
+                    <button
+                      type="button"
+                      onClick={() => setNewSubImage(null)}
+                      className="absolute inset-0 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X size={10} />
+                    </button>
+                  </div>
+                ) : (
+                  <label
+                    className="w-9 h-9 rounded-full border-2 border-dashed border-gray-300 hover:border-[#CC0000] bg-white flex items-center justify-center cursor-pointer transition-colors"
+                    title="Upload foto subkategori"
+                  >
+                    {uploadingFor === `sub-${group.id}` ? (
+                      <Loader2 size={12} className="animate-spin text-gray-400" />
+                    ) : (
+                      <ImageIcon size={12} className="text-gray-400" />
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const f = e.target.files?.[0]
+                        if (!f) return
+                        setUploadingFor(`sub-${group.id}`)
+                        setSelectedGroupIdForSub(group.id)
+                        const url = await uploadImageFile(f)
+                        if (url) setNewSubImage(url)
+                        setUploadingFor(null)
+                      }}
+                    />
+                  </label>
+                )}
+              </div>
+
+              <input
+                value={selectedGroupIdForSub === group.id ? newSubName : ''}
+                onChange={(e) => {
+                  setSelectedGroupIdForSub(group.id)
+                  setNewSubName(e.target.value)
+                }}
+                placeholder={`Tambah subkategori ke ${group.name}...`}
+                className="flex-1 w-full px-3 py-1.5 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#CC0000] bg-white"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleAddSubcategory(group.id)
+                }}
+              />
+              <button
+                onClick={() => handleAddSubcategory(group.id)}
+                disabled={saving || selectedGroupIdForSub !== group.id || !newSubName.trim()}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1 bg-[#590014] hover:bg-[#3d000e] text-white text-xs font-bold px-3 py-1.5 rounded-xl transition-all disabled:opacity-50 cursor-pointer shrink-0"
+              >
+                <Plus size={13} />
+                <span>Tambah Sub</span>
+              </button>
+            </div>
+
+          </div>
+        ))}
       </div>
+
     </div>
   )
 }

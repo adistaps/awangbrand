@@ -58,7 +58,7 @@ export function SubmissionsTable({
         <span className="text-xs text-gray-400 font-medium">{items.length} data ditemukan</span>
         <button
           onClick={exportCsv}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-700 hover:text-[#C8102E] border border-gray-200 hover:border-red-200 px-3.5 py-2 rounded-xl transition-all cursor-pointer bg-white shadow-xs"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-700 hover:text-[#CC0000] border border-gray-200 hover:border-red-200 px-3.5 py-2 rounded-xl transition-all cursor-pointer bg-white shadow-xs"
         >
           <Download size={13} /> Export CSV
         </button>
@@ -91,7 +91,7 @@ export function SubmissionsTable({
                     onChange={(e) => updateStatus(row.id, e.target.value as 'new' | 'contacted' | 'closed')}
                     className={`text-[11px] font-bold px-2.5 py-1 rounded-full border-0 focus:outline-none cursor-pointer ${
                       row.status === 'new'
-                        ? 'bg-red-50 text-[#C8102E] border border-red-200/60'
+                        ? 'bg-red-50 text-[#CC0000] border border-red-200/60'
                         : row.status === 'contacted'
                         ? 'bg-amber-50 text-amber-700 border border-amber-200/60'
                         : 'bg-gray-100 text-gray-600'

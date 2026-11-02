@@ -105,9 +105,9 @@ export default async function AdminDashboardPage() {
       value: totalProducts || 0,
       sublabel: `${publishedProducts || 0} tayang`,
       icon: Package,
-      gradient: 'from-[#C8102E] to-[#a00b22]',
+      gradient: 'from-[#CC0000] to-[#a00b22]',
       bg: 'bg-red-50',
-      textColor: 'text-[#C8102E]',
+      textColor: 'text-[#CC0000]',
     },
     {
       label: 'Featured Homepage',
@@ -172,7 +172,7 @@ export default async function AdminDashboardPage() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0A1628] tracking-tight">Dashboard</h1>
           <p className="text-xs sm:text-sm text-gray-400 mt-1 flex items-center gap-1.5">
-            <Activity size={13} className="text-[#C8102E]" />
+            <Activity size={13} className="text-[#CC0000]" />
             Ringkasan omzet penjualan, produk & aktivitas AWANG Brand
           </p>
         </div>
@@ -181,12 +181,12 @@ export default async function AdminDashboardPage() {
             href="/admin/cashflow"
             className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-[#0A1628] border border-gray-200 text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 shrink-0"
           >
-            <Wallet size={15} className="text-[#C8102E]" />
+            <Wallet size={15} className="text-[#CC0000]" />
             <span>Lihat Cashflow</span>
           </Link>
           <Link
             href="/admin/products/new"
-            className="inline-flex items-center justify-center gap-2 bg-[#C8102E] hover:bg-[#a00b22] !text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 shrink-0"
+            className="inline-flex items-center justify-center gap-2 bg-[#CC0000] hover:bg-[#a00b22] !text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 shrink-0"
           >
             <Plus size={16} className="!text-white text-white" />
             <span className="!text-white text-white">Tambah Produk</span>
@@ -216,14 +216,14 @@ export default async function AdminDashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
           <div>
             <h2 className="font-bold text-[#0A1628] text-base flex items-center gap-2">
-              <Wallet size={17} className="text-[#C8102E]" />
+              <Wallet size={17} className="text-[#CC0000]" />
               Penjualan & Cashflow Terkini
             </h2>
             <p className="text-xs text-gray-400 mt-0.5">Transaksi masuk dari toko offline, ritel modern, dan kanal penjualan</p>
           </div>
           <Link
             href="/admin/cashflow"
-            className="text-xs font-bold text-[#C8102E] hover:underline flex items-center gap-1 self-start sm:self-auto"
+            className="text-xs font-bold text-[#CC0000] hover:underline flex items-center gap-1 self-start sm:self-auto"
           >
             Buka Manajemen Cashflow <ArrowRight size={13} />
           </Link>
@@ -235,7 +235,7 @@ export default async function AdminDashboardPage() {
             <p className="text-xs text-gray-400">Belum ada catatan penjualan cashflow.</p>
             <Link
               href="/admin/cashflow"
-              className="inline-block mt-2 text-xs font-bold text-[#C8102E] hover:underline"
+              className="inline-block mt-2 text-xs font-bold text-[#CC0000] hover:underline"
             >
               + Catat Penjualan Sekarang
             </Link>
@@ -297,7 +297,7 @@ export default async function AdminDashboardPage() {
                 className="flex items-center justify-between p-3.5 rounded-xl bg-gray-50 hover:bg-red-50 hover:border-red-100 border border-transparent transition-all group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#C8102E]/10 text-[#C8102E] flex items-center justify-center group-hover:bg-[#C8102E] group-hover:text-white transition-all">
+                  <div className="w-8 h-8 rounded-lg bg-[#CC0000]/10 text-[#CC0000] flex items-center justify-center group-hover:bg-[#CC0000] group-hover:text-white transition-all">
                     <Icon size={14} />
                   </div>
                   <div>
@@ -305,7 +305,7 @@ export default async function AdminDashboardPage() {
                     <p className="text-[11px] text-gray-400">{description}</p>
                   </div>
                 </div>
-                <ArrowRight size={14} className="text-gray-300 group-hover:text-[#C8102E] transition-colors" />
+                <ArrowRight size={14} className="text-gray-300 group-hover:text-[#CC0000] transition-colors" />
               </Link>
             ))}
           </div>
@@ -318,7 +318,7 @@ export default async function AdminDashboardPage() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-bold text-[#0A1628] text-base">Quote Terbaru</h2>
-            <Link href="/admin/quote-submissions" className="text-[11px] font-semibold text-[#C8102E] hover:underline flex items-center gap-1">
+            <Link href="/admin/quote-submissions" className="text-[11px] font-semibold text-[#CC0000] hover:underline flex items-center gap-1">
               Lihat Semua <ArrowRight size={11} />
             </Link>
           </div>
@@ -338,7 +338,7 @@ export default async function AdminDashboardPage() {
                 <span
                   className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
                     q.status === 'new'
-                      ? 'bg-red-100 text-[#C8102E]'
+                      ? 'bg-red-100 text-[#CC0000]'
                       : 'bg-gray-100 text-gray-500'
                   }`}
                 >
@@ -353,7 +353,7 @@ export default async function AdminDashboardPage() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-5">
             <h2 className="font-bold text-[#0A1628] text-base">Pesan Kontak Terbaru</h2>
-            <Link href="/admin/contact-submissions" className="text-[11px] font-semibold text-[#C8102E] hover:underline flex items-center gap-1">
+            <Link href="/admin/contact-submissions" className="text-[11px] font-semibold text-[#CC0000] hover:underline flex items-center gap-1">
               Lihat Semua <ArrowRight size={11} />
             </Link>
           </div>
@@ -373,7 +373,7 @@ export default async function AdminDashboardPage() {
                 <span
                   className={`text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0 ${
                     c.status === 'new'
-                      ? 'bg-red-100 text-[#C8102E]'
+                      ? 'bg-red-100 text-[#CC0000]'
                       : 'bg-gray-100 text-gray-500'
                   }`}
                 >

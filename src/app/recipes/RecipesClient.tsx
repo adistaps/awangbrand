@@ -1,14 +1,36 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
+import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
-import { Recipe } from '@/types/database'
-import { ChevronRight, Utensils } from 'lucide-react'
+import { Recipe, CategoryGroup } from '@/types/database'
+import { Utensils, Check, X, Clock, Users, Flame } from 'lucide-react'
 
-export function RecipesClient() {
+export function RecipesClient({
+  initialCategoryGroups = [],
+}: {
+  initialCategoryGroups?: CategoryGroup[]
+}) {
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(true)
+
+  const categoryGroups = initialCategoryGroups
+
+  // Active category tab
+  const [activeCategoryTab, setActiveCategoryTab] = useState<string>(() => {
+    return categoryGroups[0]?.id || ''
+  })
+
+  // Selected subcategories (multi-select)
+  const [selectedSubcategories, setSelectedSubcategories] = useState<string[]>([])
+  const [visibleCount, setVisibleCount] = useState<number>(12)
+
+  useEffect(() => {
+    if (categoryGroups.length > 0 && !activeCategoryTab) {
+      setActiveCategoryTab(categoryGroups[0].id)
+    }
+  }, [categoryGroups, activeCategoryTab])
 
   useEffect(() => {
     async function loadRecipes() {
@@ -32,52 +54,69 @@ export function RecipesClient() {
     loadRecipes()
   }, [])
 
-  const fallbackRecipes: Partial<Recipe>[] = [
-    {
-      id: 'r1',
-      title: 'Air Fryer Hawaiian Chicken Tacos',
-      slug: 'air-fryer-hawaiian-chicken-tacos',
-      category: 'Main Course',
-      main_image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=800&q=80',
-    },
-    {
-      id: 'r2',
-      title: 'Bang Bang Coconut Shrimp',
-      slug: 'bang-bang-coconut-shrimp',
-      category: 'Appetizer',
-      main_image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80',
-    },
-    {
-      id: 'r3',
-      title: 'Black-eyed Pea Jambalaya',
-      slug: 'black-eyed-pea-jambalaya',
-      category: 'Main Course',
-      main_image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80',
-    },
-    {
-      id: 'r4',
-      title: 'Bourbon Glazed Chicken Skillet',
-      slug: 'bourbon-chicken-skillet',
-      category: 'Main Course',
-      main_image: 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&w=800&q=80',
-    }
-  ]
+  // Toggle subkategori
+  function toggleSubcategory(subId: string) {
+    setSelectedSubcategories((prev) =>
+      prev.includes(subId) ? prev.filter((id) => id !== subId) : [...prev, subId]
+    )
+    setVisibleCount(12)
+  }
 
-  const displayList = recipes.length > 0 ? recipes : (fallbackRecipes as Recipe[])
+  function clearAllFilters() {
+    setSelectedSubcategories([])
+    setVisibleCount(12)
+  }
+
+  // Active category group object
+  const currentCategoryGroup = useMemo(() => {
+    return categoryGroups.find((cg) => cg.id === activeCategoryTab) || categoryGroups[0]
+  }, [categoryGroups, activeCategoryTab])
+
+  // Filter resep berdasarkan tab & subkategori terpilih
+  const filteredRecipes = useMemo(() => {
+    return recipes.filter((r) => {
+      // 1. Cek tab category (jika resep punya category_ids)
+      if (activeCategoryTab && r.category_ids && r.category_ids.length > 0) {
+        if (!r.category_ids.includes(activeCategoryTab)) {
+          return false
+        }
+      }
+
+      // 2. Cek subcategories (multi-select)
+      if (selectedSubcategories.length > 0) {
+        if (!r.subcategory_ids || r.subcategory_ids.length === 0) {
+          return false
+        }
+        const hasMatch = selectedSubcategories.some((subId) =>
+          r.subcategory_ids?.includes(subId)
+        )
+        if (!hasMatch) return false
+      }
+
+      return true
+    })
+  }, [recipes, activeCategoryTab, selectedSubcategories])
+
+  const displayedRecipes = useMemo(() => {
+    return filteredRecipes.slice(0, visibleCount)
+  }, [filteredRecipes, visibleCount])
+
+  const subcategoriesToDisplay = currentCategoryGroup?.subcategories || []
 
   return (
     <div className="pt-0 pb-20 bg-white font-sans">
 
       {/* TOP BANNER HERO */}
-      <section className="bg-[#C8102E] text-white pt-24 sm:pt-28 pb-8 sm:pb-12 px-6 relative flex flex-col items-center">
+      <section className="bg-[#CC0000] text-white pt-24 sm:pt-28 pb-8 sm:pb-12 px-6 relative flex flex-col items-center">
         <div className="max-w-5xl mx-auto text-center space-y-3 sm:space-y-4 relative z-20">
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight uppercase text-white">
             DISCOVER AUTHENTIC <br className="hidden md:inline" />
-            <span className="md:whitespace-nowrap">FLAVOURS & EASY HOME RECIPES</span>
+            <span className="md:whitespace-nowrap">FLAVOURS &amp; EASY HOME RECIPES</span>
           </h1>
         </div>
 
         <div className="relative w-full max-w-5xl flex justify-center z-10 px-2 -mt-16 sm:-mt-24 pointer-events-none">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/recipe.webp"
             alt="Featured Recipe"
@@ -86,38 +125,184 @@ export function RecipesClient() {
         </div>
       </section>
 
-      {/* MAIN RECIPES GRID SECTION (STYLE REFERENSI) */}
-      <section className="pt-12 sm:pt-16 pb-16 px-6 max-w-[1280px] mx-auto w-full relative z-20">
+      {/* MAIN RECIPES SECTION */}
+      <section className="pt-12 sm:pt-16 pb-16 px-4 sm:px-6 max-w-[1280px] mx-auto w-full relative z-20">
 
-        {/* Header Section: Judul Kiri & Deskripsi Kanan */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 sm:mb-14">
-          <div className="max-w-xl">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#111111] tracking-tight leading-tight">
-              Explore recipes crafted for every meal
-            </h2>
+        {/* =========================================================
+            FILTER KATEGORI & SUBKATEGORI (HEINZ STYLE SCREENSHOT)
+        ========================================================= */}
+        {categoryGroups.length > 0 && (
+          <div className="w-full mb-10 sm:mb-14">
+
+            {/* BARIS ATAS: "Filter by" di kiri & TAB KATEGORI di kanan */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200/80 pb-3 mb-8 sm:mb-12">
+              <h2 className="text-xl sm:text-2xl font-black text-[#590014] tracking-tight font-heinz">
+                Filter by
+              </h2>
+
+              {/* Tab Kategori Resep */}
+              <div className="flex items-center gap-6 sm:gap-10 overflow-x-auto scrollbar-none py-1">
+                {categoryGroups.map((group) => {
+                  const isActive = activeCategoryTab === group.id
+
+                  return (
+                    <button
+                      key={group.id}
+                      type="button"
+                      onClick={() => setActiveCategoryTab(group.id)}
+                      className={`relative pb-3 flex items-center gap-2 text-sm sm:text-base font-bold whitespace-nowrap transition-colors cursor-pointer ${isActive ? 'text-[#590014]' : 'text-neutral-500 hover:text-[#590014]'
+                        }`}
+                    >
+                      <span>{group.name}</span>
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeRecipeTabUnderline"
+                          className="absolute bottom-0 left-0 right-0 h-[3px] bg-[#590014] rounded-full"
+                        />
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* BARIS TENGAH: LINGKARAN MAROON SUBKATEGORI */}
+            {subcategoriesToDisplay.length > 0 && (
+              <div className="w-full mb-8">
+                <div className="flex items-start justify-center gap-4 sm:gap-8 md:gap-10 overflow-x-auto pb-4 pt-2 px-2 scrollbar-none">
+                  {subcategoriesToDisplay.map((sub) => {
+                    const isSelected = selectedSubcategories.includes(sub.id)
+                    const img =
+                      sub.image_url ||
+                      'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800&auto=format&fit=crop'
+
+                    return (
+                      <button
+                        key={sub.id}
+                        type="button"
+                        onClick={() => toggleSubcategory(sub.id)}
+                        className="group flex flex-col items-center cursor-pointer shrink-0 w-[85px] sm:w-[110px] md:w-[130px] focus:outline-none"
+                      >
+                        {/* Lingkaran Luar Maroon (#590014 / Dark Burgundy khas Heinz) */}
+                        <div
+                          className={`relative w-20 h-20 sm:w-26 sm:h-26 md:w-30 md:h-30 rounded-full p-1 sm:p-1.5 transition-all duration-300 flex items-center justify-center ${isSelected
+                              ? 'ring-3 ring-[#CC0000] ring-offset-2 ring-offset-[#FAF6ED] scale-105'
+                              : 'group-hover:scale-105'
+                            }`}
+                        >
+                          <div className="w-full h-full rounded-full bg-[#590014] flex items-center justify-center overflow-hidden relative shadow-md p-1.5">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={img}
+                              alt={sub.name}
+                              className="w-full h-full object-cover rounded-full drop-shadow-md transition-transform duration-300 group-hover:scale-110"
+                            />
+                          </div>
+
+                          {/* Checkmark jika terpilih */}
+                          {isSelected && (
+                            <div className="absolute top-0 right-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#CC0000] border-2 border-white text-white flex items-center justify-center shadow-md animate-in zoom-in-50 duration-200">
+                              <Check size={11} strokeWidth={3} />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Label Subkategori */}
+                        <span
+                          className={`mt-2.5 text-xs sm:text-sm font-bold tracking-tight text-center leading-tight line-clamp-2 transition-colors ${isSelected ? 'text-[#590014] font-black' : 'text-[#4A0A1A] group-hover:text-[#CC0000]'
+                            }`}
+                        >
+                          {sub.name}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* BARIS BAWAH: Showing count & filter pills */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-stone-200/60 mt-2 px-2">
+              <p className="text-xs sm:text-sm text-stone-500 font-medium">
+                Showing <span className="font-bold text-stone-900">{Math.min(visibleCount, filteredRecipes.length)}</span> of{' '}
+                <span className="font-bold text-stone-900">{recipes.length}</span> recipes
+              </p>
+
+              {selectedSubcategories.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2">
+                  {selectedSubcategories.map((subId) => {
+                    let subName = subId
+                    for (const g of categoryGroups) {
+                      const found = g.subcategories.find((s) => s.id === subId)
+                      if (found) {
+                        subName = found.name
+                        break
+                      }
+                    }
+
+                    return (
+                      <button
+                        key={subId}
+                        type="button"
+                        onClick={() => toggleSubcategory(subId)}
+                        className="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-[#CC0000] border border-red-200 text-xs font-bold px-3 py-1.5 rounded-full transition-colors cursor-pointer"
+                      >
+                        <X size={12} />
+                        <span>{subName}</span>
+                      </button>
+                    )
+                  })}
+
+                  <button
+                    type="button"
+                    onClick={clearAllFilters}
+                    className="text-xs font-extrabold text-[#CC0000] hover:text-[#9e0b23] underline underline-offset-4 ml-1 cursor-pointer transition-colors"
+                  >
+                    Clear all filters
+                  </button>
+                </div>
+              )}
+            </div>
+
           </div>
-          <div className="max-w-md">
-            <p className="text-stone-600 text-sm sm:text-base leading-relaxed font-normal">
-              Easy-to-follow, flavorful dishes created by passionate home cooks and chefs to fit your daily cooking schedule.
-            </p>
-          </div>
-        </div>
+        )}
 
         {/* Grid Card Resep Overlay */}
-        {displayList.length === 0 ? (
-          <div className="text-center py-20 bg-white">
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            {[1, 2, 3, 4].map((n) => (
+              <div key={n} className="w-full aspect-[16/10] sm:aspect-[16/9] rounded-2xl bg-stone-100 animate-pulse" />
+            ))}
+          </div>
+        ) : displayedRecipes.length === 0 ? (
+          <div className="text-center py-20 bg-stone-50/50 rounded-2xl border border-stone-200">
             <Utensils size={48} className="mx-auto text-stone-300 mb-4" />
             <h3 className="text-xl font-bold text-[#111111] mb-2">No recipes found</h3>
+            <p className="text-sm text-stone-500 mb-4">
+              {selectedSubcategories.length > 0
+                ? 'Tidak ada resep yang cocok dengan filter yang dipilih.'
+                : 'Belum ada resep yang dipublikasikan.'}
+            </p>
+            {selectedSubcategories.length > 0 && (
+              <button
+                type="button"
+                onClick={clearAllFilters}
+                className="inline-flex items-center gap-2 bg-[#CC0000] text-white px-5 py-2 rounded-full text-xs font-bold hover:bg-[#a00b22] transition-colors"
+              >
+                Reset Filter
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            {displayList.map((recipe) => (
+            {displayedRecipes.map((recipe) => (
               <Link
                 key={recipe.id}
                 href={`/recipes/${recipe.slug}`}
                 className="group relative w-full aspect-[16/10] sm:aspect-[16/9] rounded-2xl overflow-hidden cursor-pointer block"
               >
                 {/* Background Image */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={recipe.main_image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'}
                   alt={recipe.title}
@@ -125,11 +310,28 @@ export function RecipesClient() {
                 />
 
                 {/* Dark Overlay untuk Legibilitas Teks */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20 group-hover:from-black/85 transition-colors duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/20 group-hover:from-black/90 transition-colors duration-300" />
 
                 {/* Konten Teks & Tombol di Dalam Card */}
                 <div className="absolute inset-0 p-6 sm:p-8 flex flex-col justify-between text-white z-10">
-                  <div className="space-y-1 sm:space-y-2">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3 text-xs text-white/80">
+                      {recipe.prep_time && (
+                        <span className="flex items-center gap-1">
+                          <Clock size={13} /> {recipe.prep_time}
+                        </span>
+                      )}
+                      {recipe.servings && (
+                        <span className="flex items-center gap-1">
+                          <Users size={13} /> {recipe.servings}
+                        </span>
+                      )}
+                      {recipe.difficulty && (
+                        <span className="flex items-center gap-1">
+                          <Flame size={13} /> {recipe.difficulty}
+                        </span>
+                      )}
+                    </div>
                     <h3 className="text-2xl sm:text-3xl font-extrabold leading-snug tracking-tight text-white drop-shadow-md">
                       {recipe.title}
                     </h3>
@@ -139,7 +341,7 @@ export function RecipesClient() {
                   </div>
 
                   <div>
-                    <span className="inline-flex items-center justify-center bg-white text-[#111111] font-bold px-5 py-2.5 rounded-full text-xs sm:text-sm group-hover:bg-[#C8102E] group-hover:text-white transition-colors duration-300">
+                    <span className="inline-flex items-center justify-center bg-white text-[#111111] font-bold px-5 py-2.5 rounded-full text-xs sm:text-sm group-hover:bg-[#CC0000] group-hover:text-white transition-colors duration-300">
                       Get Recipe
                     </span>
                   </div>
@@ -148,6 +350,20 @@ export function RecipesClient() {
             ))}
           </div>
         )}
+
+        {/* Load more button if applicable */}
+        {filteredRecipes.length > visibleCount && (
+          <div className="text-center mt-12">
+            <button
+              type="button"
+              onClick={() => setVisibleCount((c) => c + 12)}
+              className="inline-flex items-center justify-center bg-[#111111] hover:bg-[#CC0000] text-white font-bold px-8 py-3 rounded-full text-sm uppercase tracking-wider transition-all duration-300 shadow-md hover:scale-105 cursor-pointer"
+            >
+              Load More Recipes
+            </button>
+          </div>
+        )}
+
       </section>
 
     </div>

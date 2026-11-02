@@ -12,17 +12,27 @@ export default async function EditRecipePage({
   const { id } = await params
   const supabase = await createClient()
 
-  const [{ data: recipe }, { data: products }] = await Promise.all([
+  const [{ data: recipe }, { data: products }, { data: recipeCatSetting }] = await Promise.all([
     supabase.from('recipes').select('*').eq('id', id).single(),
-    supabase.from('products').select('id, name').order('name')
+    supabase.from('products').select('id, name').order('name'),
+    supabase.from('site_settings').select('value').eq('key', 'recipe_categories_hierarchy').maybeSingle(),
   ])
 
   if (!recipe) return notFound()
 
+  let categoryGroups = []
+  try {
+    if (recipeCatSetting?.value) {
+      categoryGroups = JSON.parse(recipeCatSetting.value)
+    }
+  } catch (err) {
+    categoryGroups = []
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
       <h1 className="text-2xl font-extrabold text-[#0A1628] mb-6">Edit Resep: {recipe.title}</h1>
-      <RecipeForm initialData={recipe} products={products || []} />
+      <RecipeForm initialData={recipe} products={products || []} categoryGroups={categoryGroups} />
     </div>
   )
 }

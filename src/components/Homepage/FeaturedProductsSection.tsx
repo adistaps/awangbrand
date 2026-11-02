@@ -21,7 +21,7 @@ export async function FeaturedProductsSection() {
 
   return (
     // KHUSUS MOBILE: Menambahkan max-md:-mb-[1px] untuk menarik section bawahnya sedikit ke atas agar menutupi celah garis tipis
-    <section className="bg-[#C8102E] py-8 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12 lg:px-16 w-full relative max-md:-mb-[1px]">
+    <section className="bg-[#CC0000] py-8 sm:py-16 md:py-20 px-4 sm:px-6 md:px-12 lg:px-16 w-full relative max-md:-mb-[1px]">
       <div className="max-w-[1400px] mx-auto">
         {/* Section Header */}
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-6 sm:mb-12 gap-4">

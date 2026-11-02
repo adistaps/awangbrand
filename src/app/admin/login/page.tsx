@@ -45,7 +45,7 @@ export default function AdminLoginPage() {
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 leading-tight">
               Selamat Datang<br />
-              <span className="text-[#C8102E]">Kembali 👋</span>
+              <span className="text-[#CC0000]">Kembali 👋</span>
             </h1>
           </div>
 
@@ -60,7 +60,7 @@ export default function AdminLoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#C8102E]/30 focus:border-[#C8102E] transition-all placeholder:text-gray-400"
+                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#CC0000]/30 focus:border-[#CC0000] transition-all placeholder:text-gray-400"
                 placeholder="admin@awangbrand.com"
               />
             </div>
@@ -76,7 +76,7 @@ export default function AdminLoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3.5 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#C8102E]/30 focus:border-[#C8102E] transition-all placeholder:text-gray-400"
+                  className="w-full px-4 py-3.5 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#CC0000]/30 focus:border-[#CC0000] transition-all placeholder:text-gray-400"
                   placeholder="••••••••"
                 />
                 <button
@@ -101,7 +101,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#C8102E] hover:bg-[#a00b22] active:scale-[0.99] text-white font-bold text-sm py-4 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed mt-2"
+              className="w-full bg-[#CC0000] hover:bg-[#a00b22] active:scale-[0.99] text-white font-bold text-sm py-4 rounded-xl transition-all shadow-md hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed mt-2"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">

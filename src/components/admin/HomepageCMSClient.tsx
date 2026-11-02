@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { CARD_THEMES } from '@/components/Homepage/ProductCarouselSection'
 import {
   Flame,
   ChefHat,
@@ -18,6 +19,7 @@ import {
   Star,
   Film,
   Move,
+  LayoutGrid,
 } from 'lucide-react'
 
 interface ItemCMS {
@@ -52,15 +54,17 @@ interface HomepageCMSProps {
   products: any[]
   recipes: any[]
   siteSettings: Record<string, string>
+  productHierarchy?: any[]
 }
 
 export function HomepageCMSClient({
   products: initialProducts,
   recipes: initialRecipes,
   siteSettings: initialSettings,
+  productHierarchy = [],
 }: HomepageCMSProps) {
   const router = useRouter()
-  const [activeTab, setActiveTab] = useState<'taste_heat' | 'cook_good' | 'tiktok'>('taste_heat')
+  const [activeTab, setActiveTab] = useState<'taste_heat' | 'cook_good' | 'carousel' | 'tiktok'>('taste_heat')
   const [saving, setSaving] = useState(false)
   const [savedSuccess, setSavedSuccess] = useState(false)
 
@@ -159,6 +163,80 @@ export function HomepageCMSClient({
           },
         ]
   )
+
+  // 4. STATE: PRODUCT CAROUSEL ("TEMUKAN PILIHANMU")
+  const [carouselTitle, setCarouselTitle] = useState(
+    initialSettings.homepage_product_carousel_title || 'TEMUKAN PILIHANMU'
+  )
+
+  // Ekstrak semua subkategori dari productHierarchy
+  const availableSubcategories: { id: string; name: string; groupName: string; image_url: string | null }[] = []
+  productHierarchy.forEach((group: any) => {
+    if (Array.isArray(group.subcategories)) {
+      group.subcategories.forEach((sub: any) => {
+        availableSubcategories.push({
+          id: sub.id,
+          name: sub.name,
+          groupName: group.name,
+          image_url: sub.image_url || null,
+        })
+      })
+    }
+  })
+
+  // Parse ID subkategori yang sudah dipilih sebelumnya
+  let initialSelectedSubs: string[] = []
+  try {
+    if (initialSettings.homepage_product_carousel_subcategories) {
+      initialSelectedSubs = JSON.parse(initialSettings.homepage_product_carousel_subcategories)
+    }
+  } catch (e) {
+    initialSelectedSubs = []
+  }
+
+  // Jika belum diset sama sekali, default ke semua subkategori yang ada
+  const [selectedCarouselSubs, setSelectedCarouselSubs] = useState<string[]>(
+    initialSelectedSubs.length > 0 ? initialSelectedSubs : availableSubcategories.map((s) => s.id)
+  )
+
+  // Warna per kartu carousel (subId -> themeKey)
+  let initialCardColors: Record<string, string> = {}
+  try {
+    if (initialSettings.homepage_product_carousel_card_colors) {
+      initialCardColors = JSON.parse(initialSettings.homepage_product_carousel_card_colors)
+    }
+  } catch (e) { /* ignore */ }
+  const [carouselCardColors, setCarouselCardColors] = useState<Record<string, string>>(initialCardColors)
+
+  function setCardColor(subId: string, themeKey: string) {
+    setCarouselCardColors((prev) => ({ ...prev, [subId]: themeKey }))
+  }
+
+  function toggleCarouselSub(id: string) {
+    setSelectedCarouselSubs((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter((x) => x !== id)
+      } else {
+        return [...prev, id]
+      }
+    })
+  }
+
+  function moveCarouselSub(id: string, direction: 'up' | 'down') {
+    setSelectedCarouselSubs((prev) => {
+      const idx = prev.indexOf(id)
+      if (idx === -1) return prev
+      if (direction === 'up' && idx === 0) return prev
+      if (direction === 'down' && idx === prev.length - 1) return prev
+
+      const copy = [...prev]
+      const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+      const temp = copy[idx]
+      copy[idx] = copy[swapIdx]
+      copy[swapIdx] = temp
+      return copy
+    })
+  }
 
   // Helper filter Taste The Heat yang aktif
   const featuredTasteHeat = allItems
@@ -310,11 +388,14 @@ export function HomepageCMSClient({
             .eq('id', r.id)
         )
 
-      // 3. Simpan setting Cook Something Good & TikTok ke site_settings
+      // 3. Simpan setting Cook Something Good, Carousel Subkategori & TikTok ke site_settings
       const settingsPayload = [
         { key: 'homepage_taste_the_heat_title', value: tasteHeatTitle },
         { key: 'homepage_cook_good_title', value: cookGoodTitle },
         { key: 'homepage_cook_good_subtitle', value: cookGoodSubtitle },
+        { key: 'homepage_product_carousel_title', value: carouselTitle },
+        { key: 'homepage_product_carousel_subcategories', value: JSON.stringify(selectedCarouselSubs) },
+        { key: 'homepage_product_carousel_card_colors', value: JSON.stringify(carouselCardColors) },
         { key: 'homepage_tiktok_title', value: tiktokTitle },
         { key: 'homepage_tiktok_subtitle', value: tiktokSubtitle },
         { key: 'homepage_tiktok_account_url', value: tiktokAccountUrl },
@@ -378,7 +459,7 @@ export function HomepageCMSClient({
           <button
             onClick={handleSaveAll}
             disabled={saving}
-            className="inline-flex items-center justify-center gap-2 bg-[#C8102E] hover:bg-[#a00b22] text-white text-xs sm:text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 bg-[#CC0000] hover:bg-[#a00b22] text-white text-xs sm:text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer disabled:opacity-60"
           >
             <Save size={16} />
             <span>{saving ? 'Menyimpan...' : 'Simpan Semua Perubahan'}</span>
@@ -392,7 +473,7 @@ export function HomepageCMSClient({
           onClick={() => setActiveTab('taste_heat')}
           className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'taste_heat'
-              ? 'bg-[#C8102E] text-white shadow-sm'
+              ? 'bg-[#CC0000] text-white shadow-sm'
               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
           }`}
         >
@@ -404,7 +485,7 @@ export function HomepageCMSClient({
           onClick={() => setActiveTab('cook_good')}
           className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'cook_good'
-              ? 'bg-[#C8102E] text-white shadow-sm'
+              ? 'bg-[#CC0000] text-white shadow-sm'
               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
           }`}
         >
@@ -413,10 +494,22 @@ export function HomepageCMSClient({
         </button>
 
         <button
+          onClick={() => setActiveTab('carousel')}
+          className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
+            activeTab === 'carousel'
+              ? 'bg-[#CC0000] text-white shadow-sm'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+          }`}
+        >
+          <LayoutGrid size={16} />
+          <span>Carousel Subkategori ({selectedCarouselSubs.length})</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('tiktok')}
           className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
             activeTab === 'tiktok'
-              ? 'bg-[#C8102E] text-white shadow-sm'
+              ? 'bg-[#CC0000] text-white shadow-sm'
               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
           }`}
         >
@@ -433,7 +526,7 @@ export function HomepageCMSClient({
           {/* Setting Judul Section */}
           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-xs space-y-3">
             <h3 className="text-sm font-bold text-[#0A1628] flex items-center gap-2">
-              <Flame size={17} className="text-[#C8102E]" />
+              <Flame size={17} className="text-[#CC0000]" />
               Pengaturan Teks Section
             </h3>
             <div className="max-w-md">
@@ -445,7 +538,7 @@ export function HomepageCMSClient({
                 value={tasteHeatTitle}
                 onChange={(e) => setTasteHeatTitle(e.target.value)}
                 placeholder="TASTE THE HEAT"
-                className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#C8102E]"
+                className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#CC0000]"
               />
             </div>
           </div>
@@ -476,11 +569,11 @@ export function HomepageCMSClient({
                 {featuredTasteHeat.map((item, idx) => (
                   <div
                     key={item.id}
-                    className="relative bg-gray-50 border border-gray-200 rounded-2xl p-3 flex flex-col justify-between group hover:border-[#C8102E] transition-all shadow-2xs"
+                    className="relative bg-gray-50 border border-gray-200 rounded-2xl p-3 flex flex-col justify-between group hover:border-[#CC0000] transition-all shadow-2xs"
                   >
                     {/* Badge Nomor Urut Posisi */}
                     <div className="flex items-center justify-between mb-2">
-                      <span className="w-6 h-6 rounded-full bg-[#C8102E] text-white text-xs font-black flex items-center justify-center shadow-xs">
+                      <span className="w-6 h-6 rounded-full bg-[#CC0000] text-white text-xs font-black flex items-center justify-center shadow-xs">
                         {idx + 1}
                       </span>
                       <div className="flex items-center gap-1">
@@ -557,7 +650,7 @@ export function HomepageCMSClient({
                           onClick={() => setTasteHeatBadge(item.id, 'trending')}
                           className={`py-1 rounded-md transition-colors cursor-pointer ${
                             item.featured_badge === 'trending'
-                              ? 'bg-[#C8102E] text-white shadow-2xs'
+                              ? 'bg-[#CC0000] text-white shadow-2xs'
                               : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
                           }`}
                         >
@@ -631,7 +724,7 @@ export function HomepageCMSClient({
                       onClick={() => toggleTasteHeatFeatured(item.id)}
                       className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-all cursor-pointer shrink-0 ${
                         isActive
-                          ? 'bg-[#C8102E] text-white border-[#C8102E]'
+                          ? 'bg-[#CC0000] text-white border-[#CC0000]'
                           : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-200'
                       }`}
                     >
@@ -652,7 +745,7 @@ export function HomepageCMSClient({
         <div className="space-y-6 animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-xs space-y-4">
             <h3 className="text-sm font-bold text-[#0A1628] flex items-center gap-2">
-              <ChefHat size={17} className="text-[#C8102E]" />
+              <ChefHat size={17} className="text-[#CC0000]" />
               Pengaturan Teks &amp; Judul
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -665,7 +758,7 @@ export function HomepageCMSClient({
                   value={cookGoodTitle}
                   onChange={(e) => setCookGoodTitle(e.target.value)}
                   placeholder="COOK SOMETHING GOOD"
-                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#C8102E]"
+                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#CC0000]"
                 />
               </div>
 
@@ -678,7 +771,7 @@ export function HomepageCMSClient({
                   value={cookGoodSubtitle}
                   onChange={(e) => setCookGoodSubtitle(e.target.value)}
                   placeholder="Resep pilihan istimewa yang mudah dibuat di rumah..."
-                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
                 />
               </div>
             </div>
@@ -730,7 +823,7 @@ export function HomepageCMSClient({
           {/* Setting Judul & Link Akun TikTok */}
           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-xs space-y-4">
             <h3 className="text-sm font-bold text-[#0A1628] flex items-center gap-2">
-              <Film size={17} className="text-[#C8102E]" />
+              <Film size={17} className="text-[#CC0000]" />
               Pengaturan Teks &amp; Akun TikTok
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
@@ -743,7 +836,7 @@ export function HomepageCMSClient({
                   value={tiktokTitle}
                   onChange={(e) => setTiktokTitle(e.target.value)}
                   placeholder="IKUTI KAMI DI TIKTOK"
-                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#C8102E]"
+                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#CC0000]"
                 />
               </div>
 
@@ -756,7 +849,7 @@ export function HomepageCMSClient({
                   value={tiktokSubtitle}
                   onChange={(e) => setTiktokSubtitle(e.target.value)}
                   placeholder="@awangbrand_official — Inspirasi resep..."
-                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
                 />
               </div>
 
@@ -769,7 +862,7 @@ export function HomepageCMSClient({
                   value={tiktokAccountUrl}
                   onChange={(e) => setTiktokAccountUrl(e.target.value)}
                   placeholder="https://www.tiktok.com/@awangbrand_official"
-                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+                  className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
                 />
               </div>
             </div>
@@ -810,7 +903,7 @@ export function HomepageCMSClient({
                         value={video.title}
                         onChange={(e) => handleUpdateTikTok(idx, 'title', e.target.value)}
                         placeholder="Judul / Keterangan video"
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs font-semibold focus:outline-none focus:border-[#C8102E]"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs font-semibold focus:outline-none focus:border-[#CC0000]"
                       />
                     </div>
                     <div className="sm:col-span-2">
@@ -819,7 +912,7 @@ export function HomepageCMSClient({
                         value={video.url}
                         onChange={(e) => handleUpdateTikTok(idx, 'url', e.target.value)}
                         placeholder="https://www.tiktok.com/@awangbrand_official/video/7611107188828065044"
-                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-[#C8102E]"
+                        className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-[#CC0000]"
                       />
                     </div>
                   </div>
@@ -842,6 +935,232 @@ export function HomepageCMSClient({
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 4: CAROUSEL SUBKATEGORI ("TEMUKAN PILIHANMU") */}
+      {/* ========================================================================= */}
+      {activeTab === 'carousel' && (
+        <div className="space-y-6 animate-in fade-in duration-200">
+          {/* Setting Judul Section */}
+          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-xs space-y-3">
+            <h3 className="text-sm font-bold text-[#0A1628] flex items-center gap-2">
+              <LayoutGrid size={17} className="text-[#CC0000]" />
+              Pengaturan Teks Carousel
+            </h3>
+            <div className="max-w-md">
+              <label className="text-xs font-semibold text-gray-500 block mb-1">
+                Judul Utama Section
+              </label>
+              <input
+                type="text"
+                value={carouselTitle}
+                onChange={(e) => setCarouselTitle(e.target.value)}
+                placeholder="TEMUKAN PILIHANMU"
+                className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#CC0000]"
+              />
+            </div>
+          </div>
+
+          {/* Subkategori yang Ditampilkan di Carousel */}
+          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-bold text-[#0A1628]">
+                  Urutan Subkategori Terpilih ({selectedCarouselSubs.length})
+                </h3>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Gunakan tombol panah untuk mengatur urutan kartu di carousel beranda
+                </p>
+              </div>
+            </div>
+
+            {selectedCarouselSubs.length === 0 ? (
+              <div className="p-8 text-center text-gray-400 text-xs border border-dashed border-gray-200 rounded-xl">
+                Belum ada subkategori yang dipilih untuk carousel. Pilih dari daftar di bawah.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {selectedCarouselSubs.map((subId, idx) => {
+                  const sub = availableSubcategories.find((s) => s.id === subId)
+                  if (!sub) return null
+                  const currentColorKey = carouselCardColors[sub.id]
+
+                  return (
+                    <div
+                      key={sub.id}
+                      className="p-3 bg-white border border-gray-200 rounded-xl flex flex-col gap-3 shadow-xs hover:border-[#CC0000] transition-colors"
+                    >
+                      {/* Baris atas: nomor + gambar + nama + tombol urutan + hapus */}
+                      <div className="flex items-center gap-3">
+                        <span className="w-6 h-6 rounded-full bg-[#CC0000] text-white text-xs font-bold flex items-center justify-center shrink-0">
+                          {idx + 1}
+                        </span>
+
+                        <div className="w-12 h-12 rounded-lg bg-stone-100 p-1 flex items-center justify-center shrink-0 overflow-hidden border border-gray-100">
+                          {sub.image_url ? (
+                            <img
+                              src={sub.image_url}
+                              alt={sub.name}
+                              className="max-h-full max-w-full object-contain"
+                            />
+                          ) : (
+                            <LayoutGrid size={20} className="text-gray-300" />
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-gray-900 truncate">{sub.name}</p>
+                          <p className="text-[10px] text-gray-400 truncate">{sub.groupName}</p>
+                        </div>
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            disabled={idx === 0}
+                            onClick={() => moveCarouselSub(sub.id, 'up')}
+                            className="p-1 rounded-md text-gray-400 hover:text-black hover:bg-gray-100 disabled:opacity-30 cursor-pointer"
+                            title="Geser ke kiri / awal"
+                          >
+                            <ArrowUp size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            disabled={idx === selectedCarouselSubs.length - 1}
+                            onClick={() => moveCarouselSub(sub.id, 'down')}
+                            className="p-1 rounded-md text-gray-400 hover:text-black hover:bg-gray-100 disabled:opacity-30 cursor-pointer"
+                            title="Geser ke kanan / akhir"
+                          >
+                            <ArrowDown size={14} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => toggleCarouselSub(sub.id)}
+                            className="p-1 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 cursor-pointer"
+                            title="Hapus dari carousel"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Baris bawah: Pilih Warna Kartu */}
+                      <div>
+                        <p className="text-[10px] font-semibold text-gray-400 mb-1.5">Warna Kartu</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {Object.entries(CARD_THEMES).map(([key, theme]) => (
+                            <button
+                              key={key}
+                              type="button"
+                              title={theme.label}
+                              onClick={() => setCardColor(sub.id, key)}
+                              className={`w-6 h-6 rounded-full border-2 transition-all cursor-pointer ${
+                                currentColorKey === key
+                                  ? 'border-white ring-2 ring-offset-1 ring-gray-600 scale-110'
+                                  : 'border-transparent hover:scale-110'
+                              }`}
+                              style={{ backgroundColor: theme.hex }}
+                            />
+                          ))}
+                          {/* Tombol reset ke rotasi otomatis */}
+                          {currentColorKey && (
+                            <button
+                              type="button"
+                              title="Reset ke warna otomatis"
+                              onClick={() => {
+                                setCarouselCardColors((prev) => {
+                                  const next = { ...prev }
+                                  delete next[sub.id]
+                                  return next
+                                })
+                              }}
+                              className="w-6 h-6 rounded-full border-2 border-dashed border-gray-300 text-gray-400 hover:border-gray-500 flex items-center justify-center text-[10px] cursor-pointer"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                        {currentColorKey && (
+                          <p className="text-[10px] text-gray-500 mt-1">
+                            {CARD_THEMES[currentColorKey]?.label}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Daftar Semua Subkategori dari Kategori Produk */}
+          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-xs space-y-4">
+            <div>
+              <h3 className="text-sm font-bold text-[#0A1628]">
+                Semua Subkategori Produk ({availableSubcategories.length})
+              </h3>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Klik pada kartu untuk mengaktifkan atau menonaktifkannya di carousel beranda
+              </p>
+            </div>
+
+            {availableSubcategories.length === 0 ? (
+              <div className="p-8 text-center text-gray-400 text-xs border border-dashed border-gray-200 rounded-xl">
+                Belum ada subkategori produk. Buat terlebih dahulu di menu{' '}
+                <a href="/admin/categories" className="text-[#CC0000] underline font-bold">
+                  Kategori
+                </a>
+                .
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                {availableSubcategories.map((sub) => {
+                  const isSelected = selectedCarouselSubs.includes(sub.id)
+
+                  return (
+                    <button
+                      key={sub.id}
+                      type="button"
+                      onClick={() => toggleCarouselSub(sub.id)}
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer relative group flex flex-col items-center justify-between gap-2.5 ${
+                        isSelected
+                          ? 'border-[#CC0000] bg-red-50/20 shadow-xs'
+                          : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      <div className="w-16 h-16 rounded-xl bg-stone-50 p-1.5 flex items-center justify-center overflow-hidden border border-gray-100">
+                        {sub.image_url ? (
+                          <img
+                            src={sub.image_url}
+                            alt={sub.name}
+                            className="max-h-full max-w-full object-contain"
+                          />
+                        ) : (
+                          <LayoutGrid size={24} className="text-gray-300" />
+                        )}
+                      </div>
+
+                      <div className="w-full text-center">
+                        <p className="text-xs font-bold text-gray-900 truncate">{sub.name}</p>
+                        <p className="text-[10px] text-gray-400 truncate">{sub.groupName}</p>
+                      </div>
+
+                      <div
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          isSelected
+                            ? 'bg-[#CC0000] text-white'
+                            : 'bg-gray-100 text-gray-500 group-hover:bg-gray-200'
+                        }`}
+                      >
+                        {isSelected ? '✓ Ditampilkan' : '+ Tampilkan'}
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
           </div>
         </div>
       )}

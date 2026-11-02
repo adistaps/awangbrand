@@ -9,13 +9,14 @@ import { createClient } from '@/lib/supabase/client'
 import { ImageUploader } from './ImageUploader'
 import { GalleryUploader, type GalleryImage } from './GalleryUploader'
 import { SpecificationsEditor, type SpecRow } from './SpecificationsEditor'
-import type { Category } from '@/types/database'
+import type { Category, CategoryGroup } from '@/types/database'
 
 interface ProductFormValues {
   id?: string
   name: string
   slug: string
-  category_id: string | null
+  category_ids?: string[]
+  subcategory_ids?: string[]
   description: string
   thumbnail_url: string | null
   shopee_url: string
@@ -28,11 +29,13 @@ interface ProductFormValues {
 
 export function ProductForm({
   categories,
+  categoryGroups = [],
   initialValues,
   initialGallery = [],
   initialSpecs = [],
 }: {
   categories: Category[]
+  categoryGroups?: CategoryGroup[]
   initialValues?: ProductFormValues
   initialGallery?: GalleryImage[]
   initialSpecs?: SpecRow[]
@@ -44,7 +47,8 @@ export function ProductForm({
     initialValues || {
       name: '',
       slug: '',
-      category_id: null,
+      category_ids: [],
+      subcategory_ids: [],
       description: '',
       thumbnail_url: null,
       shopee_url: '',
@@ -79,6 +83,35 @@ export function ProductForm({
     }))
   }
 
+  function toggleCategoryId(catId: string) {
+    setValues((v) => {
+      const current = v.category_ids || []
+      const updated = current.includes(catId)
+        ? current.filter((id) => id !== catId)
+        : [...current, catId]
+      return { ...v, category_ids: updated }
+    })
+  }
+
+  function toggleSubcategoryId(subId: string, parentCatId?: string) {
+    setValues((v) => {
+      const currentSubs = v.subcategory_ids || []
+      const currentCats = v.category_ids || []
+      let updatedSubs: string[]
+      let updatedCats = [...currentCats]
+
+      if (currentSubs.includes(subId)) {
+        updatedSubs = currentSubs.filter((id) => id !== subId)
+      } else {
+        updatedSubs = [...currentSubs, subId]
+        if (parentCatId && !updatedCats.includes(parentCatId)) {
+          updatedCats.push(parentCatId)
+        }
+      }
+      return { ...v, subcategory_ids: updatedSubs, category_ids: updatedCats }
+    })
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSaving(true)
@@ -107,7 +140,6 @@ export function ProductForm({
     const payload = {
       name: values.name,
       slug: values.slug,
-      category_id: values.category_id || null,
       description: values.description,
       main_image: values.thumbnail_url,
       shopee_url: values.shopee_url || null,
@@ -116,6 +148,10 @@ export function ProductForm({
       is_featured: values.is_featured,
       is_carousel: values.is_carousel,
       status: values.status,
+      nutritional_facts: {
+        category_ids: values.category_ids || [],
+        subcategory_ids: values.subcategory_ids || [],
+      },
     }
 
     let productId = values.id
@@ -180,7 +216,7 @@ export function ProductForm({
             value={values.name}
             onChange={(e) => handleNameChange(e.target.value)}
             placeholder="cth: Pes Rendang Tok Warisan"
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] transition-colors"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000] transition-colors"
           />
         </div>
         <div>
@@ -193,7 +229,7 @@ export function ProductForm({
                   setIsSlugCustomized(false)
                   setValues((v) => ({ ...v, slug: slugify(v.name) }))
                 }}
-                className="text-[11px] text-[#C8102E] hover:underline font-medium"
+                className="text-[11px] text-[#CC0000] hover:underline font-medium"
               >
                 Reset otomatis
               </button>
@@ -207,39 +243,99 @@ export function ProductForm({
               setValues((v) => ({ ...v, slug: slugify(e.target.value) }))
             }}
             placeholder="otomatis-dari-nama-produk"
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] bg-gray-50/50 transition-colors"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000] bg-gray-50/50 transition-colors"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="text-xs font-semibold text-gray-700 mb-1.5 block">Kategori</label>
-          <select
-            value={values.category_id || ''}
-            onChange={(e) => setValues((v) => ({ ...v, category_id: e.target.value || null }))}
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] bg-white transition-colors"
-          >
-            <option value="">Pilih kategori</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
           <label className="text-xs font-semibold text-gray-700 mb-1.5 block">Status Publikasi</label>
           <select
             value={values.status}
             onChange={(e) => setValues((v) => ({ ...v, status: e.target.value as 'draft' | 'published' }))}
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] bg-white transition-colors"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000] bg-white transition-colors"
           >
             <option value="draft">Draft (Disembunyikan)</option>
             <option value="published">Published (Tayang)</option>
           </select>
         </div>
       </div>
+
+      {/* FILTER KATEGORI & SUBKATEGORI (MULTI-SELECT) */}
+      {categoryGroups.length > 0 && (
+        <div className="border border-gray-200 rounded-2xl p-4 sm:p-5 bg-stone-50/50 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-xs font-extrabold text-[#590014] uppercase tracking-wider">
+                Filter Kategori & Subkategori (Multi-Select)
+              </h4>
+              <p className="text-[11px] text-gray-500 mt-0.5">
+                Centang kategori dan subkategori di mana produk ini akan muncul saat difilter oleh pengunjung. (1 produk bisa memilih banyak).
+              </p>
+            </div>
+            <span className="text-[11px] font-bold text-[#CC0000] bg-red-50 border border-red-200 px-2.5 py-1 rounded-full shrink-0">
+              {(values.subcategory_ids || []).length} Subkategori dipilih
+            </span>
+          </div>
+
+          <div className="space-y-4 pt-1">
+            {categoryGroups.map((group) => {
+              const isGroupActive = (values.category_ids || []).includes(group.id)
+
+              return (
+                <div key={group.id} className="bg-white rounded-xl p-3.5 border border-gray-200 shadow-2xs">
+                  {/* Header Kategori Induk */}
+                  <div className="flex items-center justify-between mb-2.5">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={isGroupActive}
+                        onChange={() => toggleCategoryId(group.id)}
+                        className="w-4 h-4 rounded text-[#CC0000] focus:ring-[#CC0000] border-gray-300 cursor-pointer accent-[#CC0000]"
+                      />
+                      <span className="text-xs sm:text-sm font-bold text-stone-900">
+                        {group.name}
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Subkategori Pills / Checkboxes */}
+                  {group.subcategories.length > 0 ? (
+                    <div className="flex flex-wrap gap-2 pl-6">
+                      {group.subcategories.map((sub) => {
+                        const isSubSelected = (values.subcategory_ids || []).includes(sub.id)
+
+                        return (
+                          <button
+                            key={sub.id}
+                            type="button"
+                            onClick={() => toggleSubcategoryId(sub.id, group.id)}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                              isSubSelected
+                                ? 'bg-[#590014] text-white border-[#590014] shadow-xs'
+                                : 'bg-white text-stone-700 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                            }`}
+                          >
+                            <span
+                              className={`w-2 h-2 rounded-full ${
+                                isSubSelected ? 'bg-amber-400' : 'bg-gray-300'
+                              }`}
+                            />
+                            <span>{sub.name}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-gray-400 pl-6 italic">Belum ada subkategori</p>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       <div>
         <label className="text-xs font-semibold text-gray-700 mb-1.5 block">Deskripsi Produk</label>
@@ -248,7 +344,7 @@ export function ProductForm({
           value={values.description}
           onChange={(e) => setValues((v) => ({ ...v, description: e.target.value }))}
           placeholder="Jelaskan cita rasa, keunggulan bahan alami, dan panduan saji..."
-          className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] transition-colors"
+          className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000] transition-colors"
         />
       </div>
 
@@ -300,7 +396,7 @@ export function ProductForm({
                 onChange={(e) => setValues((v) => ({ ...v, is_featured: e.target.checked }))}
                 className="sr-only peer"
               />
-              <div className="w-5 h-5 rounded-full border-2 border-[#C8102E] bg-white transition-all flex items-center justify-center shadow-xs peer-focus-visible:ring-2 peer-focus-visible:ring-[#C8102E]/30">
+              <div className="w-5 h-5 rounded-full border-2 border-[#CC0000] bg-white transition-all flex items-center justify-center shadow-xs peer-focus-visible:ring-2 peer-focus-visible:ring-[#CC0000]/30">
                 <Check
                   size={13}
                   strokeWidth={3}
@@ -311,8 +407,8 @@ export function ProductForm({
               </div>
             </div>
             <div>
-              <span className="text-sm font-semibold text-[#C8102E] flex items-center gap-2">
-                <FontAwesomeIcon icon={faFire} className="text-[#C8102E]" />
+              <span className="text-sm font-semibold text-[#CC0000] flex items-center gap-2">
+                <FontAwesomeIcon icon={faFire} className="text-[#CC0000]" />
                 Section &ldquo;TASTE THE HEAT&rdquo; (Featured Grid)
               </span>
               <span className="text-xs text-gray-500 block mt-0.5">
@@ -338,7 +434,7 @@ export function ProductForm({
         <button
           type="submit"
           disabled={saving}
-          className="w-full sm:w-auto bg-[#C8102E] hover:bg-[#a60c24] !text-white font-bold text-sm px-7 py-3 rounded-xl transition-all shadow-xs active:scale-95 disabled:opacity-60 cursor-pointer text-center"
+          className="w-full sm:w-auto bg-[#CC0000] hover:bg-[#a60c24] !text-white font-bold text-sm px-7 py-3 rounded-xl transition-all shadow-xs active:scale-95 disabled:opacity-60 cursor-pointer text-center"
         >
           <span className="!text-white text-white">{saving ? 'Menyimpan...' : isEdit ? 'Simpan Perubahan' : 'Buat Produk'}</span>
         </button>

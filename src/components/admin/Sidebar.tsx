@@ -62,7 +62,7 @@ export function Sidebar({
   }
 
   return (
-    <aside className="relative w-full lg:w-64 shrink-0 bg-[#C8102E] text-white h-full flex flex-col z-20">
+    <aside className="relative w-full lg:w-64 shrink-0 bg-[#CC0000] text-white h-full flex flex-col z-20">
 
       {/* Header / Logo */}
       <div className="relative z-10 p-5 border-b border-white/15 flex items-center shrink-0">
@@ -93,17 +93,17 @@ export function Sidebar({
               href={href}
               onClick={onClose}
               className={`flex items-center justify-between gap-3 px-4 py-3 font-semibold text-sm transition-all duration-200 ${active
-                ? 'bg-white !text-[#C8102E] rounded-l-2xl lg:-mr-3 pr-6 shadow-sm relative z-10'
+                ? 'bg-white !text-[#CC0000] rounded-l-2xl lg:-mr-3 pr-6 shadow-sm relative z-10'
                 : 'text-white/80 hover:bg-white/10 hover:text-white rounded-xl'
                 }`}
             >
               <span className="flex items-center gap-3">
-                <Icon size={19} className={active ? '!text-[#C8102E]' : 'text-white/80'} />
-                <span className={active ? '!text-[#C8102E]' : ''}>{label}</span>
+                <Icon size={19} className={active ? '!text-[#CC0000]' : 'text-white/80'} />
+                <span className={active ? '!text-[#CC0000]' : ''}>{label}</span>
               </span>
               {badge > 0 && (
                 <span
-                  className={`text-[10px] font-extrabold rounded-full min-w-[20px] h-[20px] flex items-center justify-center px-1.5 ${active ? 'bg-[#C8102E] text-white' : 'bg-white text-[#C8102E]'
+                  className={`text-[10px] font-extrabold rounded-full min-w-[20px] h-[20px] flex items-center justify-center px-1.5 ${active ? 'bg-[#CC0000] text-white' : 'bg-white text-[#CC0000]'
                     }`}
                 >
                   {badge}
@@ -115,7 +115,7 @@ export function Sidebar({
       </nav>
 
       {/* Footer Akun & Logout */}
-      <div className="relative z-10 p-4 border-t border-white/15 space-y-2 shrink-0 mt-auto bg-[#C8102E]">
+      <div className="relative z-10 p-4 border-t border-white/15 space-y-2 shrink-0 mt-auto bg-[#CC0000]">
         <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/10">
           <UserCircle size={22} className="text-white/80 shrink-0" />
           <div className="min-w-0">

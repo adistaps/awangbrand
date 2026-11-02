@@ -36,17 +36,27 @@ export default async function AdminHomepageCMSPage() {
   ])
 
   const siteSettings: Record<string, string> = {}
-  ;(siteSettingsRaw || []).forEach((row) => {
+  ;(siteSettingsRaw || []).forEach((row: { key: string; value: string | null }) => {
     if (row.key && row.value !== null) {
       siteSettings[row.key] = row.value
     }
   })
+
+  let productHierarchy: any[] = []
+  try {
+    if (siteSettings.product_categories_hierarchy) {
+      productHierarchy = JSON.parse(siteSettings.product_categories_hierarchy)
+    }
+  } catch (err) {
+    productHierarchy = []
+  }
 
   return (
     <HomepageCMSClient
       products={products || []}
       recipes={recipes || []}
       siteSettings={siteSettings}
+      productHierarchy={productHierarchy}
     />
   )
 }

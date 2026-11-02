@@ -32,7 +32,7 @@ export function QuoteFormSection() {
   }
 
   return (
-    <section className="relative w-full bg-[#C8102E] font-sans pt-10 pb-0 sm:pt-16 lg:pt-20 lg:pb-0 px-4 sm:px-8 lg:px-16 overflow-hidden">
+    <section className="relative w-full bg-[#CC0000] font-sans pt-10 pb-0 sm:pt-16 lg:pt-20 lg:pb-0 px-4 sm:px-8 lg:px-16 overflow-hidden">
       {/* KHUSUS MOBILE: Menggunakan flex-col-reverse agar maskot otomatis berada di bawah form */}
       <div className="max-w-6xl mx-auto flex flex-col-reverse lg:flex-row items-center lg:items-end justify-between gap-6 lg:gap-16 relative">
 

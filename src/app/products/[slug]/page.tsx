@@ -70,19 +70,35 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   if (!product) notFound()
 
-  // Ambil produk lainnya dari kategori yang sama atau produk published acak (maksimal 3 produk)
+  // Ambil produk lainnya dari kategori yang sama atau produk published acak (maksimal 6 produk)
   const { data: rawRelatedProducts } = await supabase
     .from('products')
     .select('id, name, slug, main_image, category_id, category:categories(name)')
     .eq('status', 'published')
     .neq('id', product.id)
-    .limit(3)
+    .limit(6)
 
   const relatedProducts = (rawRelatedProducts || []).map((p) => ({
     slug: p.slug,
     name: p.name,
-    img: p.main_image || 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800&auto=format&fit=crop',
+    img: p.main_image || '',
     cat: (p.category as unknown as { name: string } | null)?.name?.toUpperCase() || 'PRODUCT',
+  }))
+
+  // Ambil resep yang menggunakan produk ini (featured_product_id = product.id)
+  const { data: rawRelatedRecipes } = await supabase
+    .from('recipes')
+    .select('id, title, slug, main_image, category, prep_time, cook_time')
+    .eq('featured_product_id', product.id)
+    .eq('status', 'published')
+    .limit(6)
+
+  const relatedRecipes = (rawRelatedRecipes || []).map((r) => ({
+    id: r.id,
+    title: r.title,
+    slug: r.slug,
+    main_image: r.main_image || '',
+    category: r.category || 'Recipe',
   }))
 
   const images = [
@@ -100,6 +116,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       images={images}
       specs={specs}
       relatedProducts={relatedProducts}
+      relatedRecipes={relatedRecipes}
       brands={brands || []}
     />
   )

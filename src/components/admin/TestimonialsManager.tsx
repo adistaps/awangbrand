@@ -70,7 +70,7 @@ export function TestimonialsManager({ initialTestimonials }: { initialTestimonia
         </div>
         <button
           onClick={openNew}
-          className="inline-flex items-center gap-2 bg-[#C8102E] hover:bg-[#a00b22] !text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer shrink-0"
+          className="inline-flex items-center gap-2 bg-[#CC0000] hover:bg-[#a00b22] !text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer shrink-0"
         >
           <Plus size={16} className="!text-white" />
           <span className="!text-white text-white">Tambah Testimoni</span>
@@ -96,7 +96,7 @@ export function TestimonialsManager({ initialTestimonials }: { initialTestimonia
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <button onClick={() => openEdit(t)} className="p-1.5 text-gray-400 hover:text-[#C8102E] hover:bg-red-50 rounded-lg transition-colors" title="Edit">
+                <button onClick={() => openEdit(t)} className="p-1.5 text-gray-400 hover:text-[#CC0000] hover:bg-red-50 rounded-lg transition-colors" title="Edit">
                   <Pencil size={14} />
                 </button>
                 <button onClick={() => handleDelete(t.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
@@ -106,7 +106,7 @@ export function TestimonialsManager({ initialTestimonials }: { initialTestimonia
             </div>
             <p className="text-sm text-gray-600 italic line-clamp-3 bg-gray-50/50 p-3 rounded-xl border border-gray-50">&ldquo;{t.quote}&rdquo;</p>
             <label className="flex items-center gap-2 text-xs font-semibold text-gray-500 mt-3 cursor-pointer">
-              <input type="checkbox" checked={t.is_active} onChange={() => toggleActive(t)} className="accent-[#C8102E] rounded" />
+              <input type="checkbox" checked={t.is_active} onChange={() => toggleActive(t)} className="accent-[#CC0000] rounded" />
               Aktif (tampil di homepage)
             </label>
           </div>
@@ -136,7 +136,7 @@ export function TestimonialsManager({ initialTestimonials }: { initialTestimonia
                   rows={3}
                   value={form.quote}
                   onChange={(e) => setForm((f) => ({ ...f, quote: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
                 />
               </div>
               <div>
@@ -144,7 +144,7 @@ export function TestimonialsManager({ initialTestimonials }: { initialTestimonia
                 <input
                   value={form.author}
                   onChange={(e) => setForm((f) => ({ ...f, author: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
                 />
               </div>
               <div>
@@ -153,13 +153,13 @@ export function TestimonialsManager({ initialTestimonials }: { initialTestimonia
                   value={form.role}
                   onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
                   placeholder="cth: Ibu Rumah Tangga / Chef Eksekutif"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
                 />
               </div>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="w-full bg-[#C8102E] hover:bg-[#a00b22] !text-white font-bold text-sm py-3 rounded-xl transition-all shadow-sm active:scale-95 disabled:opacity-60 cursor-pointer"
+                className="w-full bg-[#CC0000] hover:bg-[#a00b22] !text-white font-bold text-sm py-3 rounded-xl transition-all shadow-sm active:scale-95 disabled:opacity-60 cursor-pointer"
               >
                 <span className="!text-white text-white">{saving ? 'Menyimpan...' : 'Simpan'}</span>
               </button>

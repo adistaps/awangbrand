@@ -114,13 +114,13 @@ export function RecipesTable({ recipes }: { recipes: any[] }) {
                       }
                       className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer whitespace-nowrap shrink-0 disabled:opacity-50 ${
                         item.is_featured
-                          ? 'bg-red-50 border-red-200 text-[#C8102E] hover:bg-red-100 shadow-xs'
+                          ? 'bg-red-50 border-red-200 text-[#CC0000] hover:bg-red-100 shadow-xs'
                           : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
                       }`}
                     >
                       <Star
                         size={12}
-                        className={item.is_featured ? 'text-[#C8102E] fill-[#C8102E]' : 'text-gray-400'}
+                        className={item.is_featured ? 'text-[#CC0000] fill-[#CC0000]' : 'text-gray-400'}
                       />
                       <span>Taste Heat: {item.is_featured ? 'On' : 'Off'}</span>
                     </button>
@@ -149,7 +149,7 @@ export function RecipesTable({ recipes }: { recipes: any[] }) {
                       </Link>
                       <Link
                         href={`/admin/recipes/${item.id}/edit`}
-                        className="p-1.5 text-gray-400 hover:text-[#C8102E] hover:bg-red-50 rounded-lg transition-colors"
+                        className="p-1.5 text-gray-400 hover:text-[#CC0000] hover:bg-red-50 rounded-lg transition-colors"
                         title="Edit Resep"
                       >
                         <Edit size={15} />

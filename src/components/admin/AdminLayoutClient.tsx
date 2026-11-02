@@ -50,7 +50,7 @@ export function AdminLayoutClient({
             onClick={() => setSidebarOpen(false)}
           />
           {/* Sidebar drawer content */}
-          <div className="relative flex w-72 max-w-[85vw] flex-1 flex-col bg-[#C8102E] h-full shadow-2xl z-10">
+          <div className="relative flex w-72 max-w-[85vw] flex-1 flex-col bg-[#CC0000] h-full shadow-2xl z-10">
             <div className="absolute top-3.5 right-3 z-20">
               <button
                 type="button"
@@ -110,7 +110,7 @@ export function AdminLayoutClient({
             </div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-[#C8102E] bg-red-50 hover:bg-red-100 border border-red-100/60 px-2 sm:px-2.5 py-1.5 rounded-xl transition-all cursor-pointer active:scale-95"
+              className="flex items-center gap-1 text-[11px] sm:text-xs font-bold text-[#CC0000] bg-red-50 hover:bg-red-100 border border-red-100/60 px-2 sm:px-2.5 py-1.5 rounded-xl transition-all cursor-pointer active:scale-95"
               title="Keluar / Logout"
             >
               <LogOut size={13} />

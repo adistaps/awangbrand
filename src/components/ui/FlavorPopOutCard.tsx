@@ -54,7 +54,7 @@ export function FlavorPopOutCard({
             </h3>
 
             {/* Tombol Ke Halaman Produk - KHUSUS MOBILE: Mengecilkan ukuran tombol di HP */}
-            <div className="w-7 h-7 sm:w-9 sm:h-9 shrink-0 rounded-full border border-neutral-300 bg-white/90 text-black flex items-center justify-center shadow-sm transition-all duration-300 group-hover:bg-[#C8102E] group-hover:text-white group-hover:border-[#C8102E] group-hover:scale-110">
+            <div className="w-7 h-7 sm:w-9 sm:h-9 shrink-0 rounded-full border border-neutral-300 bg-white/90 text-black flex items-center justify-center shadow-sm transition-all duration-300 group-hover:bg-[#CC0000] group-hover:text-white group-hover:border-[#CC0000] group-hover:scale-110">
               <ChevronRight size={16} />
             </div>
           </div>

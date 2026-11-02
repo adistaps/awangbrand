@@ -31,7 +31,7 @@ const TAGLINE = 'PREMIUM HALAL, CRAFTED WITH HERITAGE'
 function BrandSlide() {
   return (
     <motion.div
-      className="absolute inset-0 bg-[#C8102E] flex items-center justify-center px-4 pt-[84px] sm:pt-[110px] pb-[60px] sm:pb-[90px] max-md:pb-[45px]"
+      className="absolute inset-0 bg-[#CC0000] flex items-center justify-center px-4 pt-[84px] sm:pt-[110px] pb-[60px] sm:pb-[90px] max-md:pb-[45px]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -109,7 +109,7 @@ export function HeroSection() {
   }
 
   return (
-    <section className="relative w-full h-screen min-h-[500px] max-md:min-h-[500px] flex flex-col bg-[#C8102E] overflow-hidden">
+    <section className="relative w-full h-screen min-h-[500px] max-md:min-h-[500px] flex flex-col bg-[#CC0000] overflow-hidden">
       {/* LAYER SLIDESHOW (foto + slide teks brand) */}
       <div className="absolute inset-0 z-0">
         <AnimatePresence initial={false}>
@@ -140,7 +140,7 @@ export function HeroSection() {
           <svg
             viewBox="0 0 320 120"
             preserveAspectRatio="none"
-            className="w-full h-full text-[#C8102E] fill-current overflow-visible"
+            className="w-full h-full text-[#CC0000] fill-current overflow-visible"
           >
             <path d="M 0,0 L 0,0 C 40,0 90,110 160,110 C 230,110 280,0 320,0 L 320,120 L 0,120 Z" />
           </svg>

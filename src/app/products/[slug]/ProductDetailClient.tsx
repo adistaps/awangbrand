@@ -1,12 +1,26 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ShoppingBag, X, ChevronRight } from 'lucide-react'
+import { ShoppingBag, X, ChevronRight, ChevronLeft, Plus, Minus, Utensils } from 'lucide-react'
 import { ProductGallery } from '@/components/ProductGallery'
 import { ProductViewTracker } from '@/components/ProductViewTracker'
-import { ProductsGrid } from '@/components/ProductsGrid'
+
+interface RelatedProduct {
+  slug: string
+  name: string
+  img: string
+  cat: string
+}
+
+interface RelatedRecipe {
+  id: string
+  title: string
+  slug: string
+  main_image: string
+  category: string
+}
 
 interface ProductDetailClientProps {
   product: {
@@ -14,16 +28,57 @@ interface ProductDetailClientProps {
     name: string
     description: string | null
     ingredients?: string | null
+    how_to_use?: string | null
     sizes?: string[] | null
     shopee_url?: string | null
     tokopedia_url?: string | null
     lazada_url?: string | null
     category?: { name: string } | null
+    nutritional_facts?: Record<string, unknown> | null
   }
   images: { id: string; image_url: string }[]
   specs: { id: string; spec_key: string; spec_value: string }[]
-  relatedProducts: { slug: string; name: string; img: string; cat: string }[]
+  relatedProducts: RelatedProduct[]
+  relatedRecipes?: RelatedRecipe[]
   brands?: { id: string; name: string; logo_url: string | null }[]
+}
+
+// Accordion item component
+function AccordionItem({
+  title,
+  children,
+  defaultOpen = false,
+}: {
+  title: string
+  children: React.ReactNode
+  defaultOpen?: boolean
+}) {
+  const [open, setOpen] = useState(defaultOpen)
+
+  return (
+    <div className="border-b border-[#e0d8cc]">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between py-4 text-left group"
+        aria-expanded={open}
+      >
+        <span className="text-[15px] font-semibold text-[#2b1a10] tracking-wide group-hover:text-[#CC0000] transition-colors">
+          {title}
+        </span>
+        {open ? (
+          <Minus className="w-4 h-4 text-[#CC0000] shrink-0" />
+        ) : (
+          <Plus className="w-4 h-4 text-[#CC0000] shrink-0" />
+        )}
+      </button>
+      {open && (
+        <div className="pb-5 text-[14px] text-[#5a4636] leading-relaxed whitespace-pre-line">
+          {children}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export function ProductDetailClient({
@@ -31,115 +86,175 @@ export function ProductDetailClient({
   images,
   specs,
   relatedProducts,
+  relatedRecipes = [],
   brands = [],
 }: ProductDetailClientProps) {
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false)
+  const relatedScrollRef = useRef<HTMLDivElement>(null)
+  const recipesScrollRef = useRef<HTMLDivElement>(null)
 
-  const displayName = product.name
-  const displayDescription = product.description
+  const categoryName =
+    (product.category as unknown as { name: string } | null)?.name ?? 'AWANG Brand'
 
-  // Format data spesifikasi secara dinamis murni dari database tanpa hardcode
-  const dynamicSpecs = [
-    ...(product.ingredients ? [{ key: 'Ingredients', value: product.ingredients }] : []),
-    ...(displayDescription ? [{ key: 'Description', value: displayDescription }] : []),
-    { key: 'Storage', value: 'Refrigerate any unused Awang Brand Paste in a sealed container.' },
-    ...(product.sizes && Array.isArray(product.sizes) && product.sizes.length > 0
-      ? [{ key: 'Packing Size', value: product.sizes.join(', ') }]
-      : [{ key: 'Packing Size', value: '200gm, 1kg, 5kg' }]),
-    { key: 'Remark', value: '100% Natural, No Preservatives, HALAL Certified' },
-  ]
+  // Helper: ambil nilai dari specs berdasarkan key (case-insensitive)
+  function getSpec(key: string): string | null {
+    const found = specs.find((s) => s.spec_key.toLowerCase().includes(key.toLowerCase()))
+    return found ? found.spec_value : null
+  }
 
-  const specRows = specs.length > 0
-    ? specs.map((s) => ({ key: s.spec_key, value: s.spec_value }))
-    : dynamicSpecs
+  // Accordion fields — prioritize dedicated DB columns, then specs
+  const descriptionText = product.description || getSpec('description')
+  const ingredientsText = product.ingredients || getSpec('ingredient')
+  const howToUseText = product.how_to_use || getSpec('how to use') || getSpec('cara')
+  const sizeText =
+    product.sizes && product.sizes.length > 0
+      ? product.sizes.join(', ')
+      : getSpec('size') || getSpec('berat') || getSpec('packing')
+  const remarkText = getSpec('remark') || getSpec('catatan')
+
+  function scrollRelated(dir: 'left' | 'right') {
+    if (!relatedScrollRef.current) return
+    relatedScrollRef.current.scrollBy({ left: dir === 'left' ? -320 : 320, behavior: 'smooth' })
+  }
+
+  function scrollRecipes(dir: 'left' | 'right') {
+    if (!recipesScrollRef.current) return
+    recipesScrollRef.current.scrollBy({ left: dir === 'left' ? -320 : 320, behavior: 'smooth' })
+  }
 
   return (
-    <main className="bg-white min-h-screen font-sans text-slate-900 antialiased pt-28 sm:pt-36 pb-20">
+    <main className="bg-white min-h-screen font-sans text-slate-900 antialiased">
       <ProductViewTracker productId={product.id} />
 
-      {/* CONTAINER UTAMA DETAIL PRODUK (LANGSUNG DENGAN BACKGROUND PAGE, TANPA BUNGKUS CARD) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 mb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-start">
+      {/* ── BREADCRUMB ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pt-28 sm:pt-36 pb-4">
+        <nav className="flex items-center gap-1.5 text-xs text-[#7a6555]">
+          <Link href="/" className="hover:text-[#CC0000] transition-colors">Home</Link>
+          <ChevronRight className="w-3 h-3" />
+          <Link href="/products" className="hover:text-[#CC0000] transition-colors">Products</Link>
+          <ChevronRight className="w-3 h-3" />
+          <span className="text-[#2b1a10] font-medium truncate max-w-[200px]">{product.name}</span>
+        </nav>
+      </div>
 
-          {/* GALERI GAMBAR PRODUK */}
-          <div className="lg:col-span-6 lg:sticky lg:top-28">
-            <ProductGallery images={images} productName={displayName} />
+      {/* ── MAIN PRODUCT SECTION ── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 pb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+
+          {/* LEFT — Gallery */}
+          <div className="lg:sticky lg:top-28">
+            <ProductGallery images={images} productName={product.name} />
           </div>
 
-          {/* DETAIL KONTEN & TABEL SPESIFIKASI */}
-          <div className="lg:col-span-6 flex flex-col justify-between h-full space-y-6">
+          {/* RIGHT — Info */}
+          <div className="flex flex-col gap-6 pt-2">
 
-            {/* Header Nama Produk */}
-            <div>
-              {product.category && (
-                <span className="text-xs font-black text-[#C8102E] uppercase tracking-widest block mb-2">
-                  {product.category.name}
+            {/* Brand / Category label */}
+            <p className="text-xs font-bold text-[#CC0000] uppercase tracking-widest">
+              {categoryName}
+            </p>
+
+            {/* Product name */}
+            <h1 className="text-3xl sm:text-4xl lg:text-[2.6rem] font-black text-[#1a0f08] leading-tight tracking-tight">
+              {product.name}
+            </h1>
+
+            {/* Size pill */}
+            {sizeText && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[#7a6555] font-semibold uppercase tracking-wide">
+                  Sizes available:
                 </span>
-              )}
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#C8102E] uppercase tracking-tight leading-tight">
-                {displayName}
-              </h1>
-              <div className="w-full h-[2px] bg-amber-600/30 mt-4 mb-6 border-b border-dashed border-amber-600/40" />
-            </div>
+                <span className="text-xs font-bold text-[#2b1a10] border border-[#c5b49a] rounded-full px-3 py-0.5 bg-white">
+                  {sizeText}
+                </span>
+              </div>
+            )}
 
-            {/* TABEL DETAIL PRODUK (DESAIN BERSIH PUTIH TANPA CARD KREM) */}
-            <div className="border border-gray-200 rounded-xl overflow-hidden shadow-xs bg-white">
-              <table className="w-full text-xs sm:text-sm text-left">
-                <tbody className="divide-y divide-gray-200">
-                  {specRows.map((row, idx) => (
-                    <tr key={idx} className="hover:bg-gray-50/60 transition-colors">
-                      <td className="py-3.5 px-4 sm:px-5 font-bold text-[#4A1521] w-4/12 sm:w-3/12 bg-gray-50/80 border-r border-gray-200 align-top">
-                        {row.key}
-                      </td>
-                      <td className="py-3.5 px-4 sm:px-5 text-slate-800 font-medium leading-relaxed w-8/12 sm:w-9/12 align-top bg-white">
-                        {row.value}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* TOMBOL "WHERE TO BUY" (MEMANCING POPUP MULTI-MARKETPLACE) */}
-            <div className="pt-2">
+            {/* Buy button */}
+            <div className="pt-1">
               <button
                 type="button"
+                id="btn-buy-now"
                 onClick={() => setIsBuyModalOpen(true)}
-                className="w-full py-4 px-8 bg-[#C8102E] hover:bg-[#a60c24] text-white font-extrabold text-sm sm:text-base uppercase tracking-wider rounded-full shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 cursor-pointer"
+                className="inline-flex items-center gap-2.5 bg-[#1a0f08] hover:bg-[#CC0000] text-white font-bold text-sm uppercase tracking-widest px-8 py-3.5 rounded-full shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               >
-                <ShoppingBag className="w-5 h-5" />
-                <span>Beli Sekarang</span>
+                <ShoppingBag className="w-4 h-4" />
+                Beli Sekarang
               </button>
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-[#e0d8cc] pt-4">
+              <p className="text-[13px] font-bold text-[#2b1a10] uppercase tracking-widest mb-3">
+                Product Information
+              </p>
+
+              {/* Accordion */}
+              <div>
+                {descriptionText && (
+                  <AccordionItem title="Description" defaultOpen={true}>
+                    {descriptionText}
+                  </AccordionItem>
+                )}
+                {ingredientsText && (
+                  <AccordionItem title="Ingredients">
+                    {ingredientsText}
+                  </AccordionItem>
+                )}
+                {howToUseText && (
+                  <AccordionItem title="How to Use">
+                    {howToUseText}
+                  </AccordionItem>
+                )}
+                {sizeText && (
+                  <AccordionItem title="Size">
+                    {sizeText}
+                  </AccordionItem>
+                )}
+                {remarkText && (
+                  <AccordionItem title="Remark">
+                    {remarkText}
+                  </AccordionItem>
+                )}
+
+                {/* Jika tidak ada field manapun yang terisi, fallback ke specs lain */}
+                {!descriptionText && !ingredientsText && !howToUseText && !sizeText && !remarkText && specs.length > 0 && (
+                  specs.map((s) => (
+                    <AccordionItem key={s.id} title={s.spec_key}>
+                      {s.spec_value}
+                    </AccordionItem>
+                  ))
+                )}
+              </div>
             </div>
 
           </div>
         </div>
       </section>
 
-      {/* SECTION BRAND LOGOS DINAMIS DARI DATABASE SUPABASE (WE ARE AVAILABLE AT STORES) */}
+      {/* ── BRANDS / AVAILABLE AT ── */}
       {brands.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 mb-16">
-          <div className="py-4">
-            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold uppercase tracking-tight text-[#C8102E] mb-8 text-center">
-              KAMI TERSEDIA DI SUPERMARKET & TOKO
-            </h3>
-            <div className="grid grid-cols-3 sm:grid-cols-6 items-center justify-items-center gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto">
+        <section className="bg-white py-12 px-4 sm:px-6">
+          <div className="max-w-7xl mx-auto">
+            <p className="text-center text-xs font-bold text-[#7a6555] uppercase tracking-widest mb-8">
+              Tersedia di
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
               {brands.map((brand) => (
                 <div
                   key={brand.id}
-                  className="group relative h-12 sm:h-16 w-full px-2 flex items-center justify-center cursor-pointer transition-transform duration-300 hover:scale-105"
+                  className="h-10 sm:h-12 flex items-center justify-center transition-all duration-300 hover:scale-105"
                 >
                   {brand.logo_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={brand.logo_url}
                       alt={brand.name}
-                      className="max-h-10 sm:max-h-12 w-auto object-contain transition-all duration-300"
+                      className="max-h-10 sm:max-h-12 w-auto object-contain"
                     />
                   ) : (
-                    <span className="text-sm sm:text-base font-bold text-stone-800 tracking-tight text-center">
-                      {brand.name}
-                    </span>
+                    <span className="text-sm font-bold text-stone-700">{brand.name}</span>
                   )}
                 </div>
               ))}
@@ -148,41 +263,175 @@ export function ProductDetailClient({
         </section>
       )}
 
-      {/* SECTION RELATED PRODUCTS */}
+      {/* ── OTHER PRODUCTS YOU MAY LIKE ── */}
       {relatedProducts.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl sm:text-3xl font-black text-[#C8102E] uppercase tracking-tight">
-              Produk Lainnya
-            </h2>
-            <Link
-              href="/products"
-              className="inline-flex items-center gap-1 text-xs sm:text-sm font-extrabold text-[#C8102E] hover:underline uppercase tracking-wider"
+        <section className="py-14 px-4 sm:px-6 bg-white">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl sm:text-3xl font-black text-[#CC0000] uppercase tracking-tight">
+                Other Products You May Like
+              </h2>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => scrollRelated('left')}
+                  className="w-9 h-9 rounded-full border-2 border-[#2b1a10] flex items-center justify-center hover:bg-[#2b1a10] hover:text-white transition-all cursor-pointer"
+                  aria-label="Scroll left"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollRelated('right')}
+                  className="w-9 h-9 rounded-full border-2 border-[#2b1a10] flex items-center justify-center hover:bg-[#2b1a10] hover:text-white transition-all cursor-pointer"
+                  aria-label="Scroll right"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Horizontal scroll */}
+            <div
+              ref={relatedScrollRef}
+              className="flex gap-6 sm:gap-8 overflow-x-auto pb-6 scrollbar-hide snap-x snap-mandatory"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
-              <span>Lihat Semua</span>
-              <ChevronRight size={16} />
-            </Link>
+              {relatedProducts.map((p) => (
+                <Link
+                  key={p.slug}
+                  href={`/products/${p.slug}`}
+                  className="group shrink-0 w-[240px] sm:w-[280px] snap-start flex flex-col items-center text-center"
+                >
+                  <div className="w-full aspect-square overflow-hidden mb-4 flex items-center justify-center">
+                    {p.img ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={p.img}
+                        alt={p.name}
+                        className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300 drop-shadow-sm"
+                      />
+                    ) : (
+                      <div className="w-20 h-20 rounded-2xl bg-stone-100 flex items-center justify-center text-[#7a6555] text-3xl">
+                        🍲
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-base sm:text-lg font-bold text-[#1a0f08] leading-snug group-hover:text-[#CC0000] transition-colors line-clamp-2 px-1">
+                    {p.name}
+                  </p>
+                </Link>
+              ))}
+            </div>
           </div>
-          <ProductsGrid products={relatedProducts} showFilters={false} />
         </section>
       )}
 
-      {/* MODAL POPUP WHERE TO BUY (3 ONLINE PLATFORMS) */}
+      {/* ── COOK WITH US (Recipes using this product) ── */}
+      {relatedRecipes.length > 0 && (
+        <section className="py-14 px-4 sm:px-6 bg-white">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl sm:text-3xl font-black text-[#CC0000] uppercase tracking-tight flex items-center gap-3">
+                <Utensils className="w-6 h-6" />
+                Cook With Us
+              </h2>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/recipes"
+                  className="text-xs font-bold text-[#2b1a10] hover:text-[#CC0000] uppercase tracking-widest transition-colors mr-2 hidden sm:inline"
+                >
+                  See All Recipes
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => scrollRecipes('left')}
+                  className="w-9 h-9 rounded-full border-2 border-[#2b1a10] flex items-center justify-center hover:bg-[#2b1a10] hover:text-white transition-all cursor-pointer"
+                  aria-label="Scroll recipes left"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollRecipes('right')}
+                  className="w-9 h-9 rounded-full border-2 border-[#2b1a10] flex items-center justify-center hover:bg-[#2b1a10] hover:text-white transition-all cursor-pointer"
+                  aria-label="Scroll recipes right"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Horizontal scroll cards */}
+            <div
+              ref={recipesScrollRef}
+              className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {relatedRecipes.map((recipe) => (
+                <Link
+                  key={recipe.id}
+                  href={`/recipes/${recipe.slug}`}
+                  className="group shrink-0 w-[280px] sm:w-[320px] snap-start relative rounded-2xl overflow-hidden aspect-[4/3] block"
+                >
+                  {/* Image */}
+                  {recipe.main_image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={recipe.main_image}
+                      alt={recipe.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-[#e0d8cc] flex items-center justify-center text-4xl">
+                      🍳
+                    </div>
+                  )}
+
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                  {/* Text */}
+                  <div className="absolute inset-0 p-5 flex flex-col justify-end text-white">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/70 mb-1">
+                      Recipes
+                    </p>
+                    <h3 className="text-base sm:text-lg font-extrabold leading-snug uppercase tracking-tight line-clamp-2">
+                      {recipe.title}
+                    </h3>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div className="text-center mt-8 sm:hidden">
+              <Link
+                href="/recipes"
+                className="inline-flex items-center gap-1 text-sm font-bold text-[#CC0000] hover:underline uppercase tracking-widest"
+              >
+                See All Recipes <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── BUY MODAL ── */}
       {isBuyModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
           <div className="relative w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100">
-            {/* Tombol Close */}
             <button
               type="button"
               onClick={() => setIsBuyModalOpen(false)}
-              className="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-700 rounded-full hover:bg-gray-100 transition-colors"
+              className="absolute top-5 right-5 p-2 text-gray-400 hover:text-gray-700 rounded-full hover:bg-gray-100 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            {/* Header Modal */}
             <div className="text-center mb-6">
-              <div className="w-12 h-12 bg-red-50 text-[#C8102E] rounded-full flex items-center justify-center mx-auto mb-3">
+              <div className="w-12 h-12 bg-red-50 text-[#CC0000] rounded-full flex items-center justify-center mx-auto mb-3">
                 <ShoppingBag className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-black text-[#111111] uppercase tracking-tight">
@@ -193,84 +442,118 @@ export function ProductDetailClient({
               </p>
             </div>
 
-            {/* List 3 Ikon Marketplace (Shopee, Lazada, Tokopedia/Instagram) */}
             <div className="space-y-3.5">
               {/* Shopee */}
-              <a
-                href={product.shopee_url || 'https://shopee.co.id'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 rounded-2xl border border-orange-100 bg-orange-50/50 hover:bg-orange-50 transition-all duration-200 group"
-              >
-                <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-orange-100 flex items-center justify-center p-2 shadow-sm shrink-0">
-                    <Image
-                      src="/icon/shopee.svg"
-                      alt="Shopee"
-                      width={28}
-                      height={28}
-                      className="object-contain w-full h-full"
-                    />
+              {product.shopee_url ? (
+                <a
+                  href={product.shopee_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-4 rounded-2xl border border-orange-100 bg-orange-50/50 hover:bg-orange-50 transition-all duration-200 group"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-orange-100 flex items-center justify-center p-2 shadow-sm shrink-0">
+                      <Image src="/icon/shopee.svg" alt="Shopee" width={28} height={28} className="object-contain w-full h-full" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-gray-900 group-hover:text-[#EE4D2D] transition-colors">Shopee Official Store</h4>
+                      <p className="text-[11px] text-gray-500">Gratis Ongkir & Voucher Diskon</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-gray-900 group-hover:text-[#EE4D2D] transition-colors">Shopee Official Store</h4>
-                    <p className="text-[11px] text-gray-500">Gratis Ongkir & Voucher Diskon</p>
+                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                </a>
+              ) : (
+                <div
+                  className="flex items-center justify-between p-4 rounded-2xl border border-gray-200 bg-gray-50/70 opacity-60 cursor-not-allowed select-none"
+                  title="Belum tersedia untuk produk ini"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center p-2 shadow-sm shrink-0 grayscale">
+                      <Image src="/icon/shopee.svg" alt="Shopee" width={28} height={28} className="object-contain w-full h-full" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-gray-400">Shopee Official Store</h4>
+                      <p className="text-[11px] text-gray-400 italic">Belum tersedia</p>
+                    </div>
                   </div>
+                  <span className="text-[11px] font-semibold text-gray-400 bg-gray-200/60 px-2 py-0.5 rounded-md">Off</span>
                 </div>
-                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:translate-x-1 transition-transform" />
-              </a>
+              )}
 
               {/* Tokopedia */}
-              <a
-                href={product.tokopedia_url || 'https://tokopedia.com'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 rounded-2xl border border-emerald-100 bg-emerald-50/50 hover:bg-emerald-50 transition-all duration-200 group"
-              >
-                <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-emerald-100 flex items-center justify-center p-2 shadow-sm shrink-0">
-                    <Image
-                      src="/icon/tokopedia.svg"
-                      alt="Tokopedia"
-                      width={28}
-                      height={28}
-                      className="object-contain w-full h-full"
-                    />
+              {product.tokopedia_url ? (
+                <a
+                  href={product.tokopedia_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-4 rounded-2xl border border-emerald-100 bg-emerald-50/50 hover:bg-emerald-50 transition-all duration-200 group"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-emerald-100 flex items-center justify-center p-2 shadow-sm shrink-0">
+                      <Image src="/icon/tokopedia.svg" alt="Tokopedia" width={28} height={28} className="object-contain w-full h-full" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-gray-900 group-hover:text-[#03AC0E] transition-colors">Tokopedia Official Store</h4>
+                      <p className="text-[11px] text-gray-500">Pengiriman Cepat & Cashback</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-gray-900 group-hover:text-[#03AC0E] transition-colors">Tokopedia Official Store</h4>
-                    <p className="text-[11px] text-gray-500">Pengiriman Cepat & Cashback</p>
+                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                </a>
+              ) : (
+                <div
+                  className="flex items-center justify-between p-4 rounded-2xl border border-gray-200 bg-gray-50/70 opacity-60 cursor-not-allowed select-none"
+                  title="Belum tersedia untuk produk ini"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center p-2 shadow-sm shrink-0 grayscale">
+                      <Image src="/icon/tokopedia.svg" alt="Tokopedia" width={28} height={28} className="object-contain w-full h-full" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-gray-400">Tokopedia Official Store</h4>
+                      <p className="text-[11px] text-gray-400 italic">Belum tersedia</p>
+                    </div>
                   </div>
+                  <span className="text-[11px] font-semibold text-gray-400 bg-gray-200/60 px-2 py-0.5 rounded-md">Off</span>
                 </div>
-                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:translate-x-1 transition-transform" />
-              </a>
+              )}
 
               {/* Lazada */}
-              <a
-                href={product.lazada_url || 'https://lazada.co.id'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between p-4 rounded-2xl border border-blue-100 bg-blue-50/50 hover:bg-blue-50 transition-all duration-200 group"
-              >
-                <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-blue-100 flex items-center justify-center p-2 shadow-sm shrink-0">
-                    <Image
-                      src="/icon/lazada.svg"
-                      alt="Lazada"
-                      width={28}
-                      height={28}
-                      className="object-contain w-full h-full"
-                    />
+              {product.lazada_url ? (
+                <a
+                  href={product.lazada_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-4 rounded-2xl border border-blue-100 bg-blue-50/50 hover:bg-blue-50 transition-all duration-200 group"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-blue-100 flex items-center justify-center p-2 shadow-sm shrink-0">
+                      <Image src="/icon/lazada.svg" alt="Lazada" width={28} height={28} className="object-contain w-full h-full" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-gray-900 group-hover:text-[#0F146D] transition-colors">Lazada Flagship Store</h4>
+                      <p className="text-[11px] text-gray-500">Jaminan 100% Produk Original</p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-gray-900 group-hover:text-[#0F146D] transition-colors">Lazada Flagship Store</h4>
-                    <p className="text-[11px] text-gray-500">Jaminan 100% Produk Original</p>
+                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                </a>
+              ) : (
+                <div
+                  className="flex items-center justify-between p-4 rounded-2xl border border-gray-200 bg-gray-50/70 opacity-60 cursor-not-allowed select-none"
+                  title="Belum tersedia untuk produk ini"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center p-2 shadow-sm shrink-0 grayscale">
+                      <Image src="/icon/lazada.svg" alt="Lazada" width={28} height={28} className="object-contain w-full h-full" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-sm text-gray-400">Lazada Flagship Store</h4>
+                      <p className="text-[11px] text-gray-400 italic">Belum tersedia</p>
+                    </div>
                   </div>
+                  <span className="text-[11px] font-semibold text-gray-400 bg-gray-200/60 px-2 py-0.5 rounded-md">Off</span>
                 </div>
-                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:translate-x-1 transition-transform" />
-              </a>
+              )}
             </div>
-
           </div>
         </div>
       )}

@@ -1,437 +1,217 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { Recipe } from '@/types/database'
-import { ShoppingCart, Check } from 'lucide-react'
+import { Check } from 'lucide-react'
 
 interface Props {
-  recipe: Recipe | null
+  recipe: Recipe
   relatedRecipes: Recipe[] | null
   slug: string
 }
 
-export function RecipeDetailClient({ recipe, relatedRecipes, slug }: Props) {
-  // Fallback demo recipe jika belum terhubung dengan Supabase
-  const displayRecipe: Recipe = recipe || {
-    id: 'demo-detail',
-    title: 'Ayam Goreng Mentega Saus Tomat AWANG',
-    slug: slug || 'ayam-goreng-mentega',
-    category: 'Main Course',
-    prep_time: '15 MENIT',
-    cook_time: '20 MENIT',
-    servings: '3 PORSI',
-    calories: '450 KCAL',
-    difficulty: 'Easy',
-    description: 'Ayam goreng renyah dibalur saus tomat mentega asam manis lembut buatan rumah yang disukai anak-anak.',
-    main_image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=1200&q=80',
-    ingredients: [
-      '500g daging paha ayam potong dadu',
-      '5 sdm AWANG Tomato Ketchup Original',
-      '2 sdm mentega',
-      '1/2 buah bawang bombay iris tipis',
-      '2 siung bawang putih cincang',
-      '1 sdm kecap manis'
-    ],
-    instructions: [
-      'Goreng paha ayam hingga keemasan dan matang, sisihkan.',
-      'Lelehkan mentega di wajan, tumis bawang putih dan bawang bombay hingga harum.',
-      'Masukkan AWANG Tomato Ketchup, kecap manis, dan sedikit air.',
-      'Aduk rata hingga saus mengental, lalu masukkan ayam goreng.',
-      'Aduk cepat hingga seluruh permukaan ayam terbalut saus. Sajikan hangat.'
-    ],
-    tips: 'Gunakan paha ayam fillet agar teksturnya lebih juicy dan gurih saat digoreng.',
-    featured_product: {
-      id: 'p1',
-      name: 'AWANG Tomato Ketchup Original',
-      slug: 'awang-tomato-ketchup',
-      category_id: null,
-      description: 'Saus tomat autentik berkualitas tinggi.',
-      main_image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=500&q=80',
-      is_featured: true,
-      status: 'published',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    },
-    is_featured: true,
-    status: 'published',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  }
-
-  const fallbackRelated: Recipe[] = [
-    {
-      id: 'rel-1',
-      title: 'Ayam Goreng Mentega Saus Tomat AWANG',
-      slug: 'ayam-goreng-mentega',
-      category: 'Main Course',
-      prep_time: '15 MIN',
-      cook_time: '20 MIN',
-      servings: '3 PORSI',
-      difficulty: 'Easy',
-      main_image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80',
-      description: 'Comforting gnocchi baked in creamy chicken pot pie sauce.',
-      ingredients: [],
-      instructions: [],
-      is_featured: false,
-      status: 'published',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    },
-    {
-      id: 'rel-2',
-      title: 'Nasi Goreng Pedas Mantap AWANG',
-      slug: 'nasi-goreng-pedas',
-      category: 'Side Dish',
-      prep_time: '10 MIN',
-      cook_time: '10 MIN',
-      servings: '2 PORSI',
-      difficulty: 'Easy',
-      main_image: 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&w=600&q=80',
-      description: 'Crispy sauteed green beans tossed in spicy chili crunch oil.',
-      ingredients: [],
-      instructions: [],
-      is_featured: false,
-      status: 'published',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }
-  ]
-
-  const displayRelated = (relatedRecipes && relatedRecipes.length > 0) ? relatedRecipes : fallbackRelated
+export function RecipeDetailClient({ recipe, relatedRecipes }: Props) {
+  const displayRecipe = recipe
+  const displayRelated = relatedRecipes || []
 
   return (
-    <div className="w-full bg-white min-h-screen pt-20 sm:pt-28 pb-16 font-sans relative z-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <div className="w-full bg-[#FAF6ED] min-h-screen pt-20 sm:pt-28 pb-20 font-sans relative z-10">
 
-        {/* ========================================================
-            DESKTOP LAYOUT (lg:grid lg:grid-cols-12 - KEMBALI KE SEMULA)
-            ======================================================== */}
-        <div className="hidden lg:grid lg:grid-cols-12 gap-12 items-start mb-20">
+      {/* ========================================================
+          MAIN LAYOUT: Left (content) + Right (image + product)
+          ======================================================== */}
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
 
-          {/* Kolom Kiri: Judul, Metrik, Deskripsi, Bahan, Instruksi, Tips */}
-          <div className="lg:col-span-7 space-y-6">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#111111] leading-tight tracking-tight uppercase">
+          {/* ── LEFT COLUMN ── */}
+          <div className="lg:col-span-7 space-y-8">
+
+            {/* Judul Utama */}
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-[#590014] leading-[1.05] tracking-tight">
               {displayRecipe.title}
             </h1>
 
-            {/* Time / Servings Metrics */}
-            <div className="flex flex-wrap items-center gap-6 py-4 border-y border-stone-200 text-xs font-extrabold uppercase text-stone-700">
+            {/* Metrics */}
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 py-4 border-y border-[#590014]/15 text-xs sm:text-sm font-bold text-stone-800">
               {displayRecipe.prep_time && (
-                <div>
-                  <span className="text-stone-400 block text-[10px] tracking-widest">Prep</span>
-                  <span className="text-[#C8102E]">{displayRecipe.prep_time}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-stone-500 font-medium uppercase text-[10px] tracking-wider">PREP</span>
+                  <span className="font-extrabold text-[#590014]">{displayRecipe.prep_time}</span>
                 </div>
               )}
               {displayRecipe.cook_time && (
-                <div>
-                  <span className="text-stone-400 block text-[10px] tracking-widest">Cook</span>
-                  <span className="text-[#C8102E]">{displayRecipe.cook_time}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-stone-500 font-medium uppercase text-[10px] tracking-wider">COOK</span>
+                  <span className="font-extrabold text-[#590014]">{displayRecipe.cook_time}</span>
                 </div>
               )}
               {displayRecipe.servings && (
-                <div>
-                  <span className="text-stone-400 block text-[10px] tracking-widest">Servings</span>
-                  <span className="text-[#C8102E]">{displayRecipe.servings}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-stone-500 font-medium uppercase text-[10px] tracking-wider">SERVINGS</span>
+                  <span className="font-extrabold text-[#590014]">{displayRecipe.servings}</span>
                 </div>
               )}
               {displayRecipe.calories && (
-                <div>
-                  <span className="text-stone-400 block text-[10px] tracking-widest">Calories</span>
-                  <span className="text-[#C8102E]">{displayRecipe.calories}</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-stone-500 font-medium uppercase text-[10px] tracking-wider">CALORIES</span>
+                  <span className="font-extrabold text-[#590014]">{displayRecipe.calories}</span>
                 </div>
               )}
             </div>
 
-            <p className="text-stone-700 text-base leading-relaxed font-medium">
-              {displayRecipe.description}
-            </p>
+            {/* Deskripsi */}
+            {displayRecipe.description && (
+              <p className="text-stone-700 text-sm sm:text-base leading-relaxed font-normal">
+                {displayRecipe.description}
+              </p>
+            )}
 
-            {/* Ingredients List */}
-            <div className="pt-6">
-              <h2 className="text-2xl font-black text-[#C8102E] uppercase tracking-tight mb-6">
+            {/* Ingredients */}
+            <div className="space-y-4">
+              <h2 className="text-lg sm:text-xl font-black text-[#CC0000] uppercase tracking-widest">
                 Ingredients
               </h2>
-              <ul className="space-y-3.5 text-stone-800 font-semibold text-sm sm:text-base">
+              <ul className="space-y-2.5 text-stone-800 font-medium text-sm sm:text-base">
                 {displayRecipe.ingredients.map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-3 pb-3 border-b border-stone-100">
-                    <Check size={18} className="text-[#C8102E] shrink-0 mt-0.5" />
+                  <li key={idx} className="flex items-start gap-2.5">
+                    <Check size={16} className="text-[#CC0000] shrink-0 mt-0.5" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Step-by-Step Instructions */}
-            <div className="pt-6">
-              <h2 className="text-2xl font-black text-[#C8102E] uppercase tracking-tight mb-6">
+            {/* Instructions */}
+            <div className="space-y-4">
+              <h2 className="text-lg sm:text-xl font-black text-[#CC0000] uppercase tracking-widest">
                 Instructions
               </h2>
-              <div className="space-y-6">
+              <div className="space-y-5">
                 {displayRecipe.instructions.map((step, idx) => (
-                  <div key={idx} className="space-y-1.5">
-                    <h3 className="text-xs font-black text-[#C8102E] uppercase tracking-widest">
+                  <div key={idx} className="space-y-1">
+                    <h3 className="text-[10px] font-black text-[#CC0000] uppercase tracking-widest">
                       Step {idx + 1}
                     </h3>
-                    <p className="text-stone-800 text-sm sm:text-base leading-relaxed font-medium">
+                    <p className="text-stone-800 text-sm sm:text-base leading-relaxed font-normal">
                       {step}
                     </p>
                   </div>
                 ))}
               </div>
+
+              {/* Recipe Tip */}
+              {displayRecipe.tips && (
+                <div className="mt-6 p-5 bg-white/60 border border-[#590014]/10 rounded-2xl">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-[#590014] mb-1.5 flex items-center gap-1.5">
+                    <span>💡</span> Recipe Tip
+                  </h4>
+                  <p className="text-stone-700 text-xs sm:text-sm leading-relaxed font-normal">
+                    {displayRecipe.tips}
+                  </p>
+                </div>
+              )}
             </div>
 
-            {/* Recipe Tip Box */}
-            {displayRecipe.tips && (
-              <div className="mt-8 p-6 bg-stone-50 border border-stone-200/60 rounded-2xl">
-                <h4 className="text-xs font-black uppercase tracking-widest text-[#C8102E] mb-2">
-                  💡 Recipe Tip
-                </h4>
-                <p className="text-stone-700 text-xs sm:text-sm leading-relaxed font-medium">
-                  {displayRecipe.tips}
-                </p>
-              </div>
-            )}
           </div>
 
-          {/* Kolom Kanan: Main Recipe Image & Sticky Featured Product Card */}
-          <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-28">
+          {/* ── RIGHT COLUMN ── */}
+          <div className="lg:col-span-5 space-y-6 sticky top-28 self-start">
 
-            {/* Main Recipe Image */}
-            <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden bg-stone-100 border border-stone-100 shadow-sm">
+            {/* Recipe Photo */}
+            <div className="relative w-full aspect-[4/4.5] rounded-2xl overflow-hidden shadow-lg bg-stone-100">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={displayRecipe.main_image || 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=1200&q=80'}
+                src={displayRecipe.main_image || 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=900&q=80'}
                 alt={displayRecipe.title}
                 className="w-full h-full object-cover"
               />
             </div>
 
-            {/* Featured Product Card */}
+            {/* Featured Product */}
             {displayRecipe.featured_product && (
-              <Link
-                href={`/products/${displayRecipe.featured_product.slug}`}
-                className="group block bg-white p-6 rounded-2xl border border-stone-200/80 shadow-sm hover:border-[#C8102E] transition-all duration-300 space-y-3"
-              >
-                <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 block">
+              <div className="space-y-2">
+                <p className="text-[10px] font-black uppercase tracking-widest text-stone-400">
                   Shop Featured Products
-                </span>
-
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-stone-50 rounded-xl overflow-hidden shrink-0 border border-stone-100 p-2 flex items-center justify-center">
+                </p>
+                <Link
+                  href={`/products/${displayRecipe.featured_product.slug}`}
+                  className="flex items-center gap-4 bg-white px-4 py-3.5 rounded-2xl border border-stone-200 shadow-xs hover:border-[#CC0000] hover:shadow-md transition-all group"
+                >
+                  <div className="w-14 h-14 rounded-xl overflow-hidden bg-stone-50 p-1.5 shrink-0 flex items-center justify-center border border-stone-100">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={displayRecipe.featured_product.main_image || '/placeholder-product.jpg'}
                       alt={displayRecipe.featured_product.name}
-                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
                     />
                   </div>
-
-                  <div className="flex-1 flex items-center justify-between gap-3">
-                    <h4 className="text-sm sm:text-base font-extrabold text-[#111111] line-clamp-2 leading-snug tracking-tight">
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-bold text-[#111111] group-hover:text-[#CC0000] transition-colors block truncate">
                       {displayRecipe.featured_product.name}
-                    </h4>
-
-                    {/* Tombol Bundar Ikon Keranjang Belanja */}
-                    <div className="shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-stone-100 group-hover:bg-[#C8102E] text-stone-700 group-hover:text-white flex items-center justify-center transition-all duration-300">
-                      <ShoppingCart className="w-4 h-4" />
-                    </div>
+                    </span>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
             )}
 
           </div>
 
         </div>
+      </section>
 
-        {/* ========================================================
-            MOBILE LAYOUT (lg:hidden - DIPERTAHANKAN SESUAI TAMPILAN PONSEL)
-            ======================================================== */}
-        <div className="lg:hidden space-y-8 mb-16 max-w-xl mx-auto">
+      {/* ========================================================
+          COOK WITH US SECTION
+          ======================================================== */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 border-t border-stone-200/80">
+        <div className="mb-8 sm:mb-10">
+          <h2
+            className="text-xl sm:text-3xl md:text-4xl font-extrabold text-[#CC0000] tracking-tight uppercase"
+            style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
+          >
+            Cook With Us
+          </h2>
+        </div>
 
-          {/* 1. Judul Utama Resep */}
-          <h1 className="text-2xl sm:text-4xl font-bold text-[#111111] leading-tight tracking-tight uppercase">
-            {displayRecipe.title}
-          </h1>
-
-          {/* 2. Foto Resep Utama */}
-          <div className="w-full aspect-[16/10] sm:aspect-[16/9] rounded-2xl overflow-hidden bg-stone-100 border border-stone-100 shadow-sm">
-            <img
-              src={displayRecipe.main_image || 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=1200&q=80'}
-              alt={displayRecipe.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {/* 3. Produk Terkait / Featured Product Card */}
-          {displayRecipe.featured_product && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          {displayRelated.map((item) => (
             <Link
-              href={`/products/${displayRecipe.featured_product.slug}`}
-              className="group block bg-white p-5 sm:p-6 rounded-2xl border border-stone-200/80 shadow-sm hover:border-[#C8102E] transition-all duration-300 space-y-3"
+              key={item.id}
+              href={`/recipes/${item.slug}`}
+              className="group relative w-full aspect-[16/9] rounded-2xl overflow-hidden cursor-pointer block shadow-sm"
             >
-              <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400 block">
-                Produk AWANG Pilihan
-              </span>
+              {/* Background Image */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={item.main_image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'}
+                alt={item.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+              />
 
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-stone-50 rounded-xl overflow-hidden shrink-0 border border-stone-100 p-2 flex items-center justify-center">
-                  <img
-                    src={displayRecipe.featured_product.main_image || '/placeholder-product.jpg'}
-                    alt={displayRecipe.featured_product.name}
-                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                  />
+              {/* Dark Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20 group-hover:from-black/85 transition-colors duration-300" />
+
+              {/* Content Overlay */}
+              <div className="absolute inset-0 p-5 sm:p-8 flex flex-col justify-between text-white z-10">
+                <div className="space-y-1 sm:space-y-2">
+                  <h3 className="text-lg sm:text-2xl font-bold leading-snug tracking-tight text-white drop-shadow-md">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-white/80 font-medium">
+                    Masakan Praktis • AWANG Heritage Paste
+                  </p>
                 </div>
 
-                <div className="flex-1 flex items-center justify-between gap-3">
-                  <h4 className="text-xs sm:text-base font-extrabold text-[#111111] line-clamp-2 leading-snug tracking-tight">
-                    {displayRecipe.featured_product.name}
-                  </h4>
-
-                  {/* Tombol Bundar Ikon Keranjang Belanja */}
-                  <div className="shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-stone-100 group-hover:bg-[#C8102E] text-stone-700 group-hover:text-white flex items-center justify-center transition-all duration-300">
-                    <ShoppingCart className="w-4 h-4" />
-                  </div>
+                <div>
+                  <span className="inline-flex items-center justify-center bg-white text-[#111111] font-bold px-4 py-1.5 sm:px-5 sm:py-2 rounded-full text-xs sm:text-sm group-hover:bg-[#CC0000] group-hover:text-white transition-colors duration-300">
+                    Lihat Resep
+                  </span>
                 </div>
               </div>
             </Link>
-          )}
-
-          {/* 4. Metrik Waktu & Porsi */}
-          <div className="grid grid-cols-4 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-6 py-3 sm:py-4 border-y border-stone-100 text-xs font-extrabold uppercase text-stone-700 text-center sm:text-left">
-            {displayRecipe.prep_time && (
-              <div>
-                <span className="text-stone-400 block text-[9px] sm:text-[10px] tracking-widest">PREP</span>
-                <span className="text-[#C8102E] text-xs sm:text-sm">{displayRecipe.prep_time}</span>
-              </div>
-            )}
-            {displayRecipe.cook_time && (
-              <div>
-                <span className="text-stone-400 block text-[9px] sm:text-[10px] tracking-widest">COOK</span>
-                <span className="text-[#C8102E] text-xs sm:text-sm">{displayRecipe.cook_time}</span>
-              </div>
-            )}
-            {displayRecipe.servings && (
-              <div>
-                <span className="text-stone-400 block text-[9px] sm:text-[10px] tracking-widest">SERVINGS</span>
-                <span className="text-[#C8102E] text-xs sm:text-sm">{displayRecipe.servings}</span>
-              </div>
-            )}
-            {displayRecipe.calories && (
-              <div>
-                <span className="text-stone-400 block text-[9px] sm:text-[10px] tracking-widest">CALORIES</span>
-                <span className="text-[#C8102E] text-xs sm:text-sm">{displayRecipe.calories}</span>
-              </div>
-            )}
-          </div>
-
-          <p className="text-stone-600 text-sm sm:text-base leading-relaxed font-medium">
-            {displayRecipe.description}
-          </p>
-
-          {/* Daftar Bahan */}
-          <div className="pt-4">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#C8102E] uppercase tracking-tight mb-4 sm:mb-6">
-              INGREDIENTS
-            </h2>
-            <ul className="space-y-3 text-stone-800 font-semibold text-xs sm:text-base">
-              {displayRecipe.ingredients.map((item, idx) => (
-                <li key={idx} className="flex items-start gap-3 pb-2.5 border-b border-stone-100">
-                  <Check size={16} className="text-[#C8102E] shrink-0 mt-0.5" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Instruksi Pembuatan */}
-          <div className="pt-4">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#C8102E] uppercase tracking-tight mb-4 sm:mb-6">
-              INSTRUCTIONS
-            </h2>
-            <div className="space-y-5">
-              {displayRecipe.instructions.map((step, idx) => (
-                <div key={idx} className="space-y-1">
-                  <h3 className="text-xs font-bold text-[#C8102E] uppercase tracking-widest">
-                    Langkah {idx + 1}
-                  </h3>
-                  <p className="text-stone-800 text-xs sm:text-base leading-relaxed font-medium">
-                    {step}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Tips Resep */}
-          {displayRecipe.tips && (
-            <div className="mt-6 p-5 bg-stone-50 border border-stone-200/60 rounded-2xl">
-              <h4 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#C8102E] mb-1.5">
-                <svg
-                  aria-hidden="true"
-                  focusable="false"
-                  role="img"
-                  viewBox="0 0 384 512"
-                  className="w-3.5 h-3.5 fill-[#C8102E]"
-                >
-                  <path d="M272 384c9.6-31.9 29.5-59.1 49.2-86.2l0 0c5.2-7.1 10.4-14.2 15.4-21.4c19.8-28.5 31.4-63 31.4-100.3C368 78.8 289.2 0 192 0S16 78.8 16 176c0 37.3 11.6 71.9 31.4 100.3c5 7.2 10.2 14.3 15.4 21.4l0 0c19.8 27.1 39.7 54.4 49.2 86.2l160 0zM192 512c44.2 0 80-35.8 80-80l0-16-160 0 0 16c0 44.2 35.8 80 80 80z" />
-                </svg>
-                <span>Tips Resep</span>
-              </h4>
-              <p className="text-stone-700 text-xs sm:text-sm leading-relaxed font-medium">
-                {displayRecipe.tips}
-              </p>
-            </div>
-          )}
-
+          ))}
         </div>
-
-        {/* COOK WITH US SECTION */}
-        <section className="pt-12 sm:pt-16 border-t border-stone-200/80">
-          <div className="mb-8 sm:mb-10">
-            <h2 className="text-xl sm:text-3xl md:text-4xl font-extrabold text-[#C8102E] tracking-tight uppercase" style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}>
-              Cook With Us
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            {displayRelated.map((item) => (
-              <Link
-                key={item.id}
-                href={`/recipes/${item.slug}`}
-                className="group relative w-full aspect-[16/10] sm:aspect-[16/9] rounded-2xl overflow-hidden cursor-pointer block shadow-sm"
-              >
-                {/* Background Image */}
-                <img
-                  src={item.main_image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'}
-                  alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
-
-                {/* Dark Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20 group-hover:from-black/85 transition-colors duration-300" />
-
-                {/* Content Overlay */}
-                <div className="absolute inset-0 p-5 sm:p-8 flex flex-col justify-between text-white z-10">
-                  <div className="space-y-1 sm:space-y-2">
-                    <h3 className="text-lg sm:text-2xl font-bold leading-snug tracking-tight text-white drop-shadow-md">
-                      {item.title}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-white/80 font-medium">
-                      Masakan Praktis • AWANG Heritage Paste
-                    </p>
-                  </div>
-
-                  <div>
-                    <span className="inline-flex items-center justify-center bg-white text-[#111111] font-bold px-4 py-1.5 sm:px-5 sm:py-2 rounded-full text-xs sm:text-sm group-hover:bg-[#C8102E] group-hover:text-white transition-colors duration-300">
-                      Lihat Resep
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-
       </div>
+
     </div>
   )
 }

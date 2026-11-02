@@ -238,13 +238,13 @@ export function CashflowManager({
         <div className="flex items-center gap-2.5">
           <button
             onClick={exportCsv}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-700 hover:text-[#C8102E] bg-white border border-gray-200 px-3.5 py-2.5 rounded-xl shadow-xs transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-700 hover:text-[#CC0000] bg-white border border-gray-200 px-3.5 py-2.5 rounded-xl shadow-xs transition-colors cursor-pointer"
           >
             <Download size={14} /> Export CSV
           </button>
           <button
             onClick={() => setModalOpen(true)}
-            className="inline-flex items-center gap-2 bg-[#C8102E] hover:bg-[#a00b22] text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer shrink-0"
+            className="inline-flex items-center gap-2 bg-[#CC0000] hover:bg-[#a00b22] text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer shrink-0"
           >
             <Plus size={16} /> Catat Transaksi
           </button>
@@ -295,7 +295,7 @@ export function CashflowManager({
         <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-gray-100">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-semibold text-gray-500">Laba Bersih (Net)</span>
-            <div className="w-8 h-8 rounded-xl bg-[#C8102E]/10 text-[#C8102E] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#CC0000]/10 text-[#CC0000] flex items-center justify-center">
               <DollarSign size={16} />
             </div>
           </div>
@@ -314,7 +314,7 @@ export function CashflowManager({
               <h2 className="text-sm font-bold text-[#0A1628]">Integrasi Penjualan per Brand / Mitra</h2>
               <p className="text-xs text-gray-400">Total pemasukan tercatat berdasarkan brand & supplier rekanan</p>
             </div>
-            <span className="text-xs font-semibold text-[#C8102E] bg-red-50 px-2.5 py-1 rounded-full">
+            <span className="text-xs font-semibold text-[#CC0000] bg-red-50 px-2.5 py-1 rounded-full">
               {brandBreakdown.length} Brand Aktif
             </span>
           </div>
@@ -325,7 +325,7 @@ export function CashflowManager({
                   <span className="text-xs font-bold text-[#0A1628] truncate">{item.name}</span>
                   <span className="text-[10px] font-semibold text-gray-400">{item.count} tranksasi</span>
                 </div>
-                <p className="text-sm font-extrabold text-[#C8102E]">{formatCurrency(item.income)}</p>
+                <p className="text-sm font-extrabold text-[#CC0000]">{formatCurrency(item.income)}</p>
               </div>
             ))}
           </div>
@@ -342,14 +342,14 @@ export function CashflowManager({
               placeholder="Cari transaksi, toko offline, no ref..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#C8102E] transition-colors"
+              className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#CC0000] transition-colors"
             />
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as any)}
-              className="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-[#C8102E]"
+              className="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-[#CC0000]"
             >
               <option value="all">Semua Tipe</option>
               <option value="income">Pemasukan (+)</option>
@@ -358,7 +358,7 @@ export function CashflowManager({
             <select
               value={channelFilter}
               onChange={(e) => setChannelFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-[#C8102E]"
+              className="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-[#CC0000]"
             >
               <option value="all">Semua Kanal</option>
               {Object.entries(CHANNEL_LABELS).map(([key, val]) => (
@@ -370,7 +370,7 @@ export function CashflowManager({
             <select
               value={brandFilter}
               onChange={(e) => setBrandFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-[#C8102E]"
+              className="px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-[#CC0000]"
             >
               <option value="all">Semua Brand</option>
               {brands.map((b) => (
@@ -512,7 +512,7 @@ export function CashflowManager({
                     <select
                       value={form.type}
                       onChange={(e) => setForm({ ...form, type: e.target.value as CashflowType })}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm bg-white focus:outline-none focus:border-[#C8102E]"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm bg-white focus:outline-none focus:border-[#CC0000]"
                     >
                       <option value="income">Pemasukan (+)</option>
                       <option value="expense">Pengeluaran (-)</option>
@@ -525,7 +525,7 @@ export function CashflowManager({
                       required
                       value={form.transaction_date}
                       onChange={(e) => setForm({ ...form, transaction_date: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#C8102E]"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#CC0000]"
                     />
                   </div>
                 </div>
@@ -541,7 +541,7 @@ export function CashflowManager({
                       placeholder="0.00"
                       value={form.amount}
                       onChange={(e) => setForm({ ...form, amount: e.target.value })}
-                      className="w-full pl-11 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#C8102E]"
+                      className="w-full pl-11 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm font-bold focus:outline-none focus:border-[#CC0000]"
                     />
                   </div>
                 </div>
@@ -552,7 +552,7 @@ export function CashflowManager({
                     <select
                       value={form.channel}
                       onChange={(e) => setForm({ ...form, channel: e.target.value as CashflowChannel })}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm bg-white focus:outline-none focus:border-[#C8102E]"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm bg-white focus:outline-none focus:border-[#CC0000]"
                     >
                       {Object.entries(CHANNEL_LABELS).map(([k, v]) => (
                         <option key={k} value={k}>
@@ -566,7 +566,7 @@ export function CashflowManager({
                     <select
                       value={form.brand_id}
                       onChange={(e) => setForm({ ...form, brand_id: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm bg-white focus:outline-none focus:border-[#C8102E]"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm bg-white focus:outline-none focus:border-[#CC0000]"
                     >
                       <option value="">-- Tanpa Brand Khusus --</option>
                       {brands.map((b) => (
@@ -585,7 +585,7 @@ export function CashflowManager({
                     placeholder="cth: Kedai Runcit Pak Ali / Mydin Subang Jaya"
                     value={form.store_name}
                     onChange={(e) => setForm({ ...form, store_name: e.target.value })}
-                    className="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#C8102E]"
+                    className="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#CC0000]"
                   />
                 </div>
 
@@ -597,7 +597,7 @@ export function CashflowManager({
                     placeholder="cth: Restock 50 Botol Pes Rendang Tok Warisan"
                     value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    className="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#C8102E]"
+                    className="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#CC0000]"
                   />
                 </div>
 
@@ -609,7 +609,7 @@ export function CashflowManager({
                       placeholder="INV-2026-001"
                       value={form.reference_no}
                       onChange={(e) => setForm({ ...form, reference_no: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#C8102E]"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#CC0000]"
                     />
                   </div>
                   <div>
@@ -617,7 +617,7 @@ export function CashflowManager({
                     <select
                       value={form.payment_method}
                       onChange={(e) => setForm({ ...form, payment_method: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-[#C8102E]"
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs bg-white focus:outline-none focus:border-[#CC0000]"
                     >
                       <option value="Transfer Bank">Transfer Bank</option>
                       <option value="Tunai (Cash)">Tunai (Cash)</option>
@@ -634,7 +634,7 @@ export function CashflowManager({
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 bg-[#C8102E] hover:bg-[#a00b22] text-white font-bold text-sm py-3 rounded-xl transition-all shadow-md active:scale-95 disabled:opacity-60 cursor-pointer text-center"
+                  className="flex-1 bg-[#CC0000] hover:bg-[#a00b22] text-white font-bold text-sm py-3 rounded-xl transition-all shadow-md active:scale-95 disabled:opacity-60 cursor-pointer text-center"
                 >
                   {saving ? 'Menyimpan...' : 'Simpan Transaksi'}
                 </button>

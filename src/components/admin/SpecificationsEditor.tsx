@@ -37,13 +37,13 @@ export function SpecificationsEditor({
               value={spec.spec_key}
               onChange={(e) => updateRow(spec.id, 'spec_key', e.target.value)}
               placeholder="Nama spesifikasi (mis. Berat Bersih)"
-              className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+              className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
             />
             <input
               value={spec.spec_value}
               onChange={(e) => updateRow(spec.id, 'spec_value', e.target.value)}
               placeholder="Nilai (mis. 200g / Sachet)"
-              className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+              className="flex-1 px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
             />
             <button
               type="button"
@@ -58,7 +58,7 @@ export function SpecificationsEditor({
       <button
         type="button"
         onClick={addRow}
-        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#C8102E] mt-2.5 hover:underline cursor-pointer"
+        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#CC0000] mt-2.5 hover:underline cursor-pointer"
       >
         <Plus size={14} /> Tambah Spesifikasi
       </button>

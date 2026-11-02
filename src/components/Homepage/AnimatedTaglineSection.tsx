@@ -65,7 +65,7 @@ function AnimatedFallingText({ text, className, baseDelay = 0 }: AnimatedTextPro
 
 export function AnimatedTaglineSection() {
   return (
-    <section className="relative w-full bg-[#C8102E] pt-12 sm:pt-16 md:pt-20 pb-0 px-4 sm:px-6 lg:px-12 flex items-end justify-center overflow-hidden">
+    <section className="relative w-full bg-[#CC0000] pt-12 sm:pt-16 md:pt-20 pb-0 px-4 sm:px-6 lg:px-12 flex items-end justify-center overflow-hidden">
       <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row items-end justify-between gap-8 lg:gap-6 relative w-full">
         {/* Sisi Kiri: Teks Tagline (Rata Kiri) */}
         <div className="w-full lg:w-[60%] text-left flex flex-col items-start justify-center pb-12 sm:pb-16 md:pb-20 gap-1 sm:gap-2 z-10">

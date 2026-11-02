@@ -10,35 +10,6 @@ export interface TikTokVideoItem {
   title: string
 }
 
-// Fallback 5 Video TikTok Resmi AWANG Brand jika database belum ada
-const defaultTiktokVideos: TikTokVideoItem[] = [
-  {
-    id: '7611107188828065044',
-    url: 'https://www.tiktok.com/@awangbrand_official/video/7611107188828065044',
-    title: 'AWANG Brand Official Video 1',
-  },
-  {
-    id: '7204052765557918982',
-    url: 'https://www.tiktok.com/@awangbrand_official/video/7204052765557918982',
-    title: 'AWANG Brand Official Video 2',
-  },
-  {
-    id: '7696464259382824244',
-    url: 'https://www.tiktok.com/@awangbrand_official/video/7696464259382824244',
-    title: 'AWANG Brand Official Video 3',
-  },
-  {
-    id: '7696463884009655604',
-    url: 'https://www.tiktok.com/@awangbrand_official/video/7696463884009655604',
-    title: 'AWANG Brand Official Video 4',
-  },
-  {
-    id: '7693494568842448129',
-    url: 'https://www.tiktok.com/@awangbrand_official/video/7693494568842448129',
-    title: 'AWANG Brand Official Video 5',
-  },
-]
-
 // Ikon TikTok (SVG)
 function TikTokIcon({ className = 'w-5 h-5' }: { className?: string }) {
   return (
@@ -124,20 +95,13 @@ interface SocialSectionProps {
 }
 
 export function SocialSection({
-  initialVideos = defaultTiktokVideos,
+  initialVideos,
   title = 'IKUTI KAMI DI TIKTOK',
   subtitle = '@awangbrand_official — Inspirasi resep lezat, kreasi masakan & keseruan dapur AWANG',
   accountUrl = 'https://www.tiktok.com/@awangbrand_official',
 }: SocialSectionProps) {
-  const [videos, setVideos] = useState<TikTokVideoItem[]>(
-    initialVideos && initialVideos.length > 0 ? initialVideos : defaultTiktokVideos
-  )
-
-  useEffect(() => {
-    if (initialVideos && initialVideos.length > 0) {
-      setVideos(initialVideos)
-    }
-  }, [initialVideos])
+  // Tidak ada fallback — jika admin tidak mengisi video, section tidak muncul
+  const videos = initialVideos && initialVideos.length > 0 ? initialVideos : []
 
   const [activeDot, setActiveDot] = useState(0)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -189,10 +153,13 @@ export function SocialSection({
     }
   }
 
+  // Jika tidak ada video dari admin, sembunyikan section sepenuhnya
+  if (videos.length === 0) return null
+
   return (
     <section
       ref={sectionRef}
-      className="relative w-full bg-[#C8102E] py-16 sm:py-20 md:py-24 overflow-hidden"
+      className="relative w-full bg-[#CC0000] py-16 sm:py-20 md:py-24 overflow-hidden"
     >
       <div className="w-full max-w-[1400px] mx-auto text-center">
         {/* Header Section terhubung dengan CMS */}
@@ -251,9 +218,9 @@ export function SocialSection({
             href={accountUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2.5 bg-white text-[#C8102E] font-extrabold text-sm sm:text-base px-6 py-3.5 sm:px-8 sm:py-4 rounded-full hover:bg-white/90 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-md w-auto"
+            className="inline-flex items-center justify-center gap-2.5 bg-white text-[#CC0000] font-extrabold text-sm sm:text-base px-6 py-3.5 sm:px-8 sm:py-4 rounded-full hover:bg-white/90 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] shadow-md w-auto"
           >
-            <TikTokIcon className="w-5 h-5 text-[#C8102E]" />
+            <TikTokIcon className="w-5 h-5 text-[#CC0000]" />
             Follow {accountUrl.replace('https://www.tiktok.com/', '')}
           </a>
         </div>

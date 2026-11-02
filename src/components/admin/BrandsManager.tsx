@@ -49,7 +49,7 @@ export function BrandsManager({ initialBrands }: { initialBrands: Brand[] }) {
         </div>
         <button
           onClick={() => setModalOpen(true)}
-          className="inline-flex items-center gap-2 bg-[#C8102E] hover:bg-[#a00b22] text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer shrink-0"
+          className="inline-flex items-center gap-2 bg-[#CC0000] hover:bg-[#a00b22] text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer shrink-0"
         >
           <Plus size={16} /> Tambah Brand
         </button>
@@ -67,7 +67,7 @@ export function BrandsManager({ initialBrands }: { initialBrands: Brand[] }) {
             <p className="text-sm font-bold text-[#0A1628] mb-2 truncate max-w-full">{b.name}</p>
             <div className="flex items-center justify-between w-full pt-2 border-t border-gray-50 mt-auto">
               <label className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-500 cursor-pointer">
-                <input type="checkbox" checked={b.is_active} onChange={() => toggleActive(b)} className="accent-[#C8102E] rounded" />
+                <input type="checkbox" checked={b.is_active} onChange={() => toggleActive(b)} className="accent-[#CC0000] rounded" />
                 Aktif
               </label>
               <button onClick={() => handleDelete(b.id)} className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer" title="Hapus">
@@ -100,13 +100,13 @@ export function BrandsManager({ initialBrands }: { initialBrands: Brand[] }) {
                 <input
                   value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#C8102E]"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-[#CC0000]"
                 />
               </div>
               <button
                 onClick={handleAdd}
                 disabled={saving}
-                className="w-full bg-[#C8102E] hover:bg-[#a00b22] text-white font-bold text-sm py-3 rounded-xl transition-all shadow-sm active:scale-95 disabled:opacity-60 cursor-pointer"
+                className="w-full bg-[#CC0000] hover:bg-[#a00b22] text-white font-bold text-sm py-3 rounded-xl transition-all shadow-sm active:scale-95 disabled:opacity-60 cursor-pointer"
               >
                 {saving ? 'Menyimpan...' : 'Simpan'}
               </button>

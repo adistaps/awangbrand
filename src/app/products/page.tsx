@@ -35,10 +35,10 @@ export const dynamic = 'force-dynamic'
 export default async function Page() {
   const supabase = await createClient()
 
-  const [{ data: products }, { data: categories }] = await Promise.all([
+  const [{ data: products }, { data: categories }, { data: hierarchySetting }] = await Promise.all([
     supabase
       .from('products')
-      .select('id, name, slug, main_image, category:categories(name)')
+      .select('id, name, slug, main_image, nutritional_facts, category:categories(name)')
       .eq('status', 'published')
       .order('created_at', { ascending: false }),
 
@@ -46,14 +46,29 @@ export default async function Page() {
       .from('categories')
       .select('id, name, slug, image_url')
       .order('name', { ascending: true }),
+
+    supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'product_categories_hierarchy')
+      .maybeSingle(),
   ])
+
+  let categoryGroups = []
+  try {
+    if (hierarchySetting?.value) {
+      categoryGroups = JSON.parse(hierarchySetting.value)
+    }
+  } catch (err) {
+    categoryGroups = []
+  }
 
   return (
     <main className="bg-white font-sans">
       {/* ==========================================
           HERO SECTION CUSTOM (RASIO VERTIKAL & SIZES FIXED)
       ========================================== */}
-      <section className="relative w-full bg-[#C8102E] text-white pt-28 sm:pt-36 pb-16 sm:pb-24 px-6 sm:px-12 md:px-16 overflow-hidden flex items-center min-h-[600px]">
+      <section className="relative w-full bg-[#CC0000] text-white pt-28 sm:pt-36 pb-16 sm:pb-24 px-6 sm:px-12 md:px-16 overflow-hidden flex items-center min-h-[600px]">
         {/* Ornamen Bintik-Bintik Maroon Padat */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
           <svg className="absolute top-0 right-0 w-full lg:w-1/2 h-full opacity-90" viewBox="0 0 500 500" fill="none">
@@ -159,22 +174,28 @@ export default async function Page() {
       {/* PRODUCTS GRID SECTION WITH CATEGORIES */}
       <section className="py-8 md:py-16 px-3 sm:px-6 lg:px-4 w-full max-w-[1440px] mx-auto bg-white">
         <ProductsGrid
+          categoryGroups={categoryGroups}
           categories={(categories || []).map((c) => ({
             id: c.id,
             name: c.name,
             slug: c.slug,
             image_url: c.image_url,
           }))}
-          products={(products || []).map((p) => ({
-            slug: p.slug,
-            name: p.name,
-            img:
-              p.main_image ||
-              'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800&auto=format&fit=crop',
-            cat:
-              (p.category as unknown as { name: string } | null)?.name?.toUpperCase() ||
-              'PRODUCT',
-          }))}
+          products={(products || []).map((p) => {
+            const facts = (p.nutritional_facts as { category_ids?: string[]; subcategory_ids?: string[] } | null) || {}
+            return {
+              slug: p.slug,
+              name: p.name,
+              img:
+                p.main_image ||
+                'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800&auto=format&fit=crop',
+              cat:
+                (p.category as unknown as { name: string } | null)?.name?.toUpperCase() ||
+                'PRODUCT',
+              category_ids: facts.category_ids || [],
+              subcategory_ids: facts.subcategory_ids || [],
+            }
+          })}
         />
       </section>
     </main>

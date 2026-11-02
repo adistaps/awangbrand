@@ -4,8 +4,12 @@ import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useInView } from 'framer-motion'
 import TimelineBlock01 from '@/components/ui/timeline-01'
-import { MarqueeSection } from '@/components/Homepage/MarqueeSection'
+import { MarqueeAbout } from '@/components/Marqueeabout'
+import { WorldMap } from '@/components/ui/map'
 import { ProductCarouselSection } from '@/components/Homepage/ProductCarouselSection'
+
+// Lokasi file logo halal di folder /public
+const HALAL_LOGO_SRC = '/logohalal.webp'
 
 // Komponen Counter Perbaikan (Menggunakan requestAnimationFrame & inline-block)
 function Counter({ target, suffix = "", duration = 2 }: { target: number; suffix?: string; duration?: number }) {
@@ -51,169 +55,146 @@ export function AboutUsClient() {
 
       {/* ==========================================
           BAGIAN 1: HERO SECTION ("WHO WE ARE")
+          Gaya Heinz: pola brand di kiri & kanan, teks di tengah.
+          File /bgabout.webp TIDAK diubah. Ruang kosong di tengah dibuat
+          lewat CSS mask pada layer background (bukan mengedit gambar).
       ========================================== */}
-      <section
-        className="relative w-full min-h-[750px] sm:min-h-[850px] lg:min-h-[900px] bg-cover bg-center text-white pt-28 sm:pt-36 pb-20 px-6 sm:px-12 flex items-center overflow-hidden"
-        style={{ backgroundImage: "url('/bgabout.webp')" }}
-      >
-        <div className="relative z-10 w-full max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-8 sm:pt-12">
+      <section className="relative w-full min-h-[720px] sm:min-h-[820px] lg:min-h-[900px] bg-[#CC0000] text-white pt-28 sm:pt-36 pb-20 px-6 sm:px-12 flex items-center justify-center overflow-hidden">
 
-          {/* Sisi Kiri Dibiarkan Kosong (Kolom 1-6) */}
-          <div className="hidden lg:block lg:col-span-6" />
+        {/* Layer pola: pakai bgabout.webp apa adanya, lalu dimask supaya tengahnya kosong */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none
+            lg:opacity-[0.55] max-lg:opacity-[0.18] max-lg:[mask-image:none] max-lg:[-webkit-mask-image:none]
+            [mask-image:linear-gradient(to_right,black_0%,black_21%,transparent_32%,transparent_68%,black_79%,black_100%)]
+            [-webkit-mask-image:linear-gradient(to_right,black_0%,black_21%,transparent_32%,transparent_68%,black_79%,black_100%)]"
+          style={{ backgroundImage: "url('/bgabout.webp')" }}
+        />
 
-          {/* Sisi Kanan (Kolom 7-12) */}
-          <div className="lg:col-span-6 flex flex-col text-left justify-center pl-0 sm:pl-6 lg:pl-12">
+        {/* Konten tengah */}
+        <div className="relative z-10 w-full max-w-3xl mx-auto flex flex-col items-center text-center">
 
-            <h1
-              className="text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-wider mb-2 text-white leading-tight font-heinz"
-            >
-              WHO WE ARE
-            </h1>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tight leading-[0.95] mb-5 sm:mb-6 text-white font-heinz">
+            WHO WE ARE
+          </h1>
 
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold italic text-white/95 mb-6 leading-snug">
-              Awang Brand Brings a Burst of Flavours to Your Cuisine
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-6 sm:mb-8 leading-snug">
+            Awang Brand Brings a Burst of Flavours to Your Cuisine
+          </h2>
+
+          <div className="space-y-4 text-sm sm:text-base md:text-[17px] font-normal leading-relaxed text-white/95 max-w-2xl">
+            <p>
+              Awang Brand is a leading Malaysian paste manufacturer dedicated to reviving authentic Malay heritage cuisine. We specialize in ready-to-cook pastes crafted to save kitchen prep time while preserving the original, rich, and natural flavors of traditional recipes.
+            </p>
+
+            <p>
+              Using carefully calibrated spices and the freshest ingredients—such as red chilli, garlic, ginger, and onions—our products contain no added sugar or artificial preservatives, delivering a healthy and delicious dining experience for modern families.
+            </p>
+
+            <p className="font-semibold text-white pt-1">
+              All Awang Brand products are certified HALAL, adhering strictly to international quality and testing standards for the food industry.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+
+      {/* ==========================================
+          BAGIAN 4: OUR HALAL PROMISE SECTION
+          Gaya Heinz "Invested in Quality": teks di kiri, logo halal
+          di kanan. Tanpa card dan tanpa bingkai.
+      ========================================== */}
+      <section className="w-full bg-[#FAF6ED] py-20 sm:py-28 lg:py-32 px-6 md:px-12 overflow-hidden border-t border-stone-200">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-10 items-center">
+
+          {/* Sisi kiri: teks */}
+          <div className="flex flex-col items-center text-center max-w-xl mx-auto lg:max-w-none">
+            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black uppercase tracking-tight leading-[0.95] text-[#CC0000] font-heinz mb-6 sm:mb-8">
+              OUR HALAL PROMISES
             </h2>
 
-            <div className="space-y-4 text-xs sm:text-sm md:text-base font-normal leading-relaxed text-white/90 max-w-xl">
-              <p>
-                Awang Brand is a leading Malaysian paste manufacturer dedicated to reviving authentic Malay heritage cuisine. We specialize in ready-to-cook pastes crafted to save kitchen prep time while preserving the original, rich, and natural flavors of traditional recipes.
-              </p>
+            <h3 className="text-sm sm:text-base font-extrabold uppercase tracking-[0.18em] text-[#4A0A1A] mb-4">
+              GUARANTEED HYGIENE & TRUSTED QUALITY
+            </h3>
 
-              <p>
-                Using carefully calibrated spices and the freshest ingredients—such as red chilli, garlic, ginger, and onions—our products contain no added sugar or artificial preservatives, delivering a healthy and delicious dining experience for modern families.
-              </p>
+            <p className="text-base sm:text-lg leading-relaxed text-[#4A0A1A] max-w-lg">
+              We maintain our operations with the same commitment to quality as when we were first established, adhering strictly to global Syariah requirements and food safety standards. Certified permissible for Muslims by JAKIM and recognized international bodies.
+            </p>
+          </div>
 
-              <p className="font-semibold text-white pt-1">
-                All Awang Brand products are certified HALAL, adhering strictly to international quality and testing standards for the food industry.
-              </p>
-            </div>
-
+          {/* Sisi kanan: logo halal (tanpa bingkai) */}
+          <div className="relative w-full max-w-[280px] sm:max-w-[340px] lg:max-w-[420px] mx-auto aspect-square">
+            <Image
+              src={HALAL_LOGO_SRC}
+              alt="Halal Certified"
+              fill
+              sizes="(max-width: 640px) 280px, (max-width: 1024px) 340px, 420px"
+              className="object-contain drop-shadow-xl"
+            />
           </div>
 
         </div>
       </section>
 
+
       {/* ==========================================
-          BAGIAN 2: FOUNDER / CEO QUOTE GRID
+          BAGIAN 3: GLOBAL NETWORK MAP SECTION (21st.dev WorldMap)
       ========================================== */}
-      <section className="w-full py-20 sm:py-28 px-4 sm:px-6 bg-[#FDFBF7] flex justify-center items-center overflow-hidden">
-        <div className="relative max-w-5xl w-full">
-
-          {/* Garis Horizontal Top & Bottom (Gradasi Ditarik Lebih Jauh Ke Luar) */}
-          <div className="absolute -left-48 -right-48 sm:-left-96 sm:-right-96 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#4A1521]/25 via-50% to-transparent" />
-          <div className="absolute -left-48 -right-48 sm:-left-96 sm:-right-96 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-[#4A1521]/25 via-50% to-transparent" />
-
-          {/* Garis Vertikal (Gradasi Ditarik Lebih Jauh Ke Atas & Bawah) */}
-          <div className="absolute -top-24 -bottom-24 left-0 w-[1px] bg-gradient-to-b from-transparent via-[#4A1521]/25 via-50% to-transparent" />
-          <div className="absolute -top-24 -bottom-24 left-0 sm:left-[260px] w-[1px] bg-gradient-to-b from-transparent via-[#4A1521]/25 via-50% to-transparent hidden sm:block" />
-
-          {/* Konten Utama Grid (Foto Diperbesar ke 260px) */}
-          <div className="grid grid-cols-1 sm:grid-cols-[260px_1fr] items-stretch">
-
-            {/* Foto CEO (/ceo.webp) */}
-            <div className="relative w-full aspect-square bg-[#F3EFE6] flex items-center justify-center overflow-hidden">
-              <Image
-                src="/people.webp"
-                alt="Founder & CEO AWANG"
-                fill
-                className="object-cover"
-              />
-            </div>
-
-            {/* Kutipan & Informasi Detail */}
-            <div className="flex flex-col justify-center p-6 sm:p-10 md:p-12 space-y-5">
-              <blockquote className="text-lg sm:text-xl md:text-2xl font-medium text-[#111111] leading-relaxed tracking-tight">
-                &ldquo;<span className="font-bold text-[#C8102E]">AWANG</span> berkomitmen melestarikan cita rasa warisan autentik sekaligus memajukan inovasi kuliner modern agar kelezatan tradisi dapat dinikmati dengan mudah.&rdquo;
-              </blockquote>
-
-              <div className="space-y-0.5">
-                <h4 className="text-base sm:text-lg font-bold text-[#111111]">
-                  Founder & CEO
-                </h4>
-                <p className="text-xs sm:text-sm font-semibold text-[#4A1521]/70">
-                  AWANG Brand
-                </p>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-      {/* ==========================================
-          BAGIAN 3: STATS & METRICS SECTION (MENGGUNAKAN FONT BAWAAN WEBSITE)
-      ========================================== */}
-      <section className="w-full max-w-[1200px] mx-auto pb-16 sm:pb-24 px-6 text-[#111111]">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-
-          <div className="lg:col-span-7 flex flex-col sm:flex-row sm:items-center gap-6 md:gap-8">
-            {/* Menggunakan font default website (font-sans) tanpa tambahan font lain */}
-            <h2 className="text-5xl sm:text-6xl md:text-7xl font-bold font-sans text-[#111111] tracking-tight leading-none shrink-0">
-              <Counter target={10} suffix="M+" />
+      <section className="w-full bg-[#FAF6ED] py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-[#111111] uppercase tracking-tight mb-4 font-heinz">
+              Connecting Heritage Across Borders
             </h2>
-
-            <div className="flex flex-col justify-center space-y-1">
-              <h3 className="text-lg md:text-xl font-bold text-[#111111] leading-snug">
-                Total Produksi Bumbu Pertahun
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-500 font-medium leading-relaxed max-w-sm">
-                Melayani ribuan keluarga, konsumen modern, dan hipermarket global dengan kelezatan autentik.
-              </p>
-            </div>
+            <p className="text-sm sm:text-base md:text-lg text-neutral-600 max-w-2xl mx-auto leading-relaxed">
+              Dari dapur warisan Malaysia, citarasa otentik AWANG kini melintasi samudera menjangkau konsumen dan mitra di Malaysia, Singapura, hingga London.
+            </p>
           </div>
 
-          <div className="lg:col-span-5 w-full">
-            <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] rounded-2xl overflow-hidden shadow-lg border border-gray-100 bg-gray-100">
-              <Image
-                src="/stats.webp"
-                alt="AWANG Global Distribution"
-                fill
-                className="object-cover"
-              />
-            </div>
+          {/* Map directly integrates with cream background (no white card) */}
+          <div className="w-full relative py-4 sm:py-6">
+            <WorldMap
+              lineColor="#CC0000"
+              dotColor="#737373"
+              backgroundColor="transparent"
+              dots={[
+                {
+                  start: {
+                    lat: 51.5074,
+                    lng: -0.1278,
+                    label: "London"
+                  },
+                  end: {
+                    lat: 3.139,
+                    lng: 101.6869,
+                    label: "Malaysia"
+                  },
+                },
+                {
+                  start: {
+                    lat: 3.139,
+                    lng: 101.6869,
+                    label: "Malaysia"
+                  },
+                  end: {
+                    lat: 1.3521,
+                    lng: 103.8198,
+                    label: "Singapore"
+                  },
+                },
+              ]}
+            />
           </div>
-
-        </div>
-
-        <div className="w-full h-[1px] bg-gray-200 my-12 sm:my-16" />
-
-        <div className="grid grid-cols-3 gap-6 sm:gap-12 text-left">
-
-          <div className="flex flex-col">
-            <span className="text-3xl sm:text-4xl md:text-5xl font-bold font-sans text-[#111111] mb-1">
-              <Counter target={150} suffix="+" />
-            </span>
-            <span className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase text-gray-500 tracking-wider">
-              VARIAN PASTA BUMBU
-            </span>
-          </div>
-
-          <div className="flex flex-col">
-            <span className="text-3xl sm:text-4xl md:text-5xl font-bold font-sans text-[#111111] mb-1">
-              <Counter target={10} suffix="+" />
-            </span>
-            <span className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase text-gray-500 tracking-wider">
-              JARINGAN PASAR GLOBAL
-            </span>
-          </div>
-
-          <div className="flex flex-col">
-            <span className="text-3xl sm:text-4xl md:text-5xl font-bold font-sans text-[#111111] mb-1">
-              <Counter target={100} suffix="%" />
-            </span>
-            <span className="text-[10px] sm:text-xs md:text-sm font-extrabold uppercase text-gray-500 tracking-wider">
-              HALAL & ALAMI
-            </span>
-          </div>
-
         </div>
       </section>
 
+      <MarqueeAbout />
 
-      <MarqueeSection />
+
 
       {/* ==========================================
-          BAGIAN 6: TIMELINE SECTION (21st.dev Component)
+          BAGIAN 5: TIMELINE SECTION (21st.dev Component)
       ========================================== */}
       <TimelineBlock01 />
 

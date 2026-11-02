@@ -1,3 +1,17 @@
+export interface Subcategory {
+  id: string
+  name: string
+  slug: string
+  image_url?: string | null
+}
+
+export interface CategoryGroup {
+  id: string
+  name: string
+  slug: string
+  subcategories: Subcategory[]
+}
+
 export interface Category {
   id: string
   name: string
@@ -67,6 +81,8 @@ export interface Recipe {
   instructions: string[]
   tips?: string | null
   featured_product_id?: string | null
+  category_ids?: string[] | null
+  subcategory_ids?: string[] | null
   is_featured: boolean
   featured_badge?: 'trending' | 'favorite' | null
   featured_sort?: number

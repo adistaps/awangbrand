@@ -1,6 +1,4 @@
 import type { Metadata } from 'next'
-import { CTA } from '@/components/CTA'
-import { QuoteFormSection } from '@/components/Homepage/QuoteFormSection'
 import { AboutUsClient } from './AboutUsClient'
 
 export const metadata: Metadata = {
@@ -24,7 +22,6 @@ export default function Page() {
       {/* Konten Utama About Us */}
       <AboutUsClient />
       {/* Quote Form Section diletakkan diatas CTA / Footer */}
-      <QuoteFormSection />
     </main>
   )
 }

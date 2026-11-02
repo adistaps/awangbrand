@@ -4,18 +4,15 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Pencil, Trash2, ExternalLink, Search, Star, Check, Minus } from 'lucide-react'
-import type { Product, Category } from '@/types/database'
+import type { Product } from '@/types/database'
 
 export function ProductsTable({
   products,
-  categories,
 }: {
   products: (Product & { category: { id: string; name: string } | null })[]
-  categories: Category[]
 }) {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState('')
   const [selected, setSelected] = useState<string[]>([])
   const [busy, setBusy] = useState(false)
 
@@ -23,10 +20,9 @@ export function ProductsTable({
     return products.filter((p) => {
       const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
       const matchStatus = !statusFilter || p.status === statusFilter
-      const matchCategory = !categoryFilter || p.category_id === categoryFilter
-      return matchSearch && matchStatus && matchCategory
+      return matchSearch && matchStatus
     })
-  }, [products, search, statusFilter, categoryFilter])
+  }, [products, search, statusFilter])
 
   function toggleSelect(id: string) {
     setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]))
@@ -89,30 +85,18 @@ export function ProductsTable({
             placeholder="Cari produk..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] transition-colors"
+            className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000] transition-colors"
           />
         </div>
         <div className="flex items-center gap-2">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="flex-1 sm:flex-initial px-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm bg-white focus:outline-none focus:border-[#C8102E]"
+            className="flex-1 sm:flex-initial px-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm bg-white focus:outline-none focus:border-[#CC0000]"
           >
             <option value="">Semua Status</option>
             <option value="draft">Draft</option>
             <option value="published">Published</option>
-          </select>
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="flex-1 sm:flex-initial px-3 py-2 border border-gray-200 rounded-xl text-xs sm:text-sm bg-white focus:outline-none focus:border-[#C8102E]"
-          >
-            <option value="">Semua Kategori</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
           </select>
         </div>
       </div>
@@ -120,7 +104,7 @@ export function ProductsTable({
       {selected.length > 0 && (
         <div className="px-4 py-3 bg-red-50/70 border-b border-red-100 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="inline-flex items-center justify-center bg-[#C8102E] text-white font-bold px-2 py-0.5 rounded-full text-xs">
+            <span className="inline-flex items-center justify-center bg-[#CC0000] text-white font-bold px-2 py-0.5 rounded-full text-xs">
               {selected.length}
             </span>
             <span className="font-semibold text-gray-800">produk dipilih</span>
@@ -152,7 +136,7 @@ export function ProductsTable({
             <button
               onClick={handleBulkDelete}
               disabled={busy}
-              className="px-3 py-1.5 bg-[#C8102E] text-white hover:bg-[#a60c24] rounded-lg font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
+              className="px-3 py-1.5 bg-[#CC0000] text-white hover:bg-[#a60c24] rounded-lg font-semibold shadow-xs transition-colors cursor-pointer disabled:opacity-50"
             >
               Hapus Terpilih
             </button>
@@ -173,7 +157,7 @@ export function ProductsTable({
                       onChange={toggleSelectAll}
                       className="sr-only peer"
                     />
-                    <div className="w-5 h-5 rounded-full border-2 border-[#C8102E] bg-white transition-all flex items-center justify-center shadow-xs peer-focus-visible:ring-2 peer-focus-visible:ring-[#C8102E]/30 peer-checked:border-emerald-600">
+                    <div className="w-5 h-5 rounded-full border-2 border-[#CC0000] bg-white transition-all flex items-center justify-center shadow-xs peer-focus-visible:ring-2 peer-focus-visible:ring-[#CC0000]/30 peer-checked:border-emerald-600">
                       {isPartiallySelected ? (
                         <Minus size={12} strokeWidth={3} className="text-emerald-600" />
                       ) : (
@@ -213,7 +197,7 @@ export function ProductsTable({
                           onChange={() => toggleSelect(p.id)}
                           className="sr-only peer"
                         />
-                        <div className="w-5 h-5 rounded-full border-2 border-[#C8102E] bg-white transition-all flex items-center justify-center shadow-xs peer-focus-visible:ring-2 peer-focus-visible:ring-[#C8102E]/30 peer-checked:border-emerald-600">
+                        <div className="w-5 h-5 rounded-full border-2 border-[#CC0000] bg-white transition-all flex items-center justify-center shadow-xs peer-focus-visible:ring-2 peer-focus-visible:ring-[#CC0000]/30 peer-checked:border-emerald-600">
                           <Check
                             size={12}
                             strokeWidth={3}
@@ -258,13 +242,13 @@ export function ProductsTable({
                       }
                       className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold border transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                         p.is_featured
-                          ? 'bg-red-50 border-red-200 text-[#C8102E] hover:bg-red-100 shadow-xs'
+                          ? 'bg-red-50 border-red-200 text-[#CC0000] hover:bg-red-100 shadow-xs'
                           : 'bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-700 hover:bg-gray-100'
                       }`}
                     >
                       <Star
                         size={12}
-                        className={p.is_featured ? 'text-[#C8102E] fill-[#C8102E]' : 'text-gray-400'}
+                        className={p.is_featured ? 'text-[#CC0000] fill-[#CC0000]' : 'text-gray-400'}
                       />
                       <span>Taste Heat: {p.is_featured ? 'On' : 'Off'}</span>
                     </button>
@@ -274,7 +258,7 @@ export function ProductsTable({
                       <Link href={`/products/${p.slug}`} target="_blank" className="p-1.5 rounded-lg text-gray-400 hover:text-[#0A1628] hover:bg-gray-100 transition-colors" title="Lihat di Web">
                         <ExternalLink size={15} />
                       </Link>
-                      <Link href={`/admin/products/${p.id}/edit`} className="p-1.5 rounded-lg text-gray-400 hover:text-[#C8102E] hover:bg-red-50 transition-colors" title="Edit">
+                      <Link href={`/admin/products/${p.id}/edit`} className="p-1.5 rounded-lg text-gray-400 hover:text-[#CC0000] hover:bg-red-50 transition-colors" title="Edit">
                         <Pencil size={15} />
                       </Link>
                       <button onClick={() => handleDelete(p.id)} className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer" title="Hapus">

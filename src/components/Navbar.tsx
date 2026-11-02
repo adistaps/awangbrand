@@ -60,7 +60,6 @@ export function Navbar() {
     ['About', '/about-us'],
     ['Products', '/products'],
     ['Recipes', '/recipes'],
-    ['Our Halal Promise', '/halal-promise'],
     ['Contact Us', '/contact']
   ]
 
@@ -129,7 +128,7 @@ export function Navbar() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 text-white transition-all duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'
-          } ${isHomePage && isTop ? 'bg-transparent' : 'bg-[#c8102e]'}`}
+          } ${isHomePage && isTop ? 'bg-transparent' : 'bg-[#CC0000]'}`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
 
@@ -142,8 +141,14 @@ export function Navbar() {
               <img
                 src="/logo.webp"
                 alt="AWANG"
-                className="h-10 sm:h-12 w-auto object-contain"
-                style={{ filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.85)) drop-shadow(0 0 16px rgba(255,255,255,0.5))' }}
+                className={`h-10 sm:h-12 w-auto object-contain transition-all duration-300 ${
+                  isHomePage && isTop ? '' : 'brightness-0 invert'
+                }`}
+                style={
+                  isHomePage && isTop
+                    ? { filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.85)) drop-shadow(0 0 16px rgba(255,255,255,0.5))' }
+                    : undefined
+                }
               />
             </Link>
           </div>
@@ -207,7 +212,7 @@ export function Navbar() {
         />
 
         <nav
-          className={`fixed top-0 right-0 bottom-0 w-4/5 max-w-xs bg-[#c8102e] text-white p-6 flex flex-col justify-between transform transition-transform duration-300 ease-in-out shadow-2xl ${menuOpen ? 'translate-x-0' : 'translate-x-full'
+          className={`fixed top-0 right-0 bottom-0 w-4/5 max-w-xs bg-[#CC0000] text-white p-6 flex flex-col justify-between transform transition-transform duration-300 ease-in-out shadow-2xl ${menuOpen ? 'translate-x-0' : 'translate-x-full'
             }`}
           aria-label="Mobile navigation"
         >
@@ -232,18 +237,18 @@ export function Navbar() {
                     <Link
                       href={url}
                       className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all ${isActive
-                        ? 'bg-white !text-[#c8102e] font-black shadow-md'
+                        ? 'bg-white !text-[#CC0000] font-black shadow-md'
                         : 'hover:bg-white/10 text-white/90 font-bold'
                         }`}
                       onClick={() => setMenuOpen(false)}
                     >
-                      <span className={`text-base tracking-wide ${isActive ? '!text-[#c8102e]' : 'text-white'}`}>
+                      <span className={`text-base tracking-wide ${isActive ? '!text-[#CC0000]' : 'text-white'}`}>
                         {name}
                       </span>
                       <ChevronRight
                         size={18}
                         strokeWidth={isActive ? 3.5 : 2.5}
-                        className={isActive ? '!text-[#c8102e]' : 'text-white/50'}
+                        className={isActive ? '!text-[#CC0000]' : 'text-white/50'}
                       />
                     </Link>
                   </li>

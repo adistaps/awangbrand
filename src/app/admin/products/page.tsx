@@ -25,14 +25,14 @@ export default async function AdminProductsPage() {
         </div>
         <Link
           href="/admin/products/new"
-          className="inline-flex items-center justify-center gap-2 bg-[#C8102E] hover:bg-[#a00b22] !text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-sm active:scale-95 shrink-0 self-start sm:self-auto"
+          className="inline-flex items-center justify-center gap-2 bg-[#CC0000] hover:bg-[#a00b22] !text-white text-xs sm:text-sm font-bold px-4 sm:px-5 py-2.5 rounded-xl transition-all shadow-sm active:scale-95 shrink-0 self-start sm:self-auto"
         >
           <Plus size={16} className="!text-white" />
           <span className="!text-white text-white">Tambah Produk</span>
         </Link>
       </div>
 
-      <ProductsTable products={products || []} categories={categories || []} />
+      <ProductsTable products={products || []} />
     </div>
   )
 }

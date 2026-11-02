@@ -8,14 +8,26 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   const { id } = await params
   const supabase = await createClient()
 
-  const [{ data: product }, { data: categories }, { data: gallery }, { data: specs }] = await Promise.all([
+  const [{ data: product }, { data: categories }, { data: hierarchySetting }, { data: gallery }, { data: specs }] = await Promise.all([
     supabase.from('products').select('*').eq('id', id).single(),
     supabase.from('categories').select('*').order('name'),
+    supabase.from('site_settings').select('value').eq('key', 'product_categories_hierarchy').maybeSingle(),
     supabase.from('product_images').select('*').eq('product_id', id).order('sort_order'),
     supabase.from('product_specifications').select('*').eq('product_id', id).order('sort_order'),
   ])
 
   if (!product) notFound()
+
+  let categoryGroups = []
+  try {
+    if (hierarchySetting?.value) {
+      categoryGroups = JSON.parse(hierarchySetting.value)
+    }
+  } catch (err) {
+    categoryGroups = []
+  }
+
+  const facts = (product.nutritional_facts as { category_ids?: string[]; subcategory_ids?: string[] } | null) || {}
 
   return (
     <div>
@@ -23,11 +35,13 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
       <p className="text-sm text-gray-500 mb-6">{product.name}</p>
       <ProductForm
         categories={categories || []}
+        categoryGroups={categoryGroups}
         initialValues={{
           id: product.id,
           name: product.name,
           slug: product.slug,
-          category_id: product.category_id,
+          category_ids: facts.category_ids || [],
+          subcategory_ids: facts.subcategory_ids || [],
           description: product.description || '',
           thumbnail_url: product.main_image,
           shopee_url: product.shopee_url || '',

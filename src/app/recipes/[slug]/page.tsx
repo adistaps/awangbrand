@@ -49,6 +49,10 @@ export default async function RecipeDetailPage({
     .eq('slug', slug)
     .single()
 
+  if (!recipe) {
+    notFound()
+  }
+
   // Fetch related recipes
   const { data: relatedRecipes } = await supabase
     .from('recipes')

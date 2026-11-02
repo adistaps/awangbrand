@@ -49,7 +49,7 @@ function Timeline({ items }: { items: TimelineItem[] }) {
     const opacityTransform = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
 
     return (
-        <div ref={containerRef} className="relative w-full bg-[#C8102E] text-white py-6 md:py-16 px-4 md:px-8">
+        <div ref={containerRef} className="relative w-full bg-[#CC0000] text-white py-6 md:py-16 px-4 md:px-8">
             <div ref={ref} className="relative max-w-7xl mx-auto">
 
                 {/* Garis Vertikal Utama: Di posisikan persis di left-6 (mobile), di tengah (md ke atas) */}
@@ -78,7 +78,7 @@ function Timeline({ items }: { items: TimelineItem[] }) {
                             >
                                 {/* Dot Lingkaran: Dikunci pas di tengah garis (left-6 = 24px + 1px tengah garis = 25px) */}
                                 <div className="absolute left-[25px] md:left-1/2 md:-translate-x-1/2 top-1.5 md:top-1/2 md:-translate-y-1/2 z-20 -translate-x-1/2 flex items-center justify-center">
-                                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#C8102E] border-2 border-white flex items-center justify-center shadow-lg">
+                                    <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#CC0000] border-2 border-white flex items-center justify-center shadow-lg">
                                         <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-white shadow-[0_0_8px_#ffffff]" />
                                     </div>
                                 </div>
@@ -149,7 +149,7 @@ function Timeline({ items }: { items: TimelineItem[] }) {
 
 export function TimelineBlock01() {
     return (
-        <section className="overflow-hidden bg-[#C8102E] text-white py-6 relative border-none -my-px">
+        <section className="overflow-hidden bg-[#CC0000] text-white py-6 relative border-none -my-px">
 
             {/* Header Section */}
             <div className="px-4 py-6 sm:px-6 md:px-10 md:py-10 lg:px-16">

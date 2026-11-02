@@ -90,7 +90,7 @@ export function GalleryUploader({
           </div>
         ))}
 
-        <label className="flex flex-col items-center justify-center h-28 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-[#C8102E] hover:bg-red-50/20 transition-all">
+        <label className="flex flex-col items-center justify-center h-28 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-[#CC0000] hover:bg-red-50/20 transition-all">
           {uploading ? (
             <Loader2 className="animate-spin text-gray-400" size={18} />
           ) : (

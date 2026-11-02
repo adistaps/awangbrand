@@ -6,19 +6,24 @@ import { createClient } from '@/lib/supabase/client'
 import { Recipe } from '@/types/database'
 import { Plus, Trash2, Save, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import type { CategoryGroup } from '@/types/database'
+import { ImageUploader } from '@/components/admin/ImageUploader'
 
 interface Props {
   initialData?: Recipe
   products: { id: string; name: string }[]
+  categoryGroups?: CategoryGroup[]
 }
 
-export function RecipeForm({ initialData, products }: Props) {
+export function RecipeForm({ initialData, products, categoryGroups = [] }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
 
   const [title, setTitle] = useState(initialData?.title || '')
   const [slug, setSlug] = useState(initialData?.slug || '')
   const [category, setCategory] = useState(initialData?.category || 'Main Course')
+  const [categoryIds, setCategoryIds] = useState<string[]>(initialData?.category_ids || [])
+  const [subcategoryIds, setSubcategoryIds] = useState<string[]>(initialData?.subcategory_ids || [])
   const [prepTime, setPrepTime] = useState(initialData?.prep_time || '15 MIN')
   const [cookTime, setCookTime] = useState(initialData?.cook_time || '15 MIN')
   const [servings, setServings] = useState(initialData?.servings || '4 Servings')
@@ -29,6 +34,25 @@ export function RecipeForm({ initialData, products }: Props) {
   const [tips, setTips] = useState(initialData?.tips || '')
   const [featuredProductId, setFeaturedProductId] = useState(initialData?.featured_product_id || '')
   const [status, setStatus] = useState<'published' | 'draft'>(initialData?.status || 'published')
+
+  function toggleCategoryId(id: string) {
+    setCategoryIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    )
+  }
+
+  function toggleSubcategoryId(id: string, parentGroupId: string) {
+    setSubcategoryIds((prev) => {
+      const isSelected = prev.includes(id)
+      const next = isSelected ? prev.filter((item) => item !== id) : [...prev, id]
+      return next
+    })
+
+    // Otomatis centang category group parent jika belum
+    if (!categoryIds.includes(parentGroupId)) {
+      setCategoryIds((prev) => [...prev, parentGroupId])
+    }
+  }
 
   const [ingredients, setIngredients] = useState<string[]>(
     Array.isArray(initialData?.ingredients) && initialData.ingredients.length > 0
@@ -94,6 +118,8 @@ export function RecipeForm({ initialData, products }: Props) {
         main_image: mainImage,
         tips,
         featured_product_id: featuredProductId || null,
+        category_ids: categoryIds,
+        subcategory_ids: subcategoryIds,
         ingredients: ingredients.filter((i) => i.trim() !== ''),
         instructions: instructions.filter((i) => i.trim() !== ''),
         status,
@@ -132,7 +158,7 @@ export function RecipeForm({ initialData, products }: Props) {
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center justify-center gap-2 bg-[#C8102E] hover:bg-[#a00b22] !text-white text-xs sm:text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 bg-[#CC0000] hover:bg-[#a00b22] !text-white text-xs sm:text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-xs active:scale-95 cursor-pointer disabled:opacity-60"
         >
           <Save size={16} className="!text-white" />
           <span className="!text-white text-white">{loading ? 'Menyimpan...' : 'Simpan Resep'}</span>
@@ -149,7 +175,7 @@ export function RecipeForm({ initialData, products }: Props) {
             value={title}
             onChange={handleTitleChange}
             placeholder="cth: Rendang Daging Tok Warisan"
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E] transition-colors"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000] transition-colors"
           />
         </div>
 
@@ -160,7 +186,7 @@ export function RecipeForm({ initialData, products }: Props) {
             required
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:outline-none focus:border-[#C8102E] transition-colors"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50/50 focus:outline-none focus:border-[#CC0000] transition-colors"
           />
         </div>
 
@@ -169,7 +195,7 @@ export function RecipeForm({ initialData, products }: Props) {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:border-[#C8102E] transition-colors"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:border-[#CC0000] transition-colors"
           >
             <option value="Main Course">Main Course</option>
             <option value="Appetizer">Appetizer</option>
@@ -186,7 +212,7 @@ export function RecipeForm({ initialData, products }: Props) {
           <select
             value={featuredProductId}
             onChange={(e) => setFeaturedProductId(e.target.value)}
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:border-[#C8102E] transition-colors"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:border-[#CC0000] transition-colors"
           >
             <option value="">-- Tidak ada produk terpaut --</option>
             {products.map((p) => (
@@ -198,6 +224,87 @@ export function RecipeForm({ initialData, products }: Props) {
         </div>
       </div>
 
+      {/* FILTER KATEGORI & SUBKATEGORI RESEP (MULTI-SELECT) */}
+      {categoryGroups.length > 0 && (
+        <div className="border border-gray-200 rounded-2xl p-4 sm:p-5 bg-stone-50/50 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-xs font-extrabold text-[#590014] uppercase tracking-wider">
+                Filter Kategori &amp; Subkategori Resep (Multi-Select)
+              </h4>
+              <p className="text-[11px] text-gray-500 mt-0.5">
+                Pilih kategori dan subkategori resep (&quot;What are you cooking?&quot;, &quot;Flavour &amp; Taste&quot;, &quot;Meal Inspiration&quot;) di mana resep ini akan muncul saat difilter oleh pengunjung.
+              </p>
+            </div>
+            <span className="text-[11px] font-bold text-[#CC0000] bg-red-50 border border-red-200 px-2.5 py-1 rounded-full shrink-0">
+              {subcategoryIds.length} Subkategori dipilih
+            </span>
+          </div>
+
+          <div className="space-y-4 pt-1">
+            {categoryGroups.map((group) => {
+              const isGroupActive = categoryIds.includes(group.id)
+
+              return (
+                <div key={group.id} className="bg-white rounded-xl p-3.5 border border-gray-200 shadow-2xs">
+                  {/* Header Kategori Induk */}
+                  <div className="flex items-center justify-between mb-2.5">
+                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={isGroupActive}
+                        onChange={() => toggleCategoryId(group.id)}
+                        className="w-4 h-4 rounded text-[#CC0000] focus:ring-[#CC0000] border-gray-300 cursor-pointer accent-[#CC0000]"
+                      />
+                      <span className="text-xs sm:text-sm font-bold text-stone-900">
+                        {group.name}
+                      </span>
+                    </label>
+                    <span className="text-[10px] text-gray-400 font-medium">
+                      {group.subcategories.length} pilihan
+                    </span>
+                  </div>
+
+                  {/* Subkategori Checkbox Chips */}
+                  {group.subcategories.length > 0 ? (
+                    <div className="flex flex-wrap gap-2 pl-6">
+                      {group.subcategories.map((sub) => {
+                        const isSubActive = subcategoryIds.includes(sub.id)
+                        return (
+                          <button
+                            type="button"
+                            key={sub.id}
+                            onClick={() => toggleSubcategoryId(sub.id, group.id)}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
+                              isSubActive
+                                ? 'bg-[#590014] text-white border-[#590014] shadow-xs'
+                                : 'bg-stone-50 text-stone-700 border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            {sub.image_url && (
+                              <img
+                                src={sub.image_url}
+                                alt={sub.name}
+                                className="w-4 h-4 rounded-full object-cover shrink-0"
+                              />
+                            )}
+                            <span>{sub.name}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-[11px] text-gray-400 italic pl-6">
+                      Belum ada subkategori pada kategori ini.
+                    </p>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Timing & Servings */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         <div>
@@ -207,7 +314,7 @@ export function RecipeForm({ initialData, products }: Props) {
             value={prepTime}
             onChange={(e) => setPrepTime(e.target.value)}
             placeholder="15 MIN"
-            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
           />
         </div>
         <div>
@@ -217,7 +324,7 @@ export function RecipeForm({ initialData, products }: Props) {
             value={cookTime}
             onChange={(e) => setCookTime(e.target.value)}
             placeholder="30 MIN"
-            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
           />
         </div>
         <div>
@@ -227,7 +334,7 @@ export function RecipeForm({ initialData, products }: Props) {
             value={servings}
             onChange={(e) => setServings(e.target.value)}
             placeholder="4 Porsi"
-            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
           />
         </div>
         <div>
@@ -237,22 +344,33 @@ export function RecipeForm({ initialData, products }: Props) {
             value={calories}
             onChange={(e) => setCalories(e.target.value)}
             placeholder="380 Kalori"
-            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
           />
         </div>
       </div>
 
       {/* Description & Image */}
-      <div className="space-y-4">
-        <div>
-          <label className="block text-xs font-bold uppercase text-gray-700 mb-1.5">URL Foto Utama Resep</label>
-          <input
-            type="url"
-            value={mainImage}
-            onChange={(e) => setMainImage(e.target.value)}
-            placeholder="https://images.unsplash.com/..."
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+      <div className="space-y-5">
+        <div className="bg-stone-50/70 p-4 sm:p-5 rounded-2xl border border-gray-200 space-y-3">
+          <label className="block text-xs font-bold uppercase text-gray-700">Foto Utama Resep *</label>
+          <ImageUploader
+            bucket="product-images"
+            value={mainImage || null}
+            onChange={(url) => setMainImage(url || '')}
+            label="Upload Foto Resep (Pilih File Gambar)"
           />
+          <div className="pt-2 border-t border-gray-200/60">
+            <label className="block text-[11px] font-semibold text-gray-500 mb-1">
+              Atau masukkan link/URL gambar secara manual:
+            </label>
+            <input
+              type="url"
+              value={mainImage}
+              onChange={(e) => setMainImage(e.target.value)}
+              placeholder="https://images.unsplash.com/..."
+              className="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-xs focus:outline-none focus:border-[#CC0000] bg-white"
+            />
+          </div>
         </div>
 
         <div>
@@ -262,7 +380,7 @@ export function RecipeForm({ initialData, products }: Props) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Kisah atau deskripsi ringkas kenikmatan sajian ini..."
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
           />
         </div>
       </div>
@@ -274,7 +392,7 @@ export function RecipeForm({ initialData, products }: Props) {
           <button
             type="button"
             onClick={addIngredient}
-            className="inline-flex items-center gap-1 text-xs font-bold text-[#C8102E] hover:underline cursor-pointer"
+            className="inline-flex items-center gap-1 text-xs font-bold text-[#CC0000] hover:underline cursor-pointer"
           >
             <Plus size={14} /> Tambah Bahan
           </button>
@@ -286,7 +404,7 @@ export function RecipeForm({ initialData, products }: Props) {
               value={ing}
               onChange={(e) => handleIngredientChange(idx, e.target.value)}
               placeholder={`Bahan ${idx + 1}`}
-              className="flex-1 px-3.5 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+              className="flex-1 px-3.5 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
             />
             {ingredients.length > 1 && (
               <button
@@ -308,7 +426,7 @@ export function RecipeForm({ initialData, products }: Props) {
           <button
             type="button"
             onClick={addInstruction}
-            className="inline-flex items-center gap-1 text-xs font-bold text-[#C8102E] hover:underline cursor-pointer"
+            className="inline-flex items-center gap-1 text-xs font-bold text-[#CC0000] hover:underline cursor-pointer"
           >
             <Plus size={14} /> Tambah Langkah
           </button>
@@ -321,7 +439,7 @@ export function RecipeForm({ initialData, products }: Props) {
               value={ins}
               onChange={(e) => handleInstructionChange(idx, e.target.value)}
               placeholder={`Instruksi langkah ${idx + 1}`}
-              className="flex-1 px-3.5 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+              className="flex-1 px-3.5 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
             />
             {instructions.length > 1 && (
               <button
@@ -345,7 +463,7 @@ export function RecipeForm({ initialData, products }: Props) {
             value={tips}
             onChange={(e) => setTips(e.target.value)}
             placeholder="cth: Tumis bumbu dengan api sedang agar aroma rempah semerbak sempurna..."
-            className="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#C8102E]"
+            className="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000]"
           />
         </div>
 
@@ -354,7 +472,7 @@ export function RecipeForm({ initialData, products }: Props) {
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value as 'published' | 'draft')}
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:border-[#C8102E]"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:border-[#CC0000]"
           >
             <option value="published">Published (Tampil di Web)</option>
             <option value="draft">Draft (Disembunyikan)</option>

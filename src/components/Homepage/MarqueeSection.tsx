@@ -48,7 +48,7 @@ export function MarqueeSection() {
     <motion.section
       // Animasi Background menggunakan object literal agar tidak bentrok dengan pergerakan
       animate={{
-        backgroundColor: ['#C8102E', '#590014', '#FDFBF7', '#FDFBF7', '#C8102E']
+        backgroundColor: ['#CC0000', '#590014', '#FDFBF7', '#FDFBF7', '#CC0000']
       }}
       transition={sharedColorTransition}
       className="relative z-10 w-full h-[280px] sm:h-[350px] md:h-[450px] flex items-center justify-center overflow-hidden border-0 border-none outline-none ring-0 shadow-none -my-px"
@@ -74,7 +74,7 @@ export function MarqueeSection() {
                   <motion.span
                     // Animasi warna teks dipisah ke dalam child
                     animate={{
-                      color: ['#FFFFFF', '#FFFFFF', '#F1AAB2', '#C8102E', '#FFFFFF']
+                      color: ['#FFFFFF', '#FFFFFF', '#F1AAB2', '#CC0000', '#FFFFFF']
                     }}
                     transition={sharedColorTransition}
                     className="block"
