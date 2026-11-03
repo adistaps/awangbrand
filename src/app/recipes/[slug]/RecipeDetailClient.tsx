@@ -1,8 +1,9 @@
 'use client'
 
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Recipe } from '@/types/database'
-import { Check } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface Props {
   recipe: Recipe
@@ -13,6 +14,32 @@ interface Props {
 export function RecipeDetailClient({ recipe, relatedRecipes }: Props) {
   const displayRecipe = recipe
   const displayRelated = relatedRecipes || []
+
+  // Carousel "Cook With Us"
+  const scrollerRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(true)
+
+  const updateArrows = useCallback(() => {
+    const el = scrollerRef.current
+    if (!el) return
+    setCanScrollLeft(el.scrollLeft > 4)
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4)
+  }, [])
+
+  useEffect(() => {
+    updateArrows()
+    window.addEventListener('resize', updateArrows)
+    return () => window.removeEventListener('resize', updateArrows)
+  }, [displayRelated.length, updateArrows])
+
+  function scrollByCard(direction: 1 | -1) {
+    const el = scrollerRef.current
+    if (!el) return
+    const firstCard = el.querySelector<HTMLElement>('[data-card]')
+    const step = firstCard ? firstCard.offsetWidth + 24 : el.clientWidth * 0.8
+    el.scrollBy({ left: step * direction, behavior: 'smooth' })
+  }
 
   return (
     <div className="w-full bg-[#FAF6ED] min-h-screen pt-20 sm:pt-28 pb-20 font-sans relative z-10">
@@ -162,55 +189,71 @@ export function RecipeDetailClient({ recipe, relatedRecipes }: Props) {
       {/* ========================================================
           COOK WITH US SECTION
           ======================================================== */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 border-t border-stone-200/80">
-        <div className="mb-8 sm:mb-10">
-          <h2
-            className="text-xl sm:text-3xl md:text-4xl font-extrabold text-[#CC0000] tracking-tight uppercase"
-            style={{ fontFamily: 'Impact, "Arial Black", sans-serif' }}
+      {displayRelated.length > 0 && (
+        <div className="w-full overflow-hidden border-t border-stone-200/80 pt-12 sm:pt-16">
+          {/* Header */}
+          <div className="flex items-center justify-between gap-6 px-5 sm:px-8 lg:px-12">
+            <h2 className="font-heinz text-4xl font-black uppercase leading-none tracking-[-0.04em] text-[#D6001C] sm:text-5xl">
+              Cook With Us
+            </h2>
+
+            <div className="hidden shrink-0 items-center gap-4 sm:flex">
+              <button
+                type="button"
+                aria-label="Previous"
+                onClick={() => scrollByCard(-1)}
+                disabled={!canScrollLeft}
+                className="flex h-14 w-14 items-center justify-center rounded-full border border-black text-black transition-colors hover:bg-black hover:text-white disabled:cursor-default disabled:border-stone-300 disabled:text-stone-400 disabled:hover:bg-transparent disabled:hover:text-stone-400 lg:h-16 lg:w-16"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                type="button"
+                aria-label="Next"
+                onClick={() => scrollByCard(1)}
+                disabled={!canScrollRight}
+                className="flex h-14 w-14 items-center justify-center rounded-full border border-black text-black transition-colors hover:bg-black hover:text-white disabled:cursor-default disabled:border-stone-300 disabled:text-stone-400 disabled:hover:bg-transparent disabled:hover:text-stone-400 lg:h-16 lg:w-16"
+              >
+                <ChevronRight size={24} />
+              </button>
+            </div>
+          </div>
+
+          {/* Carousel */}
+          <div
+            ref={scrollerRef}
+            onScroll={updateArrows}
+            className="mt-8 flex snap-x snap-mandatory scroll-pl-5 gap-6 overflow-x-auto scroll-smooth px-5 pb-2 sm:mt-12 sm:scroll-pl-8 sm:px-8 lg:scroll-pl-12 lg:px-12 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
-            Cook With Us
-          </h2>
-        </div>
+            {displayRelated.map((item) => (
+              <Link
+                key={item.id}
+                data-card
+                href={`/recipes/${item.slug}`}
+                className="group block w-[78%] flex-none snap-start text-center sm:w-[46%] lg:w-[30.6%]"
+              >
+                {/* Foto: sudut tajam, tanpa overlay */}
+                <div className="relative aspect-[4/5] w-full overflow-hidden bg-stone-100">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={item.main_image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'}
+                    alt={item.title}
+                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-          {displayRelated.map((item) => (
-            <Link
-              key={item.id}
-              href={`/recipes/${item.slug}`}
-              className="group relative w-full aspect-[16/9] rounded-2xl overflow-hidden cursor-pointer block shadow-sm"
-            >
-              {/* Background Image */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={item.main_image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'}
-                alt={item.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-              />
-
-              {/* Dark Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/20 group-hover:from-black/85 transition-colors duration-300" />
-
-              {/* Content Overlay */}
-              <div className="absolute inset-0 p-5 sm:p-8 flex flex-col justify-between text-white z-10">
-                <div className="space-y-1 sm:space-y-2">
-                  <h3 className="text-lg sm:text-2xl font-bold leading-snug tracking-tight text-white drop-shadow-md">
+                {/* Teks di bawah foto */}
+                <div className="px-2 pt-5 sm:pt-6">
+                  <h3 className="font-heinz line-clamp-2 text-xl font-extrabold uppercase leading-tight tracking-[-0.02em] text-[#D6001C] sm:text-2xl lg:text-[32px]">
                     {item.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-white/80 font-medium">
-                    Masakan Praktis • AWANG Heritage Paste
-                  </p>
+                  <p className="mt-2 text-sm font-bold text-[#111111]">Recipes</p>
                 </div>
-
-                <div>
-                  <span className="inline-flex items-center justify-center bg-white text-[#111111] font-bold px-4 py-1.5 sm:px-5 sm:py-2 rounded-full text-xs sm:text-sm group-hover:bg-[#CC0000] group-hover:text-white transition-colors duration-300">
-                    Lihat Resep
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
     </div>
   )

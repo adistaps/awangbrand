@@ -142,7 +142,7 @@ export function RecipesClient({
       </section>
 
       {/* MAIN RECIPES SECTION */}
-      <section id="recipes-grid" className="pt-12 sm:pt-16 pb-16 px-2 sm:px-3 lg:px-4 max-w-[1800px] mx-auto w-full relative z-20 scroll-mt-12">
+      <section id="recipes-grid" className="pt-12 sm:pt-16 pb-16 px-4 sm:px-7 max-w-[1800px] mx-auto w-full relative z-20 scroll-mt-12">
 
         {/* =========================================================
             FILTER KATEGORI & SUBKATEGORI (HEINZ STYLE SCREENSHOT)
@@ -288,7 +288,7 @@ export function RecipesClient({
 
         {/* Grid Card Resep (gaya Heinz: foto di atas, teks di bawah) */}
         {loading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-2 sm:gap-x-3 gap-y-8 sm:gap-y-12">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-3 sm:gap-x-[30px] gap-y-8 sm:gap-y-12">
             {[1, 2, 3, 4, 5, 6].map((n) => (
               <div key={n}>
                 <div className="w-full aspect-[4/5] bg-stone-100 animate-pulse" />
@@ -316,7 +316,7 @@ export function RecipesClient({
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-2 sm:gap-x-3 gap-y-8 sm:gap-y-12">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-3 sm:gap-x-[30px] gap-y-8 sm:gap-y-12">
             {displayedRecipes.map((recipe) => (
               <Link
                 key={recipe.id}
@@ -335,7 +335,7 @@ export function RecipesClient({
 
                 {/* Teks di bawah foto */}
                 <div className="pt-3 sm:pt-4 px-1">
-                  <h3 className="text-sm sm:text-lg font-extrabold leading-snug tracking-tight text-[#CC0000] line-clamp-2 group-hover:underline underline-offset-4">
+                  <h3 className="text-sm sm:text-lg font-extrabold leading-snug tracking-tight text-[#CC0000] line-clamp-2">
                     {recipe.title}
                   </h3>
 
