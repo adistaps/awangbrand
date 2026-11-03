@@ -161,26 +161,26 @@ export function AboutUsClient() {
               dots={[
                 {
                   start: {
-                    lat: 51.5074,
-                    lng: -0.1278,
-                    label: "London"
-                  },
-                  end: {
                     lat: 3.139,
                     lng: 101.6869,
                     label: "Malaysia"
+                  },
+                  end: {
+                    lat: 51.5074,
+                    lng: -0.1278,
+                    label: "London"
                   },
                 },
                 {
                   start: {
                     lat: 3.139,
                     lng: 101.6869,
-                    label: "Malaysia"
                   },
                   end: {
                     lat: 1.3521,
                     lng: 103.8198,
-                    label: "Singapore"
+                    label: "Singapore",
+                    labelPosition: "bottom"
                   },
                 },
               ]}

@@ -1,15 +1,31 @@
 "use client";
 
-import { useRef, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import DottedMap from "dotted-map";
 import Image from "next/image";
-import { useTheme } from "next-themes";
+
+// Area crop dalam fraksi (0 sampai 1) dari peta dunia penuh
+interface Crop {
+  x: number; // batas kiri
+  y: number; // batas atas
+  w: number; // lebar
+  h: number; // tinggi
+}
+
+type LabelPosition = "top" | "bottom";
+
+interface MapPoint {
+  lat: number;
+  lng: number;
+  label?: string;
+  labelPosition?: LabelPosition; // default: "top"
+}
 
 interface MapProps {
   dots?: Array<{
-    start: { lat: number; lng: number; label?: string };
-    end: { lat: number; lng: number; label?: string };
+    start: MapPoint;
+    end: MapPoint;
   }>;
   lineColor?: string;
   showLabels?: boolean;
@@ -18,12 +34,25 @@ interface MapProps {
   loop?: boolean;
   backgroundColor?: string;
   dotColor?: string;
-  viewBox?: string;
+  crop?: Crop;
   className?: string;
 }
 
-export function WorldMap({ 
-  dots = [], 
+// Menampilkan sisi kanan peta: Afrika, Eropa, Asia, Australia (tanpa benua Amerika)
+const DEFAULT_CROP: Crop = { x: 0.41, y: 0, w: 0.59, h: 1 };
+
+// Titik awal Malaysia (Kuala Lumpur) -> London
+const defaultDots: NonNullable<MapProps["dots"]> = [
+  {
+    start: { lat: 3.139, lng: 101.6869, label: "Malaysia" },
+    end: { lat: 51.5072, lng: -0.1276, label: "London" },
+  },
+];
+
+const VIEW_W = 800;
+
+export function WorldMap({
+  dots = defaultDots,
   lineColor = "#CC0000",
   showLabels = true,
   labelClassName = "text-xs sm:text-sm",
@@ -31,31 +60,54 @@ export function WorldMap({
   loop = true,
   backgroundColor = "transparent",
   dotColor = "#262626",
-  viewBox = "0 0 800 400",
-  className = ""
+  crop = DEFAULT_CROP,
+  className = "",
 }: MapProps) {
-  const svgRef = useRef<SVGSVGElement>(null);
   const [hoveredLocation, setHoveredLocation] = useState<string | null>(null);
 
+  // Peta dunia penuh, sama seperti kode awal
   const map = useMemo(
     () => new DottedMap({ height: 100, grid: "diagonal" }),
     []
   );
 
   const svgMap = useMemo(
-    () => map.getSVG({
-      radius: 0.28,
-      color: dotColor,
-      shape: "circle",
-      backgroundColor: backgroundColor,
-    }),
+    () =>
+      map.getSVG({
+        radius: 0.28,
+        color: dotColor,
+        shape: "circle",
+        backgroundColor: backgroundColor,
+      }),
     [map, dotColor, backgroundColor]
   );
 
+  // width/height bersifat private di tipe TypeScript, tapi tersedia saat runtime
+  const { mapW, mapH } = useMemo(() => {
+    const m = map as unknown as { width: number; height: number };
+    return { mapW: m.width, mapH: m.height };
+  }, [map]);
+
+  // Tinggi viewBox mengikuti rasio area crop
+  const viewH = VIEW_W * ((crop.h * mapH) / (crop.w * mapW));
+  const viewBox = `0 0 ${VIEW_W} ${viewH}`;
+
   const projectPoint = (lat: number, lng: number) => {
-    const x = (lng + 180) * (800 / 360);
-    const y = (90 - lat) * (400 / 180);
-    return { x, y };
+    const pin = map.getPin({ lat, lng });
+    let fx: number;
+    let fy: number;
+    if (pin) {
+      fx = pin.x / mapW;
+      fy = pin.y / mapH;
+    } else {
+      fx = (lng + 180) / 360;
+      fy = (90 - lat) / 180;
+    }
+    // Ubah posisi di peta penuh menjadi posisi di area crop
+    return {
+      x: ((fx - crop.x) / crop.w) * VIEW_W,
+      y: ((fy - crop.y) / crop.h) * viewH,
+    };
   };
 
   const createCurvedPath = (
@@ -67,6 +119,10 @@ export function WorldMap({
     return `M ${start.x} ${start.y} Q ${midX} ${midY} ${end.x} ${end.y}`;
   };
 
+  // Posisi badge: di atas titik (default) atau di bawah titik
+  const labelY = (pointY: number, position: LabelPosition = "top") =>
+    position === "bottom" ? pointY + 8 : pointY - 42;
+
   // Calculate animation timing
   const staggerDelay = 0.3;
   const totalAnimationTime = dots.length * staggerDelay + animationDuration;
@@ -74,18 +130,32 @@ export function WorldMap({
   const fullCycleDuration = totalAnimationTime + pauseTime;
 
   return (
-    <div className={`w-full aspect-[2/1] md:aspect-[2.3/1] relative font-sans overflow-hidden ${className}`}>
-      <Image
-        src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
-        className="h-full w-full [mask-image:linear-gradient(to_bottom,transparent,black_12%,black_88%,transparent)] pointer-events-none select-none object-cover"
-        alt="world map"
-        height="495"
-        width="1056"
-        draggable={false}
-        priority
-      />
+    <div
+      className={`w-full relative font-sans overflow-hidden ${className}`}
+      style={{ aspectRatio: `${VIEW_W} / ${viewH}` }}
+    >
+      {/* Peta penuh yang diperbesar dan digeser, sehingga hanya area crop yang terlihat */}
+      <div
+        className="absolute"
+        style={{
+          width: `${100 / crop.w}%`,
+          height: `${100 / crop.h}%`,
+          left: `${-(crop.x / crop.w) * 100}%`,
+          top: `${-(crop.y / crop.h) * 100}%`,
+        }}
+      >
+        <Image
+          src={`data:image/svg+xml;utf8,${encodeURIComponent(svgMap)}`}
+          className="h-full w-full object-fill [mask-image:linear-gradient(to_bottom,transparent,black_12%,black_88%,transparent)] pointer-events-none select-none"
+          alt="world map"
+          height={Math.round((1056 * mapH) / mapW)}
+          width={1056}
+          draggable={false}
+          priority
+        />
+      </div>
+
       <svg
-        ref={svgRef}
         viewBox={viewBox}
         className="w-full h-full absolute inset-0 pointer-events-auto select-none"
         preserveAspectRatio="xMidYMid meet"
@@ -97,7 +167,7 @@ export function WorldMap({
             <stop offset="95%" stopColor={lineColor} stopOpacity="1" />
             <stop offset="100%" stopColor="white" stopOpacity="0" />
           </linearGradient>
-          
+
           <filter id="glow">
             <feMorphology operator="dilate" radius="0.5" />
             <feGaussianBlur stdDeviation="1" result="coloredBlur" />
@@ -111,12 +181,12 @@ export function WorldMap({
         {dots.map((dot, i) => {
           const startPoint = projectPoint(dot.start.lat, dot.start.lng);
           const endPoint = projectPoint(dot.end.lat, dot.end.lng);
-          
+
           // Calculate keyframe times for this specific path
           const startTime = (i * staggerDelay) / fullCycleDuration;
           const endTime = (i * staggerDelay + animationDuration) / fullCycleDuration;
           const resetTime = totalAnimationTime / fullCycleDuration;
-          
+
           return (
             <g key={`path-group-${i}`}>
               <motion.path
@@ -125,24 +195,28 @@ export function WorldMap({
                 stroke="url(#path-gradient)"
                 strokeWidth="2"
                 initial={{ pathLength: 0 }}
-                animate={loop ? {
-                  pathLength: [0, 0, 1, 1, 0],
-                } : {
-                  pathLength: 1
-                }}
-                transition={loop ? {
-                  duration: fullCycleDuration,
-                  times: [0, startTime, endTime, resetTime, 1],
-                  ease: "easeInOut",
-                  repeat: Infinity,
-                  repeatDelay: 0,
-                } : {
-                  duration: animationDuration,
-                  delay: i * staggerDelay,
-                  ease: "easeInOut",
-                }}
+                animate={
+                  loop
+                    ? { pathLength: [0, 0, 1, 1, 0] }
+                    : { pathLength: 1 }
+                }
+                transition={
+                  loop
+                    ? {
+                      duration: fullCycleDuration,
+                      times: [0, startTime, endTime, resetTime, 1],
+                      ease: "easeInOut",
+                      repeat: Infinity,
+                      repeatDelay: 0,
+                    }
+                    : {
+                      duration: animationDuration,
+                      delay: i * staggerDelay,
+                      ease: "easeInOut",
+                    }
+                }
               />
-              
+
               {loop && (
                 <motion.circle
                   r="4"
@@ -171,7 +245,7 @@ export function WorldMap({
         {dots.map((dot, i) => {
           const startPoint = projectPoint(dot.start.lat, dot.start.lng);
           const endPoint = projectPoint(dot.end.lat, dot.end.lng);
-          
+
           return (
             <g key={`points-group-${i}`}>
               {/* Start Point */}
@@ -216,7 +290,7 @@ export function WorldMap({
                     />
                   </circle>
                 </motion.g>
-                
+
                 {showLabels && dot.start.label && (
                   <motion.g
                     initial={{ opacity: 0, y: 5 }}
@@ -226,13 +300,15 @@ export function WorldMap({
                   >
                     <foreignObject
                       x={startPoint.x - 65}
-                      y={startPoint.y - 42}
+                      y={labelY(startPoint.y, dot.start.labelPosition)}
                       width="130"
                       height="38"
                       className="block overflow-visible"
                     >
                       <div className="flex items-center justify-center h-full">
-                        <span className={`font-bold px-4 py-1.5 rounded-full bg-black text-white shadow-lg border border-black/40 tracking-tight whitespace-nowrap select-none ${labelClassName}`}>
+                        <span
+                          className={`font-bold px-4 py-1.5 rounded-full bg-black text-white shadow-lg border border-black/40 tracking-tight whitespace-nowrap select-none ${labelClassName}`}
+                        >
                           {dot.start.label}
                         </span>
                       </div>
@@ -240,7 +316,7 @@ export function WorldMap({
                   </motion.g>
                 )}
               </g>
-              
+
               {/* End Point */}
               <g key={`end-${i}`}>
                 <motion.g
@@ -283,7 +359,7 @@ export function WorldMap({
                     />
                   </circle>
                 </motion.g>
-                
+
                 {showLabels && dot.end.label && (
                   <motion.g
                     initial={{ opacity: 0, y: 5 }}
@@ -293,13 +369,15 @@ export function WorldMap({
                   >
                     <foreignObject
                       x={endPoint.x - 65}
-                      y={endPoint.y - 42}
+                      y={labelY(endPoint.y, dot.end.labelPosition)}
                       width="130"
                       height="38"
                       className="block overflow-visible"
                     >
                       <div className="flex items-center justify-center h-full">
-                        <span className={`font-bold px-4 py-1.5 rounded-full bg-black text-white shadow-lg border border-black/40 tracking-tight whitespace-nowrap select-none ${labelClassName}`}>
+                        <span
+                          className={`font-bold px-4 py-1.5 rounded-full bg-black text-white shadow-lg border border-black/40 tracking-tight whitespace-nowrap select-none ${labelClassName}`}
+                        >
                           {dot.end.label}
                         </span>
                       </div>
@@ -311,7 +389,7 @@ export function WorldMap({
           );
         })}
       </svg>
-      
+
       {/* Mobile Tooltip */}
       <AnimatePresence>
         {hoveredLocation && (

@@ -51,7 +51,7 @@ export function MarqueeSection() {
         backgroundColor: ['#CC0000', '#590014', '#FDFBF7', '#FDFBF7', '#CC0000']
       }}
       transition={sharedColorTransition}
-      className="relative z-10 w-full h-[280px] sm:h-[350px] md:h-[450px] flex items-center justify-center overflow-hidden border-0 border-none outline-none ring-0 shadow-none -my-px"
+      className="relative z-10 w-full h-[140px] sm:h-[350px] md:h-[450px] flex items-center justify-center overflow-hidden border-0 border-none outline-none ring-0 shadow-none -my-px"
     >
       <div className="w-full max-w-[1600px] mx-auto flex items-center justify-between px-4 sm:px-8 md:px-12 gap-2">
 
