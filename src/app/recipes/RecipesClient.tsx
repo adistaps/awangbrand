@@ -107,8 +107,8 @@ export function RecipesClient({
     <div className="pt-0 pb-20 bg-white font-sans">
 
       {/* TOP BANNER HERO */}
-      <section className="bg-[#CC0000] text-white pt-24 sm:pt-28 md:pt-32 pb-14 sm:pb-16 md:pb-20 px-6 sm:px-8 lg:px-12 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 sm:gap-12 lg:gap-16 relative z-10">
+      <section className="bg-[#CC0000] text-white pt-28 sm:pt-36 pb-16 sm:pb-24 px-6 sm:px-12 md:px-16 relative overflow-hidden flex items-center">
+        <div className="max-w-7xl mx-auto w-full min-h-[580px] sm:min-h-[700px] flex flex-col md:flex-row items-center justify-center md:justify-between gap-8 sm:gap-12 lg:gap-16 relative z-10">
 
           {/* Sisi Kiri: Judul, Deskripsi, dan Tombol CTA */}
           <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left space-y-5 sm:space-y-6">
