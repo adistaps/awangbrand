@@ -48,7 +48,7 @@ export function MarqueeSection() {
     <motion.section
       // Animasi Background menggunakan object literal agar tidak bentrok dengan pergerakan
       animate={{
-        backgroundColor: ['#CC0000', '#590014', '#FDFBF7', '#FDFBF7', '#CC0000']
+        backgroundColor: ['#CC0000', '#540B26', '#FDFBF7', '#FDFBF7', '#CC0000']
       }}
       transition={sharedColorTransition}
       className="relative z-10 w-full h-[140px] sm:h-[350px] md:h-[450px] flex items-center justify-center overflow-hidden border-0 border-none outline-none ring-0 shadow-none -my-px"

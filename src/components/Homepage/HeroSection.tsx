@@ -18,10 +18,10 @@ type Slide =
   | { type: 'brand'; duration: number }
 
 const SLIDES: Slide[] = [
+  { type: 'brand', duration: 4500 },
   { type: 'photo', src: '/hero1.webp', duration: 3500 },
   { type: 'photo', src: '/hero4.webp', duration: 3500 },
   { type: 'photo', src: '/hero3.webp', duration: 3500 },
-  { type: 'brand', duration: 4500 },
 ]
 
 // Teks slide brand
@@ -85,7 +85,7 @@ export function HeroSection() {
   const [index, setIndex] = useState(0)
   const current = SLIDES[index]
 
-  // Loop otomatis: foto1 -> foto2 -> foto3 -> teks brand -> foto1 ...
+  // Loop otomatis: teks brand -> foto1 -> foto2 -> foto3 -> teks brand ...
   useEffect(() => {
     const t = setTimeout(
       () => setIndex((i) => (i + 1) % SLIDES.length),
@@ -112,7 +112,7 @@ export function HeroSection() {
     <section className="relative w-full h-screen min-h-[500px] max-md:min-h-[500px] flex flex-col bg-[#CC0000] overflow-hidden">
       {/* LAYER SLIDESHOW (foto + slide teks brand) */}
       <div className="absolute inset-0 z-0">
-        <AnimatePresence initial={false}>
+        <AnimatePresence>
           {current.type === 'photo' ? (
             <motion.img
               key={index}

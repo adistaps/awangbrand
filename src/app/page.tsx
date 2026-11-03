@@ -10,6 +10,7 @@ import { FeaturedProductsSection } from '@/components/Homepage/FeaturedProductsS
 import { RecipesBentoSection } from '@/components/Homepage/RecipesBentoSection'
 import { TestimonialsSection } from '@/components/Homepage/TestimonialsSection'
 import { BrandsSection } from '@/components/Homepage/BrandsSection'
+import { AllInSection } from '@/components/Homepage/AllInSection'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
@@ -49,9 +50,9 @@ export default async function Page() {
     ])
 
   const settingsMap: Record<string, string> = {}
-  ;(tiktokSettings || []).forEach((row) => {
-    if (row.value) settingsMap[row.key] = row.value
-  })
+    ; (tiktokSettings || []).forEach((row) => {
+      if (row.value) settingsMap[row.key] = row.value
+    })
 
   let tiktokVideos: TikTokVideoItem[] | undefined
   if (settingsMap.homepage_tiktok_videos) {
@@ -81,6 +82,7 @@ export default async function Page() {
         accountUrl={settingsMap.homepage_tiktok_account_url}
       />
       <MarqueeSection />
+      <AllInSection />
       <QuoteFormSection />
       <TestimonialsSection />
       <BrandsSection />

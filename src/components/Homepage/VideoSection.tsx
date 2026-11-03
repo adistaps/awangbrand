@@ -8,7 +8,7 @@ export function VideoSection() {
       {/* Background foto dengan zoom in/out looping */}
       <div className="absolute inset-0 animate-zoom-loop">
         <Image
-          src="/hero2.webp"
+          src="/hero5.webp"
           alt="AWANG Brand background"
           fill
           className="object-cover"

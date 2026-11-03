@@ -87,7 +87,7 @@ export function FeaturedItemCard({ item, index = 0 }: FeaturedItemCardProps) {
     >
       <Link
         href={href}
-        className="group relative block w-full aspect-[3/4] bg-black/20 border border-white/10 hover:border-white/30 overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl transition-all duration-500 ease-out hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
+        className="group relative block w-full aspect-[3/4] bg-[#CC0000] overflow-hidden rounded-2xl sm:rounded-3xl transition-all duration-500 ease-out hover:scale-[1.03] active:scale-[0.98] cursor-pointer"
       >
         {/* Badge Heinz Style: Trending Now vs Fan Favorite */}
         {item.featured_badge === 'trending' && <TrendingBadge />}
@@ -102,25 +102,25 @@ export function FeaturedItemCard({ item, index = 0 }: FeaturedItemCardProps) {
           style={{ backgroundImage: `url(${img})` }}
         />
 
-        {/* Dark Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent opacity-85 transition-opacity duration-300 group-hover:opacity-100" />
+        {/* Gradient hanya di bagian bawah, supaya nama produk terbaca */}
+        <div className="absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
 
         {/* Overlay Content di Bawah */}
         <div className="absolute inset-x-0 bottom-0 p-3.5 sm:p-6 z-10 flex items-end justify-between gap-2 sm:gap-3">
           <div className="flex-1 pr-1 min-w-0">
             {/* Nama Produk / Judul Resep */}
-            <h3 className="text-sm sm:text-xl font-extrabold text-white leading-snug tracking-tight line-clamp-2 drop-shadow-md">
+            <h3 className="text-sm sm:text-xl font-extrabold text-white leading-snug tracking-tight line-clamp-2">
               {item.name}
             </h3>
 
             {/* Subteks deskriptif / kategori */}
-            <p className="text-[11px] sm:text-xs text-white/75 font-medium line-clamp-1 mt-0.5">
+            <p className="text-[11px] sm:text-xs text-white/90 font-medium line-clamp-1 mt-0.5">
               {item.meta || item.badge || 'Warisan Ramuan Asli AWANG'}
             </p>
           </div>
 
-          {/* Action button bulat (Keranjang untuk produk, panah/circle untuk resep) */}
-          <div className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border border-white/30 bg-black/40 text-white backdrop-blur-md transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:scale-110 shadow-md">
+          {/* Action button bulat: outline putih transparan seperti Heinz */}
+          <div className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-full border border-white bg-transparent text-white transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:scale-110">
             {isRecipe ? (
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             ) : (

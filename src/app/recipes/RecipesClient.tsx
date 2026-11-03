@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { Recipe, CategoryGroup } from '@/types/database'
-import { Utensils, Check, X, Clock, Users, Flame, UtensilsCrossed, ChefHat, Leaf, Sparkles, Star, Apple, Coffee } from 'lucide-react'
+import { Utensils, Check, X, Flame, UtensilsCrossed, ChefHat, Leaf, Sparkles, Star, Apple, Coffee } from 'lucide-react'
 
 export function RecipesClient({
   initialCategoryGroups = [],
@@ -142,7 +142,7 @@ export function RecipesClient({
       </section>
 
       {/* MAIN RECIPES SECTION */}
-      <section id="recipes-grid" className="pt-12 sm:pt-16 pb-16 px-4 sm:px-6 max-w-[1280px] mx-auto w-full relative z-20 scroll-mt-12">
+      <section id="recipes-grid" className="pt-12 sm:pt-16 pb-16 px-2 sm:px-3 lg:px-4 max-w-[1800px] mx-auto w-full relative z-20 scroll-mt-12">
 
         {/* =========================================================
             FILTER KATEGORI & SUBKATEGORI (HEINZ STYLE SCREENSHOT)
@@ -286,11 +286,14 @@ export function RecipesClient({
           </div>
         )}
 
-        {/* Grid Card Resep Overlay */}
+        {/* Grid Card Resep (gaya Heinz: foto di atas, teks di bawah) */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            {[1, 2, 3, 4].map((n) => (
-              <div key={n} className="w-full aspect-[16/10] sm:aspect-[16/9] rounded-2xl bg-stone-100 animate-pulse" />
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-2 sm:gap-x-3 gap-y-8 sm:gap-y-12">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
+              <div key={n}>
+                <div className="w-full aspect-[4/5] bg-stone-100 animate-pulse" />
+                <div className="mt-3 mx-auto h-4 w-2/3 rounded bg-stone-100 animate-pulse" />
+              </div>
             ))}
           </div>
         ) : displayedRecipes.length === 0 ? (
@@ -313,57 +316,38 @@ export function RecipesClient({
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-2 sm:gap-x-3 gap-y-8 sm:gap-y-12">
             {displayedRecipes.map((recipe) => (
               <Link
                 key={recipe.id}
                 href={`/recipes/${recipe.slug}`}
-                className="group relative w-full aspect-[16/10] sm:aspect-[16/9] rounded-2xl overflow-hidden cursor-pointer block"
+                className="group block text-center cursor-pointer"
               >
-                {/* Background Image */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={recipe.main_image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'}
-                  alt={recipe.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
+                {/* Foto resep: sudut tajam, tanpa overlay */}
+                <div className="relative w-full aspect-[4/5] overflow-hidden bg-stone-100">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={recipe.main_image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'}
+                    alt={recipe.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                </div>
 
-                {/* Dark Overlay untuk Legibilitas Teks */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-black/20 group-hover:from-black/90 transition-colors duration-300" />
+                {/* Teks di bawah foto */}
+                <div className="pt-3 sm:pt-4 px-1">
+                  <h3 className="text-sm sm:text-lg font-extrabold leading-snug tracking-tight text-[#CC0000] line-clamp-2 group-hover:underline underline-offset-4">
+                    {recipe.title}
+                  </h3>
 
-                {/* Konten Teks & Tombol di Dalam Card */}
-                <div className="absolute inset-0 p-6 sm:p-8 flex flex-col justify-between text-white z-10">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3 text-xs text-white/80">
-                      {recipe.prep_time && (
-                        <span className="flex items-center gap-1">
-                          <Clock size={13} /> {recipe.prep_time}
-                        </span>
-                      )}
-                      {recipe.servings && (
-                        <span className="flex items-center gap-1">
-                          <Users size={13} /> {recipe.servings}
-                        </span>
-                      )}
-                      {recipe.difficulty && (
-                        <span className="flex items-center gap-1">
-                          <Flame size={13} /> {recipe.difficulty}
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="text-2xl sm:text-3xl font-extrabold leading-snug tracking-tight text-white drop-shadow-md">
-                      {recipe.title}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-white/80 font-medium">
-                      Easy Home Cooking • AWANG Heritage Paste
-                    </p>
-                  </div>
+                  <p className="mt-1 sm:mt-1.5 text-[10px] sm:text-xs font-bold text-stone-900">
+                    Recipe
+                  </p>
 
-                  <div>
-                    <span className="inline-flex items-center justify-center bg-white text-[#111111] font-bold px-5 py-2.5 rounded-full text-xs sm:text-sm group-hover:bg-[#CC0000] group-hover:text-white transition-colors duration-300">
-                      Let's Cook!
-                    </span>
-                  </div>
+                  <p className="mt-0.5 text-[10px] sm:text-xs text-stone-600 font-medium">
+                    {[recipe.prep_time, recipe.servings, recipe.difficulty]
+                      .filter(Boolean)
+                      .join(' • ')}
+                  </p>
                 </div>
               </Link>
             ))}
@@ -376,7 +360,7 @@ export function RecipesClient({
             <button
               type="button"
               onClick={() => setVisibleCount((c) => c + 12)}
-              className="inline-flex items-center justify-center bg-[#111111] hover:bg-[#CC0000] text-white font-bold px-8 py-3 rounded-full text-sm uppercase tracking-wider transition-all duration-300 shadow-md hover:scale-105 cursor-pointer"
+              className="inline-flex items-center justify-center bg-[#4A0D18] hover:bg-[#CC0000] text-white font-bold px-8 py-3 rounded-full text-sm uppercase tracking-wider transition-all duration-300 shadow-md hover:scale-105 cursor-pointer"
             >
               Load More Recipes
             </button>

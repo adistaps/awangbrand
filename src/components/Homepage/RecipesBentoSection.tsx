@@ -49,16 +49,14 @@ export async function RecipesBentoSection() {
           sizes="(max-width: 768px) 50vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
-        {/* Soft bottom dark gradient overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent pointer-events-none" />
 
         {/* Content container */}
-        <div className="absolute inset-x-0 bottom-0 p-3 sm:p-5 flex items-end justify-between gap-2 sm:gap-3 z-10">
-          <h3 className="text-white font-extrabold text-xs sm:text-lg md:text-xl leading-snug sm:leading-tight line-clamp-2 drop-shadow-sm">
+        <div className="absolute inset-x-0 bottom-0 p-3 sm:p-6 flex items-end justify-between gap-2 sm:gap-3 z-10">
+          <h3 className="text-white font-extrabold text-sm sm:text-xl md:text-2xl leading-snug sm:leading-tight line-clamp-2 drop-shadow-sm">
             {recipe.title}
           </h3>
-          <div className="flex-shrink-0 w-6 h-6 sm:w-10 sm:h-10 rounded-full border border-white/60 bg-white/10 backdrop-blur-xs flex items-center justify-center text-white transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:scale-105">
-            <ChevronRight className="w-3.5 h-3.5 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-0.5" />
+          <div className="flex-shrink-0 w-7 h-7 sm:w-11 sm:h-11 rounded-full border border-white/60 bg-white/10 backdrop-blur-xs flex items-center justify-center text-white transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:scale-105">
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-0.5" />
           </div>
         </div>
       </Link>
@@ -77,14 +75,14 @@ export async function RecipesBentoSection() {
   const card5 = recipes[5]
 
   return (
-    <section className="bg-[#FAF6ED] py-14 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 w-full">
-      <div className="max-w-6xl mx-auto">
+    <section className="bg-[#FAF6ED] py-20 sm:py-28 md:py-36 px-4 sm:px-6 lg:px-8 w-full">
+      <div className="max-w-[1400px] mx-auto">
         {/* Header Section terintegrasi dengan CMS */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-[#CC0000] uppercase tracking-tight mb-3 font-heinz">
+        <div className="text-center mb-10 sm:mb-16">
+          <h2 className="text-4xl sm:text-6xl md:text-7xl font-black text-[#CC0000] uppercase tracking-tight mb-4 font-heinz">
             {title}
           </h2>
-          <p className="text-sm sm:text-base text-neutral-600 font-semibold tracking-wide">
+          <p className="text-sm sm:text-lg text-neutral-600 font-semibold tracking-wide">
             {subtitle}
           </p>
         </div>
@@ -94,41 +92,41 @@ export async function RecipesBentoSection() {
         <div className="grid grid-cols-2 md:hidden gap-3">
           {/* Kolom Kiri Mobile: card 0, card 2, card 4 dengan variasi tinggi */}
           <div className="flex flex-col gap-3">
-            {renderCard(card0, 'h-[230px]')}
-            {renderCard(card2, 'h-[175px]')}
-            {renderCard(card4, 'h-[210px]')}
+            {renderCard(card0, 'h-[290px]')}
+            {renderCard(card2, 'h-[220px]')}
+            {renderCard(card4, 'h-[265px]')}
           </div>
           {/* Kolom Kanan Mobile: card 1, card 3, card 5 dengan offset tinggi */}
           <div className="flex flex-col gap-3">
-            {renderCard(card1, 'h-[185px]')}
-            {renderCard(card3, 'h-[235px]')}
-            {renderCard(card5, 'h-[180px]')}
+            {renderCard(card1, 'h-[235px]')}
+            {renderCard(card3, 'h-[295px]')}
+            {renderCard(card5, 'h-[225px]')}
           </div>
         </div>
 
         {/* Desktop & Tablet Layout (3 Kolom Bento) */}
-        <div className="hidden md:grid md:grid-cols-3 gap-4 sm:gap-5">
+        <div className="hidden md:grid md:grid-cols-3 gap-5 lg:gap-6">
           {/* Column 1 (Left): 2 equal stacked cards */}
-          <div className="flex flex-col gap-4 sm:gap-5">
-            {renderCard(card0, 'h-[240px] sm:h-[280px] md:h-[290px]')}
-            {renderCard(card3, 'h-[240px] sm:h-[280px] md:h-[290px]')}
+          <div className="flex flex-col gap-5 lg:gap-6">
+            {renderCard(card0, 'md:h-[400px] lg:h-[480px] xl:h-[540px]')}
+            {renderCard(card3, 'md:h-[400px] lg:h-[480px] xl:h-[540px]')}
           </div>
 
           {/* Column 2 (Center): Tall card on top, medium card below */}
-          <div className="flex flex-col gap-4 sm:gap-5">
-            {renderCard(card1, 'h-[260px] sm:h-[320px] md:h-[340px]')}
-            {renderCard(card4, 'h-[220px] sm:h-[240px] md:h-[240px]')}
+          <div className="flex flex-col gap-5 lg:gap-6">
+            {renderCard(card1, 'md:h-[480px] lg:h-[580px] xl:h-[650px]')}
+            {renderCard(card4, 'md:h-[320px] lg:h-[380px] xl:h-[430px]')}
           </div>
 
           {/* Column 3 (Right): 2 equal stacked cards */}
-          <div className="flex flex-col gap-4 sm:gap-5">
-            {renderCard(card2, 'h-[240px] sm:h-[280px] md:h-[290px]')}
-            {renderCard(card5, 'h-[240px] sm:h-[280px] md:h-[290px]')}
+          <div className="flex flex-col gap-5 lg:gap-6">
+            {renderCard(card2, 'md:h-[400px] lg:h-[480px] xl:h-[540px]')}
+            {renderCard(card5, 'md:h-[400px] lg:h-[480px] xl:h-[540px]')}
           </div>
         </div>
 
         {/* Tombol Lihat Semua Resep */}
-        <div className="mt-10 sm:mt-12 text-center">
+        <div className="mt-12 sm:mt-16 text-center">
           <Link
             href="/recipes"
             className="inline-flex items-center gap-2 bg-[#CC0000] hover:bg-[#a60c24] text-white !text-white font-extrabold text-sm uppercase px-8 py-3.5 rounded-full transition-all hover:scale-105 active:scale-95 shadow-md"
