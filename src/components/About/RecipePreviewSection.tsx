@@ -121,7 +121,7 @@ export function RecipePreviewSection() {
           <div
             ref={scrollerRef}
             onScroll={updateArrows}
-            className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-5 pb-2 sm:px-8 lg:px-10 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex snap-x snap-mandatory scroll-pl-5 gap-5 overflow-x-auto scroll-smooth px-5 pb-2 sm:scroll-pl-8 sm:px-8 lg:scroll-pl-10 lg:px-10[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {recipes.map((recipe, i) => (
               <motion.div
@@ -148,7 +148,7 @@ export function RecipePreviewSection() {
 
                   {/* Judul + tombol */}
                   <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 sm:p-6 lg:px-5 lg:pb-6">
-                    <h3 className="font-heinz line-clamp-2 text-2xl font-bold leading-[1.15] tracking-[-0.02em] text-white sm:text-[28px] lg:text-[34px]">
+                    <h3 className="font-heinz line-clamp-2 text-lg font-bold leading-[1.15] tracking-[-0.02em] text-white sm:text-xl lg:text-2xl">
                       {recipe.title}
                     </h3>
                     <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-white text-white transition-colors group-hover:bg-white group-hover:text-black lg:h-16 lg:w-16">
