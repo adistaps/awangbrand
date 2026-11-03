@@ -7,6 +7,8 @@ import TimelineBlock01 from '@/components/ui/timeline-01'
 import { MarqueeAbout } from '@/components/Marqueeabout'
 import { WorldMap } from '@/components/ui/map'
 import { ProductCarouselSection } from '@/components/Homepage/ProductCarouselSection'
+import { RecipePreviewSection } from '@/components/About/RecipePreviewSection'
+import { QuoteFormSection } from '@/components/Homepage/QuoteFormSection'
 
 // Lokasi file logo halal di folder /public
 const HALAL_LOGO_SRC = '/logohalal.webp'
@@ -88,7 +90,7 @@ export function AboutUsClient() {
             </p>
 
             <p>
-              Using carefully calibrated spices and the freshest ingredients—such as red chilli, garlic, ginger, and onions—our products contain no added sugar or artificial preservatives, delivering a healthy and delicious dining experience for modern families.
+              Using carefully calibrated spices and the freshest ingredientsâ€”such as red chilli, garlic, ginger, and onionsâ€”our products contain no added sugar or artificial preservatives, delivering a healthy and delicious dining experience for modern families.
             </p>
 
             <p className="font-semibold text-white pt-1">
@@ -197,6 +199,16 @@ export function AboutUsClient() {
           BAGIAN 5: TIMELINE SECTION (21st.dev Component)
       ========================================== */}
       <TimelineBlock01 />
+
+      {/* ==========================================
+          BAGIAN 6: LATEST RECIPES (max 6, dari Supabase)
+      ========================================== */}
+      <RecipePreviewSection />
+
+      {/* ==========================================
+          BAGIAN 7: QUOTE / CONTACT FORM SECTION
+      ========================================== */}
+      <QuoteFormSection />
 
     </div>
   )
