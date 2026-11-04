@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ChevronRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import type { Category } from '@/types/database'
@@ -23,16 +23,16 @@ interface CardTheme {
 
 // Palet warna kartu — bisa dipilih per subkategori dari admin CMS
 export const CARD_THEMES: Record<string, CardTheme> = {
-  burgundy:  { label: 'Burgundy',    bg: 'bg-[#590014]', hoverBg: 'group-hover:bg-[#450010]', hex: '#590014' },
-  crimson:   { label: 'Crimson',     bg: 'bg-[#3D0C15]', hoverBg: 'group-hover:bg-[#2F0910]', hex: '#3D0C15' },
-  gravy:     { label: 'Coklat Tua',  bg: 'bg-[#5C1D06]', hoverBg: 'group-hover:bg-[#4A1604]', hex: '#5C1D06' },
-  paprika:   { label: 'Paprika',     bg: 'bg-[#8F2D14]', hoverBg: 'group-hover:bg-[#78240F]', hex: '#8F2D14' },
-  maroon:    { label: 'Maroon',      bg: 'bg-[#7A0C1E]', hoverBg: 'group-hover:bg-[#630918]', hex: '#7A0C1E' },
-  mustard:   { label: 'Kuning',      bg: 'bg-[#B87A04]', hoverBg: 'group-hover:bg-[#9E6802]', hex: '#B87A04' },
-  green:     { label: 'Hijau',       bg: 'bg-[#1B5E20]', hoverBg: 'group-hover:bg-[#134618]', hex: '#1B5E20' },
-  olive:     { label: 'Hijau Zaitun',bg: 'bg-[#4E6B1A]', hoverBg: 'group-hover:bg-[#3D5413]', hex: '#4E6B1A' },
-  amber:     { label: 'Kuning Amber',bg: 'bg-[#C68B00]', hoverBg: 'group-hover:bg-[#A87400]', hex: '#C68B00' },
-  brown:     { label: 'Coklat',      bg: 'bg-[#6D3B1E]', hoverBg: 'group-hover:bg-[#572F17]', hex: '#6D3B1E' },
+  burgundy: { label: 'Burgundy', bg: 'bg-[#590014]', hoverBg: 'group-hover:bg-[#450010]', hex: '#590014' },
+  crimson: { label: 'Crimson', bg: 'bg-[#3D0C15]', hoverBg: 'group-hover:bg-[#2F0910]', hex: '#3D0C15' },
+  gravy: { label: 'Coklat Tua', bg: 'bg-[#5C1D06]', hoverBg: 'group-hover:bg-[#4A1604]', hex: '#5C1D06' },
+  paprika: { label: 'Paprika', bg: 'bg-[#8F2D14]', hoverBg: 'group-hover:bg-[#78240F]', hex: '#8F2D14' },
+  maroon: { label: 'Maroon', bg: 'bg-[#7A0C1E]', hoverBg: 'group-hover:bg-[#630918]', hex: '#7A0C1E' },
+  mustard: { label: 'Kuning', bg: 'bg-[#B87A04]', hoverBg: 'group-hover:bg-[#9E6802]', hex: '#B87A04' },
+  green: { label: 'Hijau', bg: 'bg-[#1B5E20]', hoverBg: 'group-hover:bg-[#134618]', hex: '#1B5E20' },
+  olive: { label: 'Hijau Zaitun', bg: 'bg-[#4E6B1A]', hoverBg: 'group-hover:bg-[#3D5413]', hex: '#4E6B1A' },
+  amber: { label: 'Kuning Amber', bg: 'bg-[#C68B00]', hoverBg: 'group-hover:bg-[#A87400]', hex: '#C68B00' },
+  brown: { label: 'Coklat', bg: 'bg-[#6D3B1E]', hoverBg: 'group-hover:bg-[#572F17]', hex: '#6D3B1E' },
 }
 
 const THEME_KEYS = Object.keys(CARD_THEMES)
@@ -56,6 +56,7 @@ function CategoryCarouselCard({
 
   return (
     <motion.div
+      data-card
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -66,36 +67,45 @@ function CategoryCarouselCard({
         href={`/products?category=${encodeURIComponent(item.name)}`}
         className="group relative block w-full cursor-pointer focus:outline-none"
       >
-        {/* KARTU LATAR BULAT (Rounded Pill Box ala Heinz "FIND YOUR FLAVOR") */}
+        {/* KARTU LATAR (gaya Heinz "FIND YOUR FLAVOR") */}
         <div
-          className={`relative w-full aspect-[16/10] sm:aspect-[1.5/1] rounded-[28px] sm:rounded-[36px] ${theme.bg} ${theme.hoverBg} transition-all duration-500 shadow-xl group-hover:shadow-2xl group-hover:scale-[1.02] flex flex-col justify-end p-5 sm:p-7 overflow-visible`}
+          className={`relative w-full aspect-[4/3] sm:aspect-[1.35/1] rounded-[20px] sm:rounded-[26px] ${theme.bg} ${theme.hoverBg} transition-all duration-500 shadow-lg group-hover:shadow-2xl group-hover:scale-[1.02] flex flex-col justify-end p-5 sm:p-7 overflow-visible`}
         >
-          {/* Subtle Heinz texture / watermark pattern */}
-          <div className="absolute inset-0 rounded-[28px] sm:rounded-[36px] overflow-hidden pointer-events-none opacity-10">
-            <div className="absolute -right-8 -bottom-8 w-48 h-48 border-[12px] border-white rounded-full" />
-            <div className="absolute -left-6 -top-6 w-36 h-36 border-[8px] border-white rounded-full" />
+          {/* Watermark tipografi samar (pengganti ilustrasi latar Heinz) */}
+          <div className="absolute inset-0 rounded-[20px] sm:rounded-[26px] overflow-hidden pointer-events-none select-none z-0">
+            <span className="absolute left-4 top-3 -rotate-6 whitespace-nowrap font-heinz font-black uppercase leading-none text-white/[0.08] text-5xl sm:text-7xl">
+              Awang
+            </span>
+            <span className="absolute left-6 top-[44%] -rotate-3 whitespace-nowrap font-heinz font-black uppercase leading-none tracking-[0.2em] text-white/[0.07] text-base sm:text-2xl">
+              Recipe Base Paste
+            </span>
+            <span className="absolute -right-2 top-[18%] rotate-6 whitespace-nowrap font-heinz font-black uppercase leading-none text-white/[0.08] text-3xl sm:text-5xl">
+              4 ke 6
+            </span>
           </div>
 
-          {/* GAMBAR PRODUK POP-OUT BESAR (Meluap ke atas dari kartu) */}
-          <div className="absolute inset-x-0 -top-16 sm:-top-24 md:-top-32 bottom-12 sm:bottom-14 flex items-center justify-center pointer-events-none z-10 transition-transform duration-500 ease-out group-hover:scale-108 group-hover:-translate-y-3">
+          {/* GAMBAR PRODUK POP-OUT: keluar ~28% dari atas kartu, ujung bawahnya
+              tenggelam di gradient */}
+          <div className="absolute inset-x-0 top-[-28%] bottom-[10%] flex items-center justify-center pointer-events-none z-10 transition-transform duration-500 ease-out group-hover:scale-105 group-hover:-translate-y-3">
             <img
               src={img}
               alt={item.name}
-              className="h-full w-auto max-w-[85%] object-contain drop-shadow-[0_16px_24px_rgba(0,0,0,0.45)] select-none"
+              draggable={false}
+              className="h-full w-auto max-w-[85%] object-contain drop-shadow-[0_14px_20px_rgba(0,0,0,0.35)] select-none"
             />
           </div>
 
+          {/* GRADIENT GELAP DI BAWAH KARTU (menutupi ujung bawah produk) */}
+          <div className="absolute inset-x-0 bottom-0 h-[40%] rounded-b-[20px] sm:rounded-b-[26px] bg-gradient-to-t from-black/85 via-black/45 to-transparent pointer-events-none z-20" />
+
           {/* BAR BAWAH: Judul Subkategori & Tombol Panah Bulat */}
-          <div className="relative z-20 w-full flex items-center justify-between gap-3 pt-2">
-            <h3
-              className="text-base sm:text-2xl font-black text-white uppercase tracking-tight line-clamp-1 drop-shadow-sm font-heinz"
-            >
+          <div className="relative z-30 w-full flex items-center justify-between gap-3">
+            <h3 className="text-xl sm:text-3xl font-black text-white uppercase tracking-tight line-clamp-1 font-heinz">
               {item.name}
             </h3>
 
-            {/* Tombol Bulat Panah Khas Heinz (Hitam/Transparan dengan Border Lingkaran) */}
-            <div className="w-9 h-9 sm:w-12 sm:h-12 shrink-0 rounded-full border border-white/40 bg-black/25 backdrop-blur-xs text-white flex items-center justify-center shadow-md transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:border-white group-hover:scale-110">
-              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2.5} />
+            <div className="w-10 h-10 sm:w-14 sm:h-14 shrink-0 rounded-full border-2 border-white text-white flex items-center justify-center transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:scale-110">
+              <ChevronRight className="w-5 h-5 sm:w-7 sm:h-7" strokeWidth={2} />
             </div>
           </div>
         </div>
@@ -106,9 +116,14 @@ function CategoryCarouselCard({
 
 export function ProductCarouselSection() {
   const [items, setItems] = useState<CarouselCardItem[]>([])
-  const [sectionTitle, setSectionTitle] = useState('TEMUKAN PILIHANMU')
+  const [sectionTitle, setSectionTitle] = useState('FIND YOUR FLAVOUR')
   const [cardColors, setCardColors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(true)
+  // Padding kiri carousel — diukur dari posisi kiri judul supaya SELALU sejajar
+  const [padLeft, setPadLeft] = useState(16)
+  const titleRef = useRef<HTMLHeadingElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -128,9 +143,9 @@ export function ProductCarouselSection() {
           ])
 
         const map: Record<string, string> = {}
-        ;(settings || []).forEach((row) => {
-          if (row.value) map[row.key] = row.value
-        })
+          ; (settings || []).forEach((row) => {
+            if (row.value) map[row.key] = row.value
+          })
 
         if (map.homepage_product_carousel_title) {
           setSectionTitle(map.homepage_product_carousel_title)
@@ -206,16 +221,46 @@ export function ProductCarouselSection() {
     fetchCarouselData()
   }, [])
 
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = direction === 'left' ? -240 : 240
-      scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
+  // Update status aktif/nonaktif tombol panah sesuai posisi scroll
+  const updateScrollState = useCallback(() => {
+    const el = scrollContainerRef.current
+    if (!el) return
+    setCanScrollLeft(el.scrollLeft > 4)
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4)
+  }, [])
+
+  // Ukur posisi kiri judul → jadikan padding kiri carousel
+  const measureAlignment = useCallback(() => {
+    const title = titleRef.current
+    const scroller = scrollContainerRef.current
+    if (!title || !scroller) return
+    const left = title.getBoundingClientRect().left - scroller.getBoundingClientRect().left
+    if (left >= 0) setPadLeft(Math.round(left))
+  }, [])
+
+  useEffect(() => {
+    if (loading) return
+    measureAlignment()
+    updateScrollState()
+    const onResize = () => {
+      measureAlignment()
+      updateScrollState()
     }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [loading, items, measureAlignment, updateScrollState])
+
+  const scroll = (direction: 'left' | 'right') => {
+    const el = scrollContainerRef.current
+    if (!el) return
+    const firstCard = el.querySelector<HTMLElement>('[data-card]')
+    const step = firstCard ? firstCard.offsetWidth + 20 : 420
+    el.scrollBy({ left: direction === 'left' ? -step : step, behavior: 'smooth' })
   }
 
   if (loading) {
     return (
-      <section className="w-full bg-[#FAF6ED] py-16 px-4 text-center">
+      <section className="w-full bg-[#FFF1DF] py-16 px-4 text-center">
         <div className="animate-pulse font-bold text-neutral-400">Loading categories...</div>
       </section>
     )
@@ -225,57 +270,69 @@ export function ProductCarouselSection() {
 
   return (
     <section
-      className="w-full bg-[#FAF6ED] py-16 sm:py-20 md:py-24"
+      className="w-full bg-[#FFF1DF] py-16 sm:py-20 md:py-24"
       style={{ overflowX: 'clip', overflowY: 'visible' }}
     >
-      {/* Header & Navigasi Panah */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12 lg:px-16">
-        <div className="flex items-center justify-between mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-[#CC0000] uppercase tracking-tight">
+      {/* Header & Navigasi Panah — lebar penuh dengan padding kecil seperti Heinz
+          (tanpa max-w / mx-auto supaya judul menempel dekat tepi kiri) */}
+      <div className="w-full px-4 sm:px-6 md:px-10 lg:px-14">
+        <div className="flex items-center justify-between gap-4 mb-4 sm:mb-6">
+          <h2
+            ref={titleRef}
+            className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.95] font-black text-[#CC0000] uppercase tracking-tight"
+          >
             {sectionTitle}
           </h2>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <button
               onClick={() => scroll('left')}
+              disabled={!canScrollLeft}
               aria-label="Previous Slide"
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-neutral-300 bg-white/80 hover:bg-white text-neutral-800 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-sm cursor-pointer"
+              className="w-10 h-10 sm:w-14 sm:h-14 rounded-full border-2 border-[#4A0A22] text-[#4A0A22] bg-transparent flex items-center justify-center transition-all duration-300 cursor-pointer hover:bg-[#4A0A22] hover:text-white active:scale-95 disabled:opacity-30 disabled:cursor-default disabled:hover:bg-transparent disabled:hover:text-[#4A0A22] disabled:active:scale-100"
             >
-              <ChevronLeft size={20} />
+              <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2} />
             </button>
             <button
               onClick={() => scroll('right')}
+              disabled={!canScrollRight}
               aria-label="Next Slide"
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-neutral-300 bg-white/80 hover:bg-white text-neutral-800 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-sm cursor-pointer"
+              className="w-10 h-10 sm:w-14 sm:h-14 rounded-full border-2 border-[#4A0A22] text-[#4A0A22] bg-transparent flex items-center justify-center transition-all duration-300 cursor-pointer hover:bg-[#4A0A22] hover:text-white active:scale-95 disabled:opacity-30 disabled:cursor-default disabled:hover:bg-transparent disabled:hover:text-[#4A0A22] disabled:active:scale-100"
             >
-              <ChevronRight size={20} />
+              <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2} />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Carousel Kategori Pop-Out — full width tanpa clipping */}
+      {/* Carousel — padding kiri mengikuti posisi kiri judul (hasil pengukuran) */}
       <div
         ref={scrollContainerRef}
-        className="flex justify-start gap-4 sm:gap-5 overflow-x-auto scrollbar-hide pt-20 pb-8 pl-4 sm:pl-6 md:pl-12 lg:pl-16 snap-x snap-mandatory scroll-smooth"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {items.map((it, idx) => (
-            <CategoryCarouselCard
-              key={it.id}
-              item={it}
-              index={idx}
-              themeKey={cardColors[it.id]}
-            />
-          ))}
+        onScroll={updateScrollState}
+        className="flex justify-start gap-4 sm:gap-5 overflow-x-auto scrollbar-hide pt-20 pb-8 pr-4 sm:pr-6 md:pr-10 lg:pr-14 snap-x snap-mandatory scroll-smooth"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          paddingLeft: padLeft,
+          scrollPaddingLeft: padLeft,
+        }}
+      >
+        {items.map((it, idx) => (
+          <CategoryCarouselCard
+            key={it.id}
+            item={it}
+            index={idx}
+            themeKey={cardColors[it.id]}
+          />
+        ))}
       </div>
 
       {/* Tombol "Lihat Semua Produk" di Tengah Bawah */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-12 lg:px-16">
-        <div className="mt-12 text-center">
+      <div className="w-full px-4 sm:px-6 md:px-10 lg:px-14">
+        <div className="mt-8 sm:mt-10 text-center">
           <Link
             href="/products"
-            className="inline-block bg-[#CC0000] hover:bg-[#a60c24] text-white !text-white font-black text-sm sm:text-base py-4 px-10 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 shadow-md uppercase tracking-wider"
+            className="inline-block bg-[#4A0A22] hover:bg-[#360718] text-white !text-white font-bold text-base sm:text-lg py-4 px-10 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 shadow-md"
           >
             Lihat Semua Produk
           </Link>

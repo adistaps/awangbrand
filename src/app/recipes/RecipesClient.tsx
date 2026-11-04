@@ -106,22 +106,22 @@ export function RecipesClient({
   return (
     <div className="pt-0 pb-20 bg-white font-sans">
 
-      {/* TOP BANNER HERO */}
-      <section className="bg-[#CC0000] text-white pt-28 sm:pt-36 pb-16 sm:pb-24 px-6 sm:px-12 md:px-16 relative overflow-hidden flex items-center">
-        <div className="max-w-7xl mx-auto w-full min-h-[580px] sm:min-h-[700px] flex flex-col md:flex-row items-center justify-center md:justify-between gap-8 sm:gap-12 lg:gap-16 relative z-10">
+      {/* TOP BANNER HERO (ukuran disamakan dengan hero Products) */}
+      <section className="bg-[#CC0000] text-white pt-28 sm:pt-36 lg:pt-32 pb-16 sm:pb-24 lg:pb-0 px-6 sm:px-12 md:px-16 relative overflow-hidden flex items-center min-h-[600px] lg:min-h-[700px]">
+        <div className="max-w-[1600px] mx-auto w-full min-h-[580px] sm:min-h-[700px] lg:min-h-0 flex flex-col md:flex-row items-center justify-center md:justify-between gap-8 sm:gap-12 lg:gap-6 relative z-10">
 
           {/* Sisi Kiri: Judul, Deskripsi, dan Tombol CTA */}
-          <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left space-y-5 sm:space-y-6">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05] text-white font-heinz">
+          <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left space-y-4">
+            <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tight leading-[1.05] text-white font-heinz">
               Zesty, Garlicky, and Grill-Ready
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-white/95 max-w-xl font-medium leading-relaxed">
+            <p className="text-base sm:text-lg md:text-base lg:text-lg text-white/95 max-w-md font-medium leading-relaxed">
               Elevate your dishes with authentic homemade recipes that pack a delicious, flavorful punch.
             </p>
-            <div className="pt-2">
+            <div className="pt-1">
               <a
                 href="#recipes-grid"
-                className="inline-flex items-center justify-center bg-[#4A0D18] hover:bg-[#380912] active:scale-95 text-white font-extrabold text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-3.5 rounded-full shadow-lg transition-all duration-300"
+                className="inline-flex items-center justify-center bg-[#4A0D18] hover:bg-[#380912] active:scale-95 text-white font-extrabold text-base sm:text-lg px-8 py-4 lg:px-6 lg:py-3 lg:text-sm rounded-full shadow-lg transition-all duration-300"
               >
                 Get Recipe
               </a>

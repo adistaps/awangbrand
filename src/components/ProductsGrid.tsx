@@ -189,10 +189,11 @@ export function ProductsGrid({
             </div>
           </div>
 
-          {/* BARIS TENGAH: LINGKARAN MAROON SUBKATEGORI */}
+          {/* BARIS TENGAH: LINGKARAN SUBKATEGORI */}
           {subcategoriesToDisplay.length > 0 && (
             <div className="w-full mb-8">
-              <div className="flex items-start justify-center gap-6 sm:gap-10 md:gap-14 overflow-x-auto pb-4 pt-2 px-2 scrollbar-none">
+              {/* Padding atas/bawah/samping ditambah agar ring, centang, dan efek scale tidak terpotong oleh overflow */}
+              <div className="flex items-start justify-center gap-6 sm:gap-10 md:gap-14 overflow-x-auto pb-6 pt-6 px-6 scrollbar-none">
                 {subcategoriesToDisplay.map((sub) => {
                   const isSelected = selectedSubcategories.includes(sub.id)
                   const img =
@@ -206,32 +207,34 @@ export function ProductsGrid({
                       onClick={() => toggleSubcategory(sub.id)}
                       className="group flex flex-col items-center cursor-pointer shrink-0 w-[150px] sm:w-[170px] md:w-[185px] focus:outline-none"
                     >
-                      {/* Lingkaran Subkategori Besar */}
+                      {/* Wrapper luar: tempat ring & centang (TIDAK overflow-hidden) */}
                       <div
-                        className={`relative w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44 rounded-full p-1 sm:p-1.5 transition-all duration-300 flex items-center justify-center ${isSelected
-                          ? 'ring-4 ring-[#CC0000] ring-offset-2 ring-offset-white scale-105'
+                        className={`relative w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44 rounded-full transition-all duration-300 ${isSelected
+                          ? 'ring-4 ring-[#CC0000] ring-offset-4 ring-offset-white scale-105'
                           : 'group-hover:scale-105'
                           }`}
                       >
-                        <div className="w-full h-full rounded-full bg-[#CC0000] flex items-center justify-center overflow-hidden relative shadow-md p-2">
+                        {/* Lingkaran dalam: overflow-hidden agar foto terpotong di bawah */}
+                        <div className="absolute inset-0 rounded-full bg-[#CC0000] overflow-hidden shadow-md">
+                          {/* Foto dibesarkan, menempel di atas, bagian bawah terpotong lingkaran */}
                           <img
                             src={img}
                             alt={sub.name}
-                            className="w-full h-full object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-110"
+                            className="absolute left-1/2 top-[12%] -translate-x-1/2 w-[88%] h-[130%] max-w-none object-contain object-top drop-shadow-md transition-transform duration-300 origin-top group-hover:scale-105"
                           />
                         </div>
 
-                        {/* Checkmark jika terpilih */}
+                        {/* Checkmark jika terpilih (di luar lingkaran dalam, jadi tidak terpotong) */}
                         {isSelected && (
-                          <div className="absolute top-0 right-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-[#CC0000] border-2 border-white text-white flex items-center justify-center shadow-md animate-in zoom-in-50 duration-200">
-                            <Check size={11} strokeWidth={3} />
+                          <div className="absolute -top-1 -right-1 z-10 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#CC0000] border-2 border-white text-white flex items-center justify-center shadow-md animate-in zoom-in-50 duration-200">
+                            <Check size={13} strokeWidth={3} />
                           </div>
                         )}
                       </div>
 
                       {/* Label Subkategori */}
                       <span
-                        className={`mt-2.5 text-xs sm:text-sm font-bold tracking-tight text-center leading-tight line-clamp-2 transition-colors ${isSelected ? 'text-[#590014] font-black' : 'text-[#4A0A1A] group-hover:text-[#CC0000]'
+                        className={`mt-5 text-xs sm:text-sm font-bold tracking-tight text-center leading-tight line-clamp-2 transition-colors ${isSelected ? 'text-[#590014] font-black' : 'text-[#4A0A1A] group-hover:text-[#CC0000]'
                           }`}
                       >
                         {sub.name}
@@ -251,7 +254,7 @@ export function ProductsGrid({
             </p>
 
             {selectedSubcategories.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
                 {selectedSubcategories.map((subId) => {
                   let subName = subId
                   for (const g of categoryGroups) {
@@ -267,9 +270,9 @@ export function ProductsGrid({
                       key={subId}
                       type="button"
                       onClick={() => toggleSubcategory(subId)}
-                      className="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-[#CC0000] border border-red-200 text-xs font-bold px-3 py-1.5 rounded-full transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-2.5 bg-[#F5F5F5] hover:bg-[#EBEBEB] text-[#590014] text-sm sm:text-base font-bold px-4 py-2.5 rounded-md transition-colors cursor-pointer"
                     >
-                      <X size={12} />
+                      <X size={16} strokeWidth={2} />
                       <span>{subName}</span>
                     </button>
                   )
@@ -278,7 +281,7 @@ export function ProductsGrid({
                 <button
                   type="button"
                   onClick={clearAllFilters}
-                  className="text-xs font-extrabold text-[#CC0000] hover:text-[#9e0b23] underline underline-offset-4 ml-1 cursor-pointer transition-colors"
+                  className="text-base sm:text-lg font-extrabold text-[#590014] hover:text-[#CC0000] tracking-tight cursor-pointer transition-colors"
                 >
                   Clear all filters
                 </button>

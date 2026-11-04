@@ -21,7 +21,7 @@ const SLIDES: Slide[] = [
   { type: 'brand', duration: 4500 },
   { type: 'photo', src: '/hero1.webp', duration: 3500 },
   { type: 'photo', src: '/hero4.webp', duration: 3500 },
-  { type: 'photo', src: '/hero3.webp', duration: 3500 },
+  { type: 'photo', src: '/hero3,webp', duration: 3500 },
 ]
 
 // Teks slide brand

@@ -71,6 +71,7 @@ export default async function Page() {
       />
       <HeroSection />
       <FeaturedProductsSection />
+      <QuoteFormSection />
       <AnimatedTaglineSection />
       <ProductCarouselSection />
       <VideoSection />
@@ -83,7 +84,6 @@ export default async function Page() {
       />
       <MarqueeSection />
       <AllInSection />
-      <QuoteFormSection />
       <TestimonialsSection />
       <BrandsSection />
     </main>

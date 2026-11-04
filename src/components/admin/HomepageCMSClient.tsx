@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { CARD_THEMES } from '@/components/Homepage/ProductCarouselSection'
+import { FEATURED_CARD_THEMES } from '@/components/ui/FeaturedItemCard'
 import {
   Flame,
   ChefHat,
@@ -101,13 +102,34 @@ export function HomepageCMSClient({
 
   const [allItems, setAllItems] = useState<ItemCMS[]>(initialTasteHeatItems)
 
+  // Warna per kartu featured Taste The Heat (itemId -> themeKey)
+  let initialFeaturedColors: Record<string, string> = {}
+  try {
+    if (initialSettings.homepage_featured_card_colors) {
+      initialFeaturedColors = JSON.parse(initialSettings.homepage_featured_card_colors)
+    }
+  } catch (e) { /* ignore */ }
+  const [featuredCardColors, setFeaturedCardColors] = useState<Record<string, string>>(initialFeaturedColors)
+
+  function setFeaturedColor(itemId: string, themeKey: string) {
+    setFeaturedCardColors((prev) => ({ ...prev, [itemId]: themeKey }))
+  }
+
+  function clearFeaturedColor(itemId: string) {
+    setFeaturedCardColors((prev) => {
+      const next = { ...prev }
+      delete next[itemId]
+      return next
+    })
+  }
+
   // 2. STATE: COOK SOMETHING GOOD
   const [cookGoodTitle, setCookGoodTitle] = useState(
     initialSettings.homepage_cook_good_title || 'COOK SOMETHING GOOD'
   )
   const [cookGoodSubtitle, setCookGoodSubtitle] = useState(
     initialSettings.homepage_cook_good_subtitle ||
-      'Resep pilihan istimewa yang mudah dibuat di rumah dengan produk AWANG.'
+    'Resep pilihan istimewa yang mudah dibuat di rumah dengan produk AWANG.'
   )
   const [recipePool, setRecipePool] = useState<RecipeHomeCMS[]>(
     initialRecipes.map((r) => ({
@@ -127,7 +149,7 @@ export function HomepageCMSClient({
   )
   const [tiktokSubtitle, setTiktokSubtitle] = useState(
     initialSettings.homepage_tiktok_subtitle ||
-      '@awangbrand_official — Inspirasi resep lezat, kreasi masakan & keseruan dapur AWANG'
+    '@awangbrand_official — Inspirasi resep lezat, kreasi masakan & keseruan dapur AWANG'
   )
   const [tiktokAccountUrl, setTiktokAccountUrl] = useState(
     initialSettings.homepage_tiktok_account_url || 'https://www.tiktok.com/@awangbrand_official'
@@ -146,22 +168,22 @@ export function HomepageCMSClient({
     parsedVideos.length > 0
       ? parsedVideos
       : [
-          {
-            id: '7611107188828065044',
-            url: 'https://www.tiktok.com/@awangbrand_official/video/7611107188828065044',
-            title: 'AWANG Brand Official Video 1',
-          },
-          {
-            id: '7204052765557918982',
-            url: 'https://www.tiktok.com/@awangbrand_official/video/7204052765557918982',
-            title: 'AWANG Brand Official Video 2',
-          },
-          {
-            id: '7696464259382824244',
-            url: 'https://www.tiktok.com/@awangbrand_official/video/7696464259382824244',
-            title: 'AWANG Brand Official Video 3',
-          },
-        ]
+        {
+          id: '7611107188828065044',
+          url: 'https://www.tiktok.com/@awangbrand_official/video/7611107188828065044',
+          title: 'AWANG Brand Official Video 1',
+        },
+        {
+          id: '7204052765557918982',
+          url: 'https://www.tiktok.com/@awangbrand_official/video/7204052765557918982',
+          title: 'AWANG Brand Official Video 2',
+        },
+        {
+          id: '7696464259382824244',
+          url: 'https://www.tiktok.com/@awangbrand_official/video/7696464259382824244',
+          title: 'AWANG Brand Official Video 3',
+        },
+      ]
   )
 
   // 4. STATE: PRODUCT CAROUSEL ("TEMUKAN PILIHANMU")
@@ -259,10 +281,10 @@ export function HomepageCMSClient({
       return prev.map((x) =>
         x.id === id
           ? {
-              ...x,
-              is_featured: newStatus,
-              featured_sort: newStatus ? currentActive.length + 1 : 99,
-            }
+            ...x,
+            is_featured: newStatus,
+            featured_sort: newStatus ? currentActive.length + 1 : 99,
+          }
           : x
       )
     })
@@ -391,6 +413,7 @@ export function HomepageCMSClient({
       // 3. Simpan setting Cook Something Good, Carousel Subkategori & TikTok ke site_settings
       const settingsPayload = [
         { key: 'homepage_taste_the_heat_title', value: tasteHeatTitle },
+        { key: 'homepage_featured_card_colors', value: JSON.stringify(featuredCardColors) },
         { key: 'homepage_cook_good_title', value: cookGoodTitle },
         { key: 'homepage_cook_good_subtitle', value: cookGoodSubtitle },
         { key: 'homepage_product_carousel_title', value: carouselTitle },
@@ -428,8 +451,8 @@ export function HomepageCMSClient({
     } catch (err: any) {
       alert(
         'Gagal menyimpan perubahan ke Supabase:\n\n' +
-          err.message +
-          '\n\nCatatan: Pastikan script SQL migrasi homepage_cms sudah dijalankan di Supabase SQL Editor.'
+        err.message +
+        '\n\nCatatan: Pastikan script SQL migrasi homepage_cms sudah dijalankan di Supabase SQL Editor.'
       )
     } finally {
       setSaving(false)
@@ -471,11 +494,10 @@ export function HomepageCMSClient({
       <div className="flex items-center gap-2 border-b border-gray-200 pb-2 overflow-x-auto scrollbar-none">
         <button
           onClick={() => setActiveTab('taste_heat')}
-          className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
-            activeTab === 'taste_heat'
+          className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${activeTab === 'taste_heat'
               ? 'bg-[#CC0000] text-white shadow-sm'
               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-          }`}
+            }`}
         >
           <Flame size={16} />
           <span>Taste The Heat ({featuredTasteHeat.length}/4)</span>
@@ -483,11 +505,10 @@ export function HomepageCMSClient({
 
         <button
           onClick={() => setActiveTab('cook_good')}
-          className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
-            activeTab === 'cook_good'
+          className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${activeTab === 'cook_good'
               ? 'bg-[#CC0000] text-white shadow-sm'
               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-          }`}
+            }`}
         >
           <ChefHat size={16} />
           <span>Cook Something Good (Resep)</span>
@@ -495,11 +516,10 @@ export function HomepageCMSClient({
 
         <button
           onClick={() => setActiveTab('carousel')}
-          className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
-            activeTab === 'carousel'
+          className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${activeTab === 'carousel'
               ? 'bg-[#CC0000] text-white shadow-sm'
               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-          }`}
+            }`}
         >
           <LayoutGrid size={16} />
           <span>Carousel Subkategori ({selectedCarouselSubs.length})</span>
@@ -507,11 +527,10 @@ export function HomepageCMSClient({
 
         <button
           onClick={() => setActiveTab('tiktok')}
-          className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
-            activeTab === 'tiktok'
+          className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${activeTab === 'tiktok'
               ? 'bg-[#CC0000] text-white shadow-sm'
               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-          }`}
+            }`}
         >
           <Video size={16} />
           <span>Video di TikTok ({tiktokVideos.length})</span>
@@ -599,13 +618,21 @@ export function HomepageCMSClient({
                       </div>
                     </div>
 
-                    {/* Foto & Info */}
-                    <div className="aspect-[4/3] rounded-xl overflow-hidden bg-white border border-gray-100 mb-2.5 relative flex items-center justify-center p-2">
+                    {/* Foto & Info Preview */}
+                    <div
+                      style={{
+                        backgroundColor: featuredCardColors[item.id]
+                          ? FEATURED_CARD_THEMES[featuredCardColors[item.id]]?.hex || '#ffffff'
+                          : '#ffffff',
+                      }}
+                      className="aspect-[4/3] rounded-xl overflow-hidden border border-gray-100 mb-2.5 relative flex items-center justify-center p-2 transition-colors"
+                    >
                       <img
                         src={item.main_image || '/placeholder-product.jpg'}
                         alt={item.name}
-                        className="max-h-full max-w-full object-contain"
+                        className="max-h-full max-w-full object-contain relative z-10 drop-shadow-md"
                       />
+
                       {/* Preview Badge di Foto */}
                       {item.featured_badge === 'trending' && (
                         <span className="absolute top-1.5 left-1.5 bg-white text-black text-[9px] font-black px-2 py-0.5 rounded shadow-sm">
@@ -637,36 +664,76 @@ export function HomepageCMSClient({
                         <button
                           type="button"
                           onClick={() => setTasteHeatBadge(item.id, null)}
-                          className={`py-1 rounded-md transition-colors cursor-pointer ${
-                            !item.featured_badge
+                          className={`py-1 rounded-md transition-colors cursor-pointer ${!item.featured_badge
                               ? 'bg-gray-800 text-white shadow-2xs'
                               : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                          }`}
+                            }`}
                         >
                           Polos
                         </button>
                         <button
                           type="button"
                           onClick={() => setTasteHeatBadge(item.id, 'trending')}
-                          className={`py-1 rounded-md transition-colors cursor-pointer ${
-                            item.featured_badge === 'trending'
+                          className={`py-1 rounded-md transition-colors cursor-pointer ${item.featured_badge === 'trending'
                               ? 'bg-[#CC0000] text-white shadow-2xs'
                               : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                          }`}
+                            }`}
                         >
                           Trending
                         </button>
                         <button
                           type="button"
                           onClick={() => setTasteHeatBadge(item.id, 'favorite')}
-                          className={`py-1 rounded-md transition-colors cursor-pointer ${
-                            item.featured_badge === 'favorite'
+                          className={`py-1 rounded-md transition-colors cursor-pointer ${item.featured_badge === 'favorite'
                               ? 'bg-amber-500 text-white shadow-2xs'
                               : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                          }`}
+                            }`}
                         >
                           Favorite
                         </button>
+                      </div>
+
+                      {/* Selector Warna Background Kartu (Palet Gourmet Kaya Warna Khusus Featured) */}
+                      <div className="pt-2 border-t border-gray-200/80 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
+                            Warna Kartu:
+                          </label>
+                          {featuredCardColors[item.id] && (
+                            <span className="text-[10px] font-bold text-[#CC0000] truncate max-w-[120px]">
+                              {FEATURED_CARD_THEMES[featuredCardColors[item.id]]?.label}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {Object.entries(FEATURED_CARD_THEMES).map(([key, theme]) => {
+                            const isSelected = featuredCardColors[item.id] === key
+                            return (
+                              <button
+                                key={key}
+                                type="button"
+                                title={theme.label}
+                                onClick={() => setFeaturedColor(item.id, key)}
+                                className={`w-5 h-5 rounded-full border-2 transition-all cursor-pointer ${isSelected
+                                    ? 'border-white ring-2 ring-offset-1 ring-gray-700 scale-110 shadow-xs'
+                                    : 'border-transparent hover:scale-110'
+                                  }`}
+                                style={{ backgroundColor: theme.hex }}
+                              />
+                            )
+                          })}
+                          {/* Tombol Reset ke default */}
+                          {featuredCardColors[item.id] && (
+                            <button
+                              type="button"
+                              title="Reset ke warna default"
+                              onClick={() => clearFeaturedColor(item.id)}
+                              className="w-5 h-5 rounded-full border border-dashed border-gray-300 text-gray-400 hover:border-gray-500 hover:text-black flex items-center justify-center text-[10px] cursor-pointer"
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
                       </div>
 
                       <button
@@ -699,9 +766,8 @@ export function HomepageCMSClient({
                 return (
                   <div
                     key={item.id}
-                    className={`flex items-center justify-between p-2.5 rounded-xl border transition-colors ${
-                      isActive ? 'bg-red-50/40 border-red-200' : 'bg-gray-50/50 border-gray-100 hover:bg-gray-50'
-                    }`}
+                    className={`flex items-center justify-between p-2.5 rounded-xl border transition-colors ${isActive ? 'bg-red-50/40 border-red-200' : 'bg-gray-50/50 border-gray-100 hover:bg-gray-50'
+                      }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0 mr-2">
                       <div className="w-10 h-10 rounded-lg bg-white border border-gray-100 flex items-center justify-center shrink-0 p-1">
@@ -722,11 +788,10 @@ export function HomepageCMSClient({
                     <button
                       type="button"
                       onClick={() => toggleTasteHeatFeatured(item.id)}
-                      className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-all cursor-pointer shrink-0 ${
-                        isActive
+                      className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-all cursor-pointer shrink-0 ${isActive
                           ? 'bg-[#CC0000] text-white border-[#CC0000]'
                           : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-200'
-                      }`}
+                        }`}
                     >
                       {isActive ? 'Aktif ✓' : '+ Pilih'}
                     </button>
@@ -1056,11 +1121,10 @@ export function HomepageCMSClient({
                               type="button"
                               title={theme.label}
                               onClick={() => setCardColor(sub.id, key)}
-                              className={`w-6 h-6 rounded-full border-2 transition-all cursor-pointer ${
-                                currentColorKey === key
+                              className={`w-6 h-6 rounded-full border-2 transition-all cursor-pointer ${currentColorKey === key
                                   ? 'border-white ring-2 ring-offset-1 ring-gray-600 scale-110'
                                   : 'border-transparent hover:scale-110'
-                              }`}
+                                }`}
                               style={{ backgroundColor: theme.hex }}
                             />
                           ))}
@@ -1124,11 +1188,10 @@ export function HomepageCMSClient({
                       key={sub.id}
                       type="button"
                       onClick={() => toggleCarouselSub(sub.id)}
-                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer relative group flex flex-col items-center justify-between gap-2.5 ${
-                        isSelected
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer relative group flex flex-col items-center justify-between gap-2.5 ${isSelected
                           ? 'border-[#CC0000] bg-red-50/20 shadow-xs'
                           : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
-                      }`}
+                        }`}
                     >
                       <div className="w-16 h-16 rounded-xl bg-stone-50 p-1.5 flex items-center justify-center overflow-hidden border border-gray-100">
                         {sub.image_url ? (
@@ -1148,11 +1211,10 @@ export function HomepageCMSClient({
                       </div>
 
                       <div
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          isSelected
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isSelected
                             ? 'bg-[#CC0000] text-white'
                             : 'bg-gray-100 text-gray-500 group-hover:bg-gray-200'
-                        }`}
+                          }`}
                       >
                         {isSelected ? '✓ Ditampilkan' : '+ Tampilkan'}
                       </div>

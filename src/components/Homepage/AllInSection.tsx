@@ -76,7 +76,7 @@ export function AllInSection() {
 
             {/* Gambar produk — di-anchor ke dasar kartu */}
             <Image
-              src="/product.webp"
+              src="/allin.webp"
               alt="AWANG Brand — Ramuan Asli & Produk Segar"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"

@@ -4,13 +4,14 @@ import Image from 'next/image'
 
 export function VideoSection() {
   return (
-    <section className="relative w-full h-[70vh] sm:h-[80vh] md:h-[90vh] overflow-hidden bg-black">
-      {/* Background foto dengan zoom in/out looping */}
+    <section className="relative w-full min-h-[560px] h-[85svh] sm:h-[100svh] lg:h-[110svh] overflow-hidden bg-black">
+      {/* Background foto dengan zoom in/out looping (pelan) */}
       <div className="absolute inset-0 animate-zoom-loop">
         <Image
           src="/hero5.webp"
           alt="AWANG Brand background"
           fill
+          sizes="100vw"
           className="object-cover"
           priority
         />
