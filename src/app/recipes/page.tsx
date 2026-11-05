@@ -2,10 +2,10 @@ import type { Metadata } from 'next'
 import { RecipesClient } from '@/app/recipes/RecipesClient'
 
 export const metadata: Metadata = {
-  title: 'All Recipes | AWANG Delicious Inspirations',
+  title: 'All Recipes - AwangBrand',
   description: 'Temukan aneka resep masakan lezat dan kreatif menggunakan produk saus dan bumbu AWANG.',
   openGraph: {
-    title: 'Recipes | AWANG',
+    title: 'Recipes - AWANG',
     description: 'Kreasi resep pilihan terbaik untuk keluarga Anda.',
     url: 'https://awangbrand.com/recipes',
   },

@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { ContactClient } from './ContactClient'
 
 export const metadata: Metadata = {
-  title: 'Hubungi Kami | AWANG Brand Malaysia',
+  title: 'Contact Us - AwangBrand',
   description:
     'Hubungi AWANG Brand Malaysia untuk pertanyaan pes masakan, tempahan borong, atau peluang pengedaran di Malaysia dan pasaran serantau.',
   keywords: [

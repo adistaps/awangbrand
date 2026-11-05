@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ProductsGrid } from '@/components/ProductsGrid'
 
 export const metadata: Metadata = {
-  title: 'Katalog Pes Masakan & Bumbu Warisan Melayu | AWANG Brand Malaysia',
+  title: 'Products - AwangBrand',
   description:
     'Jelajahi aneka pes masakan autentik, perencah warisan Melayu, sambal, dan sos lazat dari AWANG Brand Malaysia. 100% ramuan asli semulajadi, disahkan Halal JAKIM, tanpa bahan pengawet.',
   keywords: [

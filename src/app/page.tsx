@@ -14,7 +14,7 @@ import { AllInSection } from '@/components/Homepage/AllInSection'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
-  title: 'Awang Brand  — Pes Masakan Autentik & Perencah Warisan Melayu',
+  title: 'Awang Brand - Pes Masakan Autentik & Perencah Warisan Melayu',
   description: 'AWANG Brand — Pengeluar pes masakan autentik warisan Melayu terkemuka di Malaysia. 100% ramuan asli semulajadi, disahkan Halal JAKIM, mudah dan lazat untuk seisi keluarga.',
   alternates: { canonical: 'https://awangbrand.com' },
 }
