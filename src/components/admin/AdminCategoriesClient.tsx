@@ -54,6 +54,7 @@ export function AdminCategoriesClient({
             </p>
           </div>
           <CategoriesManager
+            key="product_categories_hierarchy"
             initialHierarchy={productHierarchy}
             settingsKey="product_categories_hierarchy"
             title="Kategori Produk"
@@ -68,6 +69,7 @@ export function AdminCategoriesClient({
             </p>
           </div>
           <CategoriesManager
+            key="recipe_categories_hierarchy"
             initialHierarchy={recipeHierarchy}
             settingsKey="recipe_categories_hierarchy"
             title="Kategori Resep"

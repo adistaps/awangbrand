@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Plus, Trash2, Pencil, Check, X, Image as ImageIcon, Loader2 } from 'lucide-react'
 import type { CategoryGroup, Subcategory } from '@/types/database'
@@ -24,6 +24,11 @@ export function CategoriesManager({
   title?: string
 }) {
   const [hierarchy, setHierarchy] = useState<CategoryGroup[]>(initialHierarchy)
+
+  // Pastikan jika initialHierarchy dari parent berganti, state lokal juga di-sync
+  useEffect(() => {
+    setHierarchy(initialHierarchy)
+  }, [initialHierarchy])
 
   // State tambah group baru
   const [newGroupName, setNewGroupName] = useState('')
@@ -77,11 +82,15 @@ export function CategoriesManager({
   async function saveHierarchy(updated: CategoryGroup[]) {
     setSaving(true)
     const supabase = createClient()
-    const { error } = await supabase.from('site_settings').upsert({
-      key: settingsKey,
-      value: JSON.stringify(updated),
-      updated_at: new Date().toISOString(),
-    })
+    // onConflict: 'key' — pastikan upsert update baris yang key-nya sama, bukan membuat baris baru
+    const { error } = await supabase.from('site_settings').upsert(
+      {
+        key: settingsKey,
+        value: JSON.stringify(updated),
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'key' }
+    )
     if (!error) {
       setHierarchy(updated)
     } else {

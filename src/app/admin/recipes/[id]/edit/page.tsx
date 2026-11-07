@@ -12,13 +12,15 @@ export default async function EditRecipePage({
   const { id } = await params
   const supabase = await createClient()
 
-  const [{ data: recipe }, { data: products }, { data: recipeCatSetting }] = await Promise.all([
+  const [{ data: recipe }, { data: products }, { data: recipeCatRows }] = await Promise.all([
     supabase.from('recipes').select('*').eq('id', id).single(),
     supabase.from('products').select('id, name').order('name'),
-    supabase.from('site_settings').select('value').eq('key', 'recipe_categories_hierarchy').maybeSingle(),
+    supabase.from('site_settings').select('value').eq('key', 'recipe_categories_hierarchy').order('updated_at', { ascending: false }).limit(1),
   ])
 
   if (!recipe) return notFound()
+
+  const recipeCatSetting = recipeCatRows?.[0] ?? null
 
   let categoryGroups = []
   try {

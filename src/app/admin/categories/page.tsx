@@ -6,10 +6,25 @@ export const dynamic = 'force-dynamic'
 
 export default async function AdminCategoriesPage() {
   const supabase = await createClient()
-  const [{ data: productSetting }, { data: recipeSetting }] = await Promise.all([
-    supabase.from('site_settings').select('value').eq('key', 'product_categories_hierarchy').maybeSingle(),
-    supabase.from('site_settings').select('value').eq('key', 'recipe_categories_hierarchy').maybeSingle(),
+
+  // Gunakan .order + .limit(1) untuk menghindari error jika ada duplikat row di site_settings
+  const [{ data: productSettingRows }, { data: recipeSettingRows }] = await Promise.all([
+    supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'product_categories_hierarchy')
+      .order('updated_at', { ascending: false })
+      .limit(1),
+    supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'recipe_categories_hierarchy')
+      .order('updated_at', { ascending: false })
+      .limit(1),
   ])
+
+  const productSetting = productSettingRows?.[0] ?? null
+  const recipeSetting = recipeSettingRows?.[0] ?? null
 
   let productHierarchy: CategoryGroup[] = []
   try {

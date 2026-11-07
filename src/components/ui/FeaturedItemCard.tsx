@@ -145,8 +145,8 @@ export function FeaturedItemCard({ item, index = 0, themeKey }: FeaturedItemCard
   const cardBgColor = resolvedTheme
     ? resolvedTheme.hex
     : isRecipe
-    ? '#1A1A1E'
-    : '#540B26'
+      ? '#1A1A1E'
+      : '#540B26'
 
   return (
     <motion.div
@@ -177,13 +177,16 @@ export function FeaturedItemCard({ item, index = 0, themeKey }: FeaturedItemCard
         {item.featured_badge === 'trending' && <TrendingBadge />}
         {item.featured_badge === 'favorite' && <FanFavoriteBadge />}
 
-        {/* GAMBAR PRODUK / RESEP (UKURAN ASLI PENUH & BESAR PERSIS SEPERTI SEMULA) */}
+        {/* GAMBAR PRODUK / RESEP
+            Produk: bg-origin-content membuat padding benar-benar mengatur ukuran foto.
+            px = lebar (makin kecil, makin besar fotonya)
+            pt = jarak dari atas (makin besar, makin turun)
+            pb = jarak ke judul di bawah */}
         <div
-          className={`absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105 ${
-            isRecipe
+          className={`absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-105 ${isRecipe
               ? 'bg-cover bg-center'
-              : 'bg-contain bg-center bg-no-repeat p-2.5 sm:p-4'
-          }`}
+              : 'bg-contain bg-center bg-no-repeat bg-origin-content px-0 pt-6 pb-6 sm:pt-8 sm:pb-8'
+            }`}
           style={{ backgroundImage: `url(${img})` }}
         />
 

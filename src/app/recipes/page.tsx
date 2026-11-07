@@ -19,11 +19,15 @@ import type { CategoryGroup } from '@/types/database'
 
 export default async function RecipesPage() {
   const supabase = await createClient()
-  const { data: recipeCatSetting } = await supabase
+  // Gunakan .order + .limit(1) untuk menghindari error jika ada duplikat row di site_settings
+  const { data: recipeCatRows } = await supabase
     .from('site_settings')
     .select('value')
     .eq('key', 'recipe_categories_hierarchy')
-    .maybeSingle()
+    .order('updated_at', { ascending: false })
+    .limit(1)
+
+  const recipeCatSetting = recipeCatRows?.[0] ?? null
 
   let categoryGroups: CategoryGroup[] = []
   try {
