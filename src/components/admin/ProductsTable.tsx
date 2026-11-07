@@ -4,25 +4,65 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Pencil, Trash2, ExternalLink, Search, Star, Check, Minus } from 'lucide-react'
-import type { Product } from '@/types/database'
+import type { Product, CategoryGroup } from '@/types/database'
 
 export function ProductsTable({
   products,
+  categoryGroups = [],
 }: {
   products: (Product & { category: { id: string; name: string } | null })[]
+  categoryGroups?: CategoryGroup[]
 }) {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [selected, setSelected] = useState<string[]>([])
   const [busy, setBusy] = useState(false)
 
+  // Helper untuk mendapatkan nama kategori & subkategori dari struktur Kategori Admin
+  function getProductCategoryLabel(p: Product & { category: { id: string; name: string } | null }) {
+    const facts = (p.nutritional_facts as { category_ids?: string[]; subcategory_ids?: string[] } | null) || {}
+    const subIds = facts.subcategory_ids || []
+    const catIds = facts.category_ids || []
+
+    // 1. Cek nama subkategori dari categoryGroups
+    const matchedSubNames: string[] = []
+    categoryGroups.forEach((group) => {
+      (group.subcategories || []).forEach((sub) => {
+        if (subIds.includes(sub.id)) {
+          matchedSubNames.push(sub.name)
+        }
+      })
+    })
+
+    if (matchedSubNames.length > 0) {
+      return matchedSubNames.slice(0, 2).join(', ') + (matchedSubNames.length > 2 ? ` (+${matchedSubNames.length - 2})` : '')
+    }
+
+    // 2. Cek nama kategori utama dari categoryGroups jika subkategori belum ada
+    const matchedCatNames: string[] = []
+    categoryGroups.forEach((group) => {
+      if (catIds.includes(group.id)) {
+        matchedCatNames.push(group.name)
+      }
+    })
+
+    if (matchedCatNames.length > 0) {
+      return matchedCatNames.join(', ')
+    }
+
+    // 3. Fallback ke relasi tabel categories lama jika ada
+    return p.category?.name || '—'
+  }
+
   const filtered = useMemo(() => {
     return products.filter((p) => {
-      const matchSearch = p.name.toLowerCase().includes(search.toLowerCase())
+      const matchSearch =
+        p.name.toLowerCase().includes(search.toLowerCase()) ||
+        getProductCategoryLabel(p).toLowerCase().includes(search.toLowerCase())
       const matchStatus = !statusFilter || p.status === statusFilter
       return matchSearch && matchStatus
     })
-  }, [products, search, statusFilter])
+  }, [products, search, statusFilter, categoryGroups])
 
   function toggleSelect(id: string) {
     setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]))
@@ -223,7 +263,11 @@ export function ProductsTable({
                       </div>
                     </div>
                   </td>
-                  <td className="p-3.5 text-gray-600 text-xs font-medium">{p.category?.name || '—'}</td>
+                  <td className="p-3.5 text-gray-600 text-xs font-medium">
+                    <span className="inline-block bg-stone-100 text-stone-700 px-2.5 py-1 rounded-md font-semibold max-w-[200px] truncate" title={getProductCategoryLabel(p)}>
+                      {getProductCategoryLabel(p)}
+                    </span>
+                  </td>
                   <td className="p-3.5">
                     <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider ${p.status === 'published' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/50' : 'bg-gray-100 text-gray-500'}`}>
                       {p.status}

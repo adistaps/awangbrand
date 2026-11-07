@@ -8,13 +8,26 @@ export const dynamic = 'force-dynamic'
 export default async function AdminProductsPage() {
   const supabase = await createClient()
 
-  const { data: products } = await supabase
-    .from('products')
-    .select('*, category:categories(id, name)')
-    .order('created_at', { ascending: false })
+  const [{ data: products }, { data: hierarchySetting }] = await Promise.all([
+    supabase
+      .from('products')
+      .select('*, category:categories(id, name)')
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('site_settings')
+      .select('value')
+      .eq('key', 'product_categories_hierarchy')
+      .maybeSingle(),
+  ])
 
-
-  const { data: categories } = await supabase.from('categories').select('*').order('name')
+  let categoryGroups = []
+  try {
+    if (hierarchySetting?.value) {
+      categoryGroups = JSON.parse(hierarchySetting.value)
+    }
+  } catch (err) {
+    categoryGroups = []
+  }
 
   return (
     <div className="space-y-6">
@@ -32,7 +45,7 @@ export default async function AdminProductsPage() {
         </Link>
       </div>
 
-      <ProductsTable products={products || []} />
+      <ProductsTable products={products || []} categoryGroups={categoryGroups} />
     </div>
   )
 }

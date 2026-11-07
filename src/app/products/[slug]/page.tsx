@@ -73,7 +73,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   // Ambil produk lainnya dari kategori yang sama atau produk published acak (maksimal 6 produk)
   const { data: rawRelatedProducts } = await supabase
     .from('products')
-    .select('id, name, slug, main_image, category_id, category:categories(name)')
+    .select('id, name, slug, main_image, sizes, category_id, category:categories(name)')
     .eq('status', 'published')
     .neq('id', product.id)
     .limit(6)
@@ -83,6 +83,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     name: p.name,
     img: p.main_image || '',
     cat: (p.category as unknown as { name: string } | null)?.name?.toUpperCase() || 'PRODUCT',
+    sizes: (p.sizes as string[] | null) || [],
   }))
 
   // Ambil resep yang menggunakan produk ini (featured_product_id = product.id)
@@ -99,6 +100,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     slug: r.slug,
     main_image: r.main_image || '',
     category: r.category || 'Recipe',
+    prep_time: r.prep_time || null,
+    cook_time: r.cook_time || null,
   }))
 
   const images = [

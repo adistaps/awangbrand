@@ -39,7 +39,7 @@ export default async function Page() {
   const [{ data: products }, { data: categories }, { data: hierarchySetting }] = await Promise.all([
     supabase
       .from('products')
-      .select('id, name, slug, main_image, nutritional_facts, category:categories(name)')
+      .select('id, name, slug, main_image, sizes, nutritional_facts, category:categories(name)')
       .eq('status', 'published')
       .order('created_at', { ascending: false }),
 
@@ -130,6 +130,7 @@ export default async function Page() {
               cat:
                 (p.category as unknown as { name: string } | null)?.name?.toUpperCase() ||
                 'PRODUCT',
+              sizes: p.sizes || [],
               category_ids: facts.category_ids || [],
               subcategory_ids: facts.subcategory_ids || [],
             }

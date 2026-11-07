@@ -1,93 +1,80 @@
 'use client'
 
-import React from 'react'
-import { motion } from 'framer-motion'
-import type { Variants, Transition } from 'framer-motion'
+import { useEffect, useState } from 'react'
+
+const W = 1000
+const K = 1.2 // scaleY
+const GAP = 20 // jarak visual antar baris (satuan viewBox)
+const PAD = 70 // sisa ruang atas = bawah (satuan viewBox)
+const LS = 0.04 // jarak antar huruf (satuan em)
+const WS = 0.1 // jarak antar kata (satuan em)
+const BG = '#CC0000'
+
+const LINES = [
+  { text: 'KEEPING IT', size: 150, fill: '#FFFFFF' },
+  { text: 'FRESH', size: 150, fill: '#540B26' },
+]
 
 export function MarqueeAbout() {
-  const textPhrase = 'TASTE THE HERITAGE'
-  const words = textPhrase.split(' ')
+  // rasio tinggi huruf kapital terhadap font-size, diukur dari font aslinya
+  const [cap, setCap] = useState(0.7)
 
-  // --- 1. KONFIGURASI WARNA (Background & Font) ---
-  const colorCycleDuration = 6
-  const sharedColorTransition: Transition = {
-    duration: colorCycleDuration,
-    repeat: Infinity,
-    repeatType: 'loop',
-    ease: 'easeInOut',
-    times: [0, 0.25, 0.5, 0.75, 1],
-  }
+  useEffect(() => {
+    const measure = async () => {
+      await document.fonts.ready
+      const el = document.getElementById('marquee-about-svg')
+      if (!el) return
+      const cs = getComputedStyle(el)
+      const ctx = document.createElement('canvas').getContext('2d')
+      if (!ctx) return
+      ctx.font = `${cs.fontWeight} 100px ${cs.fontFamily}`
+      const m = ctx.measureText('H')
+      setCap(m.actualBoundingBoxAscent / 100)
+    }
+    measure()
+  }, [])
 
-  // --- 2. KONFIGURASI GERAKAN (Memantul / Spring) ---
-  const letterVariants: Variants = {
-    initial: {
-      opacity: 0,
-      y: -50,
-      rotate: -8, // Miring ke kiri saat muncul
-    },
-    animate: (currentDelay: number) => ({
-      opacity: 1,
-      y: 0,
-      rotate: 0,
-      transition: {
-        type: 'spring',
-        damping: 12,
-        stiffness: 150,
-        delay: currentDelay, // Delay dihitung berurutan per karakter
-        repeat: Infinity,
-        repeatType: 'reverse', // Mundur otomatis
-        repeatDelay: 2,
-      },
-    }),
-  }
-
-  let charCount = 0
+  // tinggi tinta tiap baris, lalu baseline masing-masing
+  const inkH = LINES.map((l) => cap * l.size * K)
+  const baselines: number[] = []
+  let y = PAD
+  inkH.forEach((h) => {
+    y += h
+    baselines.push(y)
+    y += GAP
+  })
+  const H = y - GAP + PAD
 
   return (
-    <motion.section
-      // Animasi Background menggunakan object literal agar tidak bentrok dengan pergerakan
-      animate={{
-        backgroundColor: ['#CC0000', '#540B26', '#FAF6ED', '#FAF6ED', '#CC0000'],
-      }}
-      transition={sharedColorTransition}
-      className="relative z-10 w-full h-[140px] sm:h-[350px] md:h-[450px] flex items-center justify-center overflow-hidden border-0 border-none outline-none ring-0 shadow-none -my-px"
+    <section
+      className="relative z-10 w-full flex items-center justify-center overflow-hidden px-2 sm:px-4 -my-px"
+      style={{ backgroundColor: BG }}
     >
-      <div className="w-full max-w-[1600px] mx-auto flex items-center justify-center px-4 sm:px-8 md:px-12 gap-2 sm:gap-6 md:gap-8 flex-wrap text-center">
-        {/* Teks: Dipecah menjadi per kata, lalu per huruf */}
-        {words.map((word, wordIdx) => (
-          <span key={wordIdx} className="flex whitespace-nowrap">
-            {word.split('').map((char, charIdx) => {
-              const currentDelay = charCount * 0.05
-              charCount++
-
-              return (
-                <motion.span
-                  key={charIdx}
-                  custom={currentDelay}
-                  variants={letterVariants} // Menggunakan animasi Spring memantul
-                  initial="initial"
-                  animate="animate"
-                  className="inline-block text-[10vw] sm:text-[9vw] md:text-[8.5vw] font-black uppercase leading-none tracking-tighter font-heinz select-none"
-                >
-                  <motion.span
-                    // Animasi warna teks dipisah ke dalam child (warna putih saat background merah diganti warna #FAF6ED)
-                    animate={{
-                      color: ['#FAF6ED', '#FAF6ED', '#F1AAB2', '#CC0000', '#FAF6ED'],
-                    }}
-                    transition={sharedColorTransition}
-                    className="block"
-                  >
-                    {char}
-                  </motion.span>
-                </motion.span>
-              )
-            })}
-          </span>
+      <svg
+        id="marquee-about-svg"
+        viewBox={`0 0 ${W} ${H}`}
+        className="w-full max-w-[1600px] h-auto font-heinz font-black uppercase"
+        role="img"
+        aria-label="Keeping it fresh"
+      >
+        {LINES.map((l, i) => (
+          <text
+            key={l.text}
+            x={0}
+            y={0}
+            dx={0.5 * l.size * LS}
+            fontSize={l.size}
+            fill={l.fill}
+            textAnchor="middle"
+            transform={`translate(${W / 2} ${baselines[i]}) scale(1 ${K})`}
+            style={{ letterSpacing: `${LS}em`, wordSpacing: `${WS}em` }}
+          >
+            {l.text}
+          </text>
         ))}
-      </div>
-    </motion.section>
+      </svg>
+    </section>
   )
 }
 
-// Export alias default
 export default MarqueeAbout

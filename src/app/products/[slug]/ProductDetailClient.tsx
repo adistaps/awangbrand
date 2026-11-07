@@ -12,6 +12,7 @@ interface RelatedProduct {
   name: string
   img: string
   cat: string
+  sizes?: string[]
 }
 
 interface RelatedRecipe {
@@ -20,6 +21,8 @@ interface RelatedRecipe {
   slug: string
   main_image: string
   category: string
+  prep_time?: string | null
+  cook_time?: string | null
 }
 
 interface ProductDetailClientProps {
@@ -295,22 +298,24 @@ export function ProductDetailClient({
             {/* Horizontal scroll */}
             <div
               ref={relatedScrollRef}
-              className="flex gap-6 sm:gap-8 overflow-x-auto pb-6 scrollbar-hide snap-x snap-mandatory"
+              className="flex gap-6 sm:gap-10 overflow-x-auto pb-6 scrollbar-hide snap-x snap-mandatory"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {relatedProducts.map((p) => (
                 <Link
                   key={p.slug}
                   href={`/products/${p.slug}`}
-                  className="group shrink-0 w-[240px] sm:w-[280px] snap-start flex flex-col items-center text-center"
+                  className="group shrink-0 w-[220px] sm:w-[260px] snap-start flex flex-col items-center text-center"
                 >
-                  <div className="w-full aspect-square overflow-hidden mb-4 flex items-center justify-center">
+                  {/* Product image — transparent background, drop shadow, hover scale */}
+                  <div className="w-full aspect-square flex items-center justify-center mb-5 relative">
                     {p.img ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={p.img}
                         alt={p.name}
-                        className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300 drop-shadow-sm"
+                        className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300"
+                        style={{ filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.18)) drop-shadow(0 2px 6px rgba(0,0,0,0.10))' }}
                       />
                     ) : (
                       <div className="w-20 h-20 rounded-2xl bg-stone-100 flex items-center justify-center text-[#7a6555] text-3xl">
@@ -318,9 +323,20 @@ export function ProductDetailClient({
                       </div>
                     )}
                   </div>
-                  <p className="text-base sm:text-lg font-bold text-[#1a0f08] leading-snug group-hover:text-[#CC0000] transition-colors line-clamp-2 px-1">
+                  {/* "Awang" brand label */}
+                  <p className="text-xs font-semibold text-[#540B26] mb-0.5 tracking-wide">
+                    Awang
+                  </p>
+                  {/* Product name — red bold */}
+                  <p className="text-sm sm:text-base font-extrabold text-[#CC0000] leading-snug line-clamp-2 px-1 mb-1">
                     {p.name}
                   </p>
+                  {/* Sizes */}
+                  {p.sizes && p.sizes.length > 0 && (
+                    <p className="text-xs text-gray-500 font-medium">
+                      Available In {p.sizes.length} {p.sizes.length === 1 ? 'Size' : 'Sizes'}
+                    </p>
+                  )}
                 </Link>
               ))}
             </div>
@@ -374,33 +390,40 @@ export function ProductDetailClient({
                 <Link
                   key={recipe.id}
                   href={`/recipes/${recipe.slug}`}
-                  className="group shrink-0 w-[280px] sm:w-[320px] snap-start relative rounded-2xl overflow-hidden aspect-[4/3] block"
+                  className="group shrink-0 w-[220px] sm:w-[260px] snap-start flex flex-col"
                 >
-                  {/* Image */}
-                  {recipe.main_image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={recipe.main_image}
-                      alt={recipe.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-[#e0d8cc] flex items-center justify-center text-4xl">
-                      🍳
-                    </div>
-                  )}
+                  {/* Full-bleed image top */}
+                  <div className="w-full aspect-[4/3] overflow-hidden rounded-t-lg">
+                    {recipe.main_image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={recipe.main_image}
+                        alt={recipe.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#e0d8cc] flex items-center justify-center text-4xl">
+                        🍳
+                      </div>
+                    )}
+                  </div>
 
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-                  {/* Text */}
-                  <div className="absolute inset-0 p-5 flex flex-col justify-end text-white">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/70 mb-1">
+                  {/* Text below image */}
+                  <div className="pt-3 px-1 pb-2 flex flex-col gap-0.5">
+                    {/* "Recipes" label */}
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
                       Recipes
                     </p>
-                    <h3 className="text-base sm:text-lg font-extrabold leading-snug uppercase tracking-tight line-clamp-2">
+                    {/* Title — red bold uppercase */}
+                    <h3 className="text-sm sm:text-base font-extrabold text-[#CC0000] leading-snug uppercase tracking-tight line-clamp-2">
                       {recipe.title}
                     </h3>
+                    {/* Time metadata */}
+                    {(recipe.prep_time || recipe.cook_time) && (
+                      <p className="text-[11px] text-gray-500 font-medium mt-1">
+                        {[recipe.prep_time, recipe.cook_time].filter(Boolean).join(' · ')}
+                      </p>
+                    )}
                   </div>
                 </Link>
               ))}

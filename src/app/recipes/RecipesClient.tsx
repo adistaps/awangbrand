@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { createClient } from '@/lib/supabase/client'
 import { Recipe, CategoryGroup } from '@/types/database'
@@ -12,6 +13,9 @@ export function RecipesClient({
 }: {
   initialCategoryGroups?: CategoryGroup[]
 }) {
+  const searchParams = useSearchParams()
+  const searchQuery = searchParams.get('search')?.toLowerCase().trim() || ''
+
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -75,6 +79,13 @@ export function RecipesClient({
   // Filter resep berdasarkan tab & subkategori terpilih
   const filteredRecipes = useMemo(() => {
     return recipes.filter((r) => {
+      // 0. Cek search query dari URL jika ada
+      if (searchQuery) {
+        const matchTitle = r.title.toLowerCase().includes(searchQuery)
+        const matchCat = (r.category || '').toLowerCase().includes(searchQuery)
+        if (!matchTitle && !matchCat) return false
+      }
+
       // 1. Cek tab category (jika resep punya category_ids)
       if (activeCategoryTab && r.category_ids && r.category_ids.length > 0) {
         if (!r.category_ids.includes(activeCategoryTab)) {
@@ -168,11 +179,11 @@ export function RecipesClient({
                       key={group.id}
                       type="button"
                       onClick={() => setActiveCategoryTab(group.id)}
-                      className={`relative pb-3 flex items-center gap-2 text-sm sm:text-base font-bold whitespace-nowrap transition-colors cursor-pointer ${isActive ? 'text-[#590014]' : 'text-neutral-500 hover:text-[#590014]'
+                      className={`relative pb-3 flex items-center gap-2 text-sm sm:text-base font-extrabold whitespace-nowrap transition-colors cursor-pointer ${isActive ? 'text-[#590014]' : 'text-neutral-600 hover:text-[#590014]'
                         }`}
                     >
-                      <TabIcon size={16} className="shrink-0" />
-                      <span>{group.name}</span>
+                      <TabIcon size={18} strokeWidth={2.4} className="shrink-0" />
+                      <span className="font-extrabold">{group.name}</span>
                       {isActive && (
                         <motion.div
                           layoutId="activeRecipeTabUnderline"
@@ -185,10 +196,11 @@ export function RecipesClient({
               </div>
             </div>
 
-            {/* BARIS TENGAH: LINGKARAN MAROON SUBKATEGORI (BESAR SEPERTI HALAMAN PRODUK) */}
+            {/* BARIS TENGAH: LINGKARAN SUBKATEGORI */}
             {subcategoriesToDisplay.length > 0 && (
               <div className="w-full mb-8">
-                <div className="flex items-start justify-center gap-6 sm:gap-10 md:gap-14 overflow-x-auto pb-4 pt-2 px-2 scrollbar-none">
+                {/* Padding atas/bawah/samping cukup besar agar ring, centang, dan efek scale tidak terpotong overflow */}
+                <div className="flex items-start justify-center gap-6 sm:gap-10 md:gap-14 overflow-x-auto pb-6 pt-8 px-8 scrollbar-none">
                   {subcategoriesToDisplay.map((sub) => {
                     const isSelected = selectedSubcategories.includes(sub.id)
                     const img =
@@ -202,25 +214,26 @@ export function RecipesClient({
                         onClick={() => toggleSubcategory(sub.id)}
                         className="group flex flex-col items-center cursor-pointer shrink-0 w-[150px] sm:w-[170px] md:w-[185px] focus:outline-none"
                       >
-                        {/* Lingkaran Luar Maroon Besar */}
+                        {/* Wrapper luar: tempat ring terpilih & centang (TIDAK overflow-hidden) */}
                         <div
-                          className={`relative w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44 rounded-full p-1 sm:p-1.5 transition-all duration-300 flex items-center justify-center ${isSelected
-                            ? 'ring-4 ring-[#CC0000] ring-offset-2 ring-offset-white scale-105'
+                          className={`relative w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44 rounded-full transition-all duration-300 ${isSelected
+                            ? 'ring-[3px] ring-[#540B26] ring-offset-4 ring-offset-white scale-105'
                             : 'group-hover:scale-105'
                             }`}
                         >
-                          <div className="w-full h-full rounded-full bg-[#CC0000] flex items-center justify-center overflow-hidden relative shadow-md p-2">
+                          {/* Lingkaran dengan border #540B26 */}
+                          <div className="w-full h-full rounded-full border-[6px] border-[#540B26] overflow-hidden relative shadow-md bg-[#540B26]">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={img}
                               alt={sub.name}
-                              className="w-full h-full object-cover rounded-full drop-shadow-md transition-transform duration-300 group-hover:scale-110"
+                              className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-110"
                             />
                           </div>
 
                           {/* Checkmark jika terpilih */}
                           {isSelected && (
-                            <div className="absolute top-0 right-0 w-6 h-6 rounded-full bg-[#CC0000] border-2 border-white text-white flex items-center justify-center shadow-md animate-in zoom-in-50 duration-200">
+                            <div className="absolute -top-1 -right-1 z-10 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#540B26] border-2 border-white text-white flex items-center justify-center shadow-md animate-in zoom-in-50 duration-200">
                               <Check size={13} strokeWidth={3} />
                             </div>
                           )}
@@ -228,8 +241,8 @@ export function RecipesClient({
 
                         {/* Label Subkategori */}
                         <span
-                          className={`mt-3 text-sm sm:text-base font-bold tracking-tight text-center leading-tight line-clamp-2 transition-colors ${isSelected ? 'text-[#590014] font-black' : 'text-[#4A0A1A] group-hover:text-[#CC0000]'
-                            }`}
+                          className={`mt-4 text-sm sm:text-base font-semibold tracking-tight text-center leading-tight line-clamp-2 transition-colors ${isSelected ? 'font-bold' : ''
+                            } text-[#540B26]`}
                         >
                           {sub.name}
                         </span>
@@ -242,13 +255,12 @@ export function RecipesClient({
 
             {/* BARIS BAWAH: Showing count & filter pills */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-stone-200/60 mt-2 px-2">
-              <p className="text-xs sm:text-sm text-stone-500 font-medium">
-                Showing <span className="font-bold text-stone-900">{Math.min(visibleCount, filteredRecipes.length)}</span> of{' '}
-                <span className="font-bold text-stone-900">{recipes.length}</span> recipes
+              <p className="text-sm sm:text-base text-[#540B26] font-medium">
+                Showing {Math.min(visibleCount, filteredRecipes.length)} of {recipes.length} recipes
               </p>
 
               {selectedSubcategories.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
                   {selectedSubcategories.map((subId) => {
                     let subName = subId
                     for (const g of categoryGroups) {
@@ -264,9 +276,9 @@ export function RecipesClient({
                         key={subId}
                         type="button"
                         onClick={() => toggleSubcategory(subId)}
-                        className="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-[#CC0000] border border-red-200 text-xs font-bold px-3 py-1.5 rounded-full transition-colors cursor-pointer"
+                        className="inline-flex items-center gap-2.5 bg-[#F5F5F5] hover:bg-[#EBEBEB] text-[#540B26] text-sm font-bold px-4 py-2.5 rounded-sm transition-colors cursor-pointer"
                       >
-                        <X size={12} />
+                        <X size={16} strokeWidth={2} />
                         <span>{subName}</span>
                       </button>
                     )
@@ -275,7 +287,7 @@ export function RecipesClient({
                   <button
                     type="button"
                     onClick={clearAllFilters}
-                    className="text-xs font-extrabold text-[#CC0000] hover:text-[#9e0b23] underline underline-offset-4 ml-1 cursor-pointer transition-colors"
+                    className="text-lg sm:text-xl font-extrabold text-[#540B26] hover:opacity-70 tracking-tight cursor-pointer transition-opacity"
                   >
                     Clear all filters
                   </button>

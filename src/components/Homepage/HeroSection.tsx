@@ -27,21 +27,20 @@ const SLIDES: Slide[] = [
 // Teks slide brand
 const PRE_TEXT = 'FLAVOUR YOU CAN TRUST, ONLY AT'
 const TAGLINE = 'PREMIUM HALAL, CRAFTED WITH HERITAGE'
-
 function BrandSlide() {
   return (
     <motion.div
-      className="absolute inset-0 bg-[#CC0000] flex items-center justify-center px-4 pt-[84px] sm:pt-[110px] pb-[60px] sm:pb-[90px] max-md:pb-[45px]"
+      className="absolute inset-0 z-10 bg-[#CC0000] flex items-center justify-center px-4 pt-[84px] sm:pt-[110px] pb-[60px] sm:pb-[90px] max-md:pb-[45px]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
-      <div className="w-full max-w-4xl flex flex-col items-center text-center">
-        {/* KALIMAT PEMBUKA */}
+      <div className="w-full max-w-[1600px] flex flex-col items-center text-center">
+        {/* KALIMAT PEMBUKA (dikecilkan) */}
         {PRE_TEXT && (
           <motion.h2
-            className={`${heinz.className} text-white tracking-wide leading-tight text-balance text-lg sm:text-3xl lg:text-4xl mb-6 sm:mb-8`}
+            className={`${heinz.className} text-white uppercase leading-[0.95] tracking-tight text-balance text-[clamp(1.5rem,4vw,4rem)] mb-4 sm:mb-6`}
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
@@ -50,7 +49,7 @@ function BrandSlide() {
           </motion.h2>
         )}
 
-        {/* LOGO AWANG BRAND (putih, tanpa shadow) */}
+        {/* LOGO AWANG BRAND (ukuran tetap) */}
         <motion.div
           className="w-full flex justify-center"
           initial={{ opacity: 0, y: 80 }}
@@ -60,15 +59,15 @@ function BrandSlide() {
           <img
             src="/logo.webp"
             alt="AWANG Brand"
-            className="w-[260px] sm:w-[380px] md:w-[440px] lg:w-[500px] h-auto object-contain brightness-0 invert select-none"
+            className="w-auto max-w-[90vw] h-[26vh] sm:h-[36vh] lg:h-[42vh] object-contain brightness-0 invert select-none"
             draggable={false}
           />
         </motion.div>
 
-        {/* TAGLINE */}
+        {/* TAGLINE (dikecilkan) */}
         {TAGLINE && (
           <motion.p
-            className={`${heinz.className} text-white/95 text-balance tracking-[0.12em] sm:tracking-[0.2em] text-[11px] sm:text-xl mt-6 sm:mt-8 px-2`}
+            className={`${heinz.className} text-white/95 text-balance tracking-[0.1em] sm:tracking-[0.16em] text-[11px] sm:text-lg lg:text-xl mt-4 sm:mt-6 px-2`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7, ease: 'easeOut' }}

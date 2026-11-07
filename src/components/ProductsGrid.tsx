@@ -33,9 +33,13 @@ export interface ProductItem {
   name: string
   img: string
   cat: string
+  sizes?: string[]
   category_ids?: string[]
   subcategory_ids?: string[]
 }
+
+// Warna lingkaran subkategori (sesuai referensi)
+const SUB_COLOR = '#540B26'
 
 export function ProductsGrid({
   products,
@@ -50,6 +54,7 @@ export function ProductsGrid({
 }) {
   const searchParams = useSearchParams()
   const initialCategoryParam = searchParams.get('category')
+  const searchQuery = searchParams.get('search')?.toLowerCase().trim() || ''
 
   // Selected parent category tab
   const [activeCategoryTab, setActiveCategoryTab] = useState<string>(() => {
@@ -107,6 +112,13 @@ export function ProductsGrid({
   // Filter produk berdasarkan tab kategori dan subkategori yang aktif
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
+      // 0. Cek search query dari URL jika ada
+      if (searchQuery) {
+        const matchName = p.name.toLowerCase().includes(searchQuery)
+        const matchCat = p.cat.toLowerCase().includes(searchQuery)
+        if (!matchName && !matchCat) return false
+      }
+
       // 1. Cek apakah produk masuk ke tab kategori aktif (jika produk punya category_ids)
       if (activeCategoryTab && p.category_ids && p.category_ids.length > 0) {
         if (!p.category_ids.includes(activeCategoryTab)) {
@@ -128,7 +140,7 @@ export function ProductsGrid({
 
       return true
     })
-  }, [products, activeCategoryTab, selectedSubcategories])
+  }, [products, activeCategoryTab, selectedSubcategories, searchQuery])
 
   const displayedProducts = useMemo(() => {
     return filteredProducts.slice(0, visibleCount)
@@ -172,11 +184,11 @@ export function ProductsGrid({
                       setActiveCategoryTab(group.id)
                       // Pertahankan subkategori atau reset jika ingin filter per tab
                     }}
-                    className={`relative pb-3 flex items-center gap-2 text-sm sm:text-base font-bold whitespace-nowrap transition-colors cursor-pointer ${isActive ? 'text-[#590014]' : 'text-neutral-500 hover:text-[#590014]'
+                    className={`relative pb-3 flex items-center gap-2 text-sm sm:text-base font-extrabold whitespace-nowrap transition-colors cursor-pointer ${isActive ? 'text-[#590014]' : 'text-neutral-600 hover:text-[#590014]'
                       }`}
                   >
-                    <TabIcon size={16} className="shrink-0" />
-                    <span>{group.name}</span>
+                    <TabIcon size={18} strokeWidth={2.4} className="shrink-0" />
+                    <span className="font-extrabold">{group.name}</span>
                     {isActive && (
                       <motion.div
                         layoutId="activeTabUnderline"
@@ -210,12 +222,15 @@ export function ProductsGrid({
                       {/* Wrapper luar: tempat ring & centang (TIDAK overflow-hidden) */}
                       <div
                         className={`relative w-36 h-36 sm:w-40 sm:h-40 md:w-44 md:h-44 rounded-full transition-all duration-300 ${isSelected
-                          ? 'ring-4 ring-[#CC0000] ring-offset-4 ring-offset-white scale-105'
+                          ? 'ring-[3px] ring-[#540B26] ring-offset-4 ring-offset-white scale-105'
                           : 'group-hover:scale-105'
                           }`}
                       >
                         {/* Lingkaran dalam: overflow-hidden agar foto terpotong di bawah */}
-                        <div className="absolute inset-0 rounded-full bg-[#CC0000] overflow-hidden shadow-md">
+                        <div
+                          className="absolute inset-0 rounded-full overflow-hidden shadow-md"
+                          style={{ backgroundColor: SUB_COLOR }}
+                        >
                           {/* Foto dibesarkan, menempel di atas, bagian bawah terpotong lingkaran */}
                           <img
                             src={img}
@@ -226,7 +241,10 @@ export function ProductsGrid({
 
                         {/* Checkmark jika terpilih (di luar lingkaran dalam, jadi tidak terpotong) */}
                         {isSelected && (
-                          <div className="absolute -top-1 -right-1 z-10 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#CC0000] border-2 border-white text-white flex items-center justify-center shadow-md animate-in zoom-in-50 duration-200">
+                          <div
+                            className="absolute -top-1 -right-1 z-10 w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 border-white text-white flex items-center justify-center shadow-md animate-in zoom-in-50 duration-200"
+                            style={{ backgroundColor: SUB_COLOR }}
+                          >
                             <Check size={13} strokeWidth={3} />
                           </div>
                         )}
@@ -234,7 +252,7 @@ export function ProductsGrid({
 
                       {/* Label Subkategori */}
                       <span
-                        className={`mt-5 text-xs sm:text-sm font-bold tracking-tight text-center leading-tight line-clamp-2 transition-colors ${isSelected ? 'text-[#590014] font-black' : 'text-[#4A0A1A] group-hover:text-[#CC0000]'
+                        className={`mt-5 text-xs sm:text-sm font-semibold tracking-tight text-center leading-tight line-clamp-2 transition-colors ${isSelected ? 'text-[#540B26] font-bold' : 'text-[#4A0A1A] group-hover:text-[#540B26]'
                           }`}
                       >
                         {sub.name}
@@ -298,10 +316,10 @@ export function ProductsGrid({
       <div className="w-full min-w-0">
         <motion.div
           layout
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 lg:gap-12"
         >
           <AnimatePresence mode="popLayout">
-            {displayedProducts.map(({ name, img, slug }) => (
+            {displayedProducts.map(({ name, img, slug, sizes }) => (
               <motion.div
                 layout
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -312,60 +330,47 @@ export function ProductsGrid({
               >
                 <Link
                   href={`/products/${slug}`}
-                  className="group relative flex flex-col items-center w-full cursor-pointer"
+                  className="group relative flex flex-col items-center w-full cursor-pointer focus:outline-none"
                 >
-                  {/* Container Gambar Produk dengan Efek Splash Abstrak Merah saat Hover */}
-                  <div className="relative w-full aspect-[4/5] flex items-center justify-center p-4 overflow-hidden rounded-2xl bg-transparent transition-transform duration-500 group-hover:-translate-y-2">
-                    {/* SVG Splash Saus Organik Halus (Refined Liquid Splash) */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none scale-75 group-hover:scale-100 ease-out">
-                      <svg
-                        viewBox="0 0 200 200"
-                        className="w-[85%] h-[85%] text-[#CC0000]"
-                        fill="none"
-                      >
-                        {/* Lingkaran halo cahaya lembut */}
-                        <circle cx="100" cy="100" r="72" fill="currentColor" fillOpacity="0.08" />
-
-                        {/* Bentuk saus organik utama yang mulus dan proporsional */}
-                        <path
-                          d="M100 28C132 28 162 48 168 76C174 104 158 132 144 152C128 172 108 176 86 172C64 168 40 152 32 126C24 100 36 74 54 52C70 34 82 28 100 28Z"
-                          fill="currentColor"
-                          fillOpacity="0.18"
-                        />
-
-                        {/* Tetesan saus aksen halus di sekeliling */}
-                        <circle cx="166" cy="48" r="5" fill="currentColor" fillOpacity="0.25" />
-                        <circle cx="178" cy="68" r="3.5" fill="currentColor" fillOpacity="0.2" />
-                        <circle cx="158" cy="164" r="4.5" fill="currentColor" fillOpacity="0.22" />
-                        <circle cx="38" cy="146" r="4" fill="currentColor" fillOpacity="0.22" />
-                        <circle cx="28" cy="88" r="3.5" fill="currentColor" fillOpacity="0.2" />
-                        <circle cx="48" cy="40" r="4" fill="currentColor" fillOpacity="0.22" />
-                      </svg>
-                    </div>
-
-                    {/* Gambar Produk Utama (Miring ke kanan saat disentuh/hover) */}
-                    <div className="relative w-full h-full z-10 flex items-center justify-center">
+                  {/* Container Gambar Produk: putih solid, tanpa rounded.
+                      Saat hover berubah merah (#9B1527) kotak penuh */}
+                  <div className="relative w-full aspect-[4/5] flex items-center justify-center p-2 sm:p-3 overflow-hidden bg-white group-hover:bg-[#9B1527] transition-colors duration-500 ease-out">
+                    {/* Gambar Produk Utama (dikecilkan & naik sedikit agar ada jarak dengan shadow) */}
+                    <div className="relative w-full h-[76%] -translate-y-3 sm:-translate-y-4 lg:-translate-y-5 z-10 flex items-center justify-center">
                       <Image
                         src={img}
                         alt={name}
                         fill
                         unoptimized
-                        sizes="(max-width: 768px) 50vw, 25vw"
-                        className="object-contain drop-shadow-md group-hover:scale-105 group-hover:rotate-6 transition-transform duration-500 ease-out origin-center"
+                        sizes="(max-width: 768px) 50vw, 33vw"
+                        className="object-contain filter drop-shadow-[0_8px_10px_rgba(0,0,0,0.22)] group-hover:translate-x-1.5 group-hover:rotate-3 transition-transform duration-500 ease-out origin-center"
                       />
+                    </div>
+
+                    {/* Ground Shadow lebih kecil & tipis */}
+                    <div className="absolute bottom-8 sm:bottom-9 lg:bottom-11 left-1/2 -translate-x-1/2 w-2/5 h-2 bg-black/20 group-hover:bg-black/30 rounded-full blur-[4px] transition-all duration-500 pointer-events-none" />
+
+                    {/* Tombol Bundar Ikon Keranjang di Pojok Kanan Bawah */}
+                    <div className="absolute bottom-3.5 right-3.5 sm:bottom-4 sm:right-4 lg:bottom-5 lg:right-5 z-20 w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full bg-[#540B26] text-white flex items-center justify-center transition-transform duration-300 shadow-md group-hover:scale-110">
+                      <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 lg:w-[18px] lg:h-[18px]" strokeWidth={2.2} />
                     </div>
                   </div>
 
-                  {/* Informasi Produk */}
-                  <div className="mt-3 w-full flex items-center justify-center gap-2 sm:gap-3 px-2">
-                    <h3 className="text-xs sm:text-sm md:text-base font-extrabold text-[#111111] text-center uppercase tracking-tight leading-snug">
+                  {/* Informasi Produk di Bawah Kartu (Gaya Heinz) */}
+                  <div className="mt-3.5 lg:mt-4 w-full flex flex-col items-center text-center px-1">
+                    <span className="text-[11px] sm:text-xs lg:text-sm font-semibold text-[#540B26] tracking-tight">
+                      Awang
+                    </span>
+
+                    <h3 className="mt-1 text-sm sm:text-base md:text-lg lg:text-xl font-black text-[#9B1527] tracking-tight leading-tight line-clamp-2">
                       {name}
                     </h3>
 
-                    {/* Tombol Bundar Ikon Keranjang */}
-                    <div className="shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gray-100 group-hover:bg-[#CC0000] text-gray-700 group-hover:text-white flex items-center justify-center transition-all duration-300 shadow-sm">
-                      <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    </div>
+                    <p className="mt-1 text-[11px] sm:text-xs lg:text-sm font-semibold text-stone-600">
+                      {sizes && sizes.length > 0
+                        ? `Available In ${sizes.length} ${sizes.length > 1 ? 'Sizes' : 'Size'}`
+                        : 'Authentic Heritage Paste'}
+                    </p>
                   </div>
                 </Link>
               </motion.div>
@@ -375,16 +380,14 @@ export function ProductsGrid({
 
         {/* Tombol Load More */}
         {visibleCount < filteredProducts.length && (
-          <div className="mt-12 sm:mt-16 flex flex-col items-center justify-center gap-2">
+          <div className="mt-12 sm:mt-16 flex items-center justify-center">
             <button
+              type="button"
               onClick={() => setVisibleCount((prev) => prev + 8)}
-              className="px-8 py-3.5 rounded-full bg-[#CC0000] hover:bg-[#a60c24] text-white font-black text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
+              className="px-10 sm:px-12 py-4 sm:py-5 rounded-full bg-[#540B26] hover:bg-[#3F081C] text-white font-black text-base sm:text-lg tracking-tight transition-colors duration-300 cursor-pointer"
             >
-              Muat Lebih Banyak ({filteredProducts.length - visibleCount} lagi)
+              Load More
             </button>
-            <span className="text-xs text-gray-400 mt-1">
-              Menampilkan {displayedProducts.length} dari {filteredProducts.length} produk
-            </span>
           </div>
         )}
 
