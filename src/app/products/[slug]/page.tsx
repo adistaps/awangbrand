@@ -52,7 +52,7 @@ export async function generateMetadata({
   }
 }
 
-import { getActiveBrands } from '@/lib/queries'
+import { getProductDetailBrands } from '@/lib/queries'
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -65,7 +65,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       .eq('slug', slug)
       .eq('status', 'published')
       .single(),
-    getActiveBrands(),
+    getProductDetailBrands(),
   ])
 
   if (!product) notFound()

@@ -15,12 +15,12 @@ export async function BrandsSection() {
           </h2>
         </div>
 
-        {/* Brand Logos Sejajar Horizontal 1 Baris (Berwarna) */}
-        <div className="grid grid-cols-3 sm:grid-cols-6 items-center justify-items-center gap-4 sm:gap-6 md:gap-8 max-w-6xl mx-auto">
+        {/* Brand Logos Sejajar Horizontal & Centered (Flexbox wrap) */}
+        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 md:gap-10 max-w-6xl mx-auto">
           {brands.map((brand) => (
             <div
               key={brand.id}
-              className="group relative h-12 sm:h-16 w-full px-2 flex items-center justify-center cursor-pointer transition-transform duration-300 hover:scale-105"
+              className="group relative h-12 sm:h-16 px-3 flex items-center justify-center cursor-pointer transition-transform duration-300 hover:scale-105 shrink-0"
             >
               {brand.logo_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
