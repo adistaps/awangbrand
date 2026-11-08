@@ -106,7 +106,7 @@ export function RecipesClient({
 
       return true
     })
-  }, [recipes, activeCategoryTab, selectedSubcategories])
+  }, [recipes, activeCategoryTab, selectedSubcategories, searchQuery])
 
   const displayedRecipes = useMemo(() => {
     return filteredRecipes.slice(0, visibleCount)
@@ -117,12 +117,12 @@ export function RecipesClient({
   return (
     <div className="pt-0 pb-20 bg-white font-sans">
 
-      {/* TOP BANNER HERO (ukuran disamakan dengan hero Products) */}
-      <section className="bg-[#CC0000] text-white pt-28 sm:pt-36 lg:pt-32 pb-16 sm:pb-24 lg:pb-0 px-6 sm:px-12 md:px-16 relative overflow-hidden flex items-center min-h-[600px] lg:min-h-[700px]">
-        <div className="max-w-[1600px] mx-auto w-full min-h-[580px] sm:min-h-[700px] lg:min-h-0 flex flex-col md:flex-row items-center justify-center md:justify-between gap-8 sm:gap-12 lg:gap-6 relative z-10">
+      {/* TOP BANNER HERO (struktur & tinggi sama persis dengan hero Products) */}
+      <section className="relative w-full bg-[#CC0000] text-white pt-28 sm:pt-36 lg:pt-32 pb-16 sm:pb-24 lg:pb-0 px-6 sm:px-12 md:px-16 lg:pr-0 overflow-hidden flex items-center min-h-[600px] lg:min-h-[700px]">
+        <div className="max-w-[1600px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center relative z-10">
 
-          {/* Sisi Kiri: Judul, Deskripsi, dan Tombol CTA */}
-          <div className="w-full md:w-1/2 flex flex-col items-center md:items-start text-center md:text-left space-y-4">
+          {/* Kolom Kiri: Judul, Deskripsi, dan Tombol CTA */}
+          <div className="lg:col-span-5 flex flex-col justify-center space-y-4 order-1 lg:pl-12 xl:pl-24">
             <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-black tracking-tight leading-[1.05] text-white font-heinz">
               Zesty, Garlicky, and Grill-Ready
             </h1>
@@ -139,14 +139,16 @@ export function RecipesClient({
             </div>
           </div>
 
-          {/* Sisi Kanan: Gambar Masakan */}
-          <div className="w-full md:w-1/2 flex justify-center md:justify-end items-center relative">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/recipe.webp"
-              alt="Featured Recipe"
-              className="w-full max-w-[460px] sm:max-w-[540px] md:max-w-none md:w-full h-auto object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-105"
-            />
+          {/* Kolom Kanan: Gambar Masakan (tinggi sama dengan hero Products, tanpa shadow) */}
+          <div className="lg:col-span-7 relative flex justify-center lg:justify-end items-center order-2">
+            <div className="relative w-full max-w-[680px] aspect-[3/4] h-[620px] sm:h-[760px] lg:max-w-none lg:aspect-auto lg:h-[680px] xl:h-[720px] lg:w-full lg:mr-1 xl:mr-3 lg:-translate-y-4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/recipe.webp"
+                alt="Featured Recipe"
+                className="absolute inset-0 w-full h-full object-contain object-center lg:object-right"
+              />
+            </div>
           </div>
 
         </div>

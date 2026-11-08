@@ -69,7 +69,7 @@ export default async function Page() {
       {/* ==========================================
           HERO SECTION (GAYA HEINZ: TEKS KIRI, GAMBAR KANAN)
       ========================================== */}
-      <section className="relative w-full bg-[#CC0000] text-white pt-28 sm:pt-36 lg:pt-32 pb-16 sm:pb-24 lg:pb-0 px-6 sm:px-12 md:px-16 overflow-hidden flex items-center min-h-[600px] lg:min-h-[700px]">
+      <section className="relative w-full bg-[#CC0000] text-white pt-28 sm:pt-36 lg:pt-32 pb-16 sm:pb-24 lg:pb-0 px-6 sm:px-12 md:px-16 lg:pr-0 overflow-hidden flex items-center min-h-[600px] lg:min-h-[700px]">
         <div className="max-w-[1600px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center relative z-10">
           {/* Kolom Kiri: Judul, Subtitle, Tombol */}
           <div className="lg:col-span-5 flex flex-col justify-center space-y-4 order-1 lg:pl-12 xl:pl-24">
@@ -90,15 +90,15 @@ export default async function Page() {
             </div>
           </div>
 
-          {/* Kolom Kanan: Gambar produk (mepet kanan, sedikit meluber ke bawah seperti Heinz) */}
+          {/* Kolom Kanan: Gambar produk (mepet kanan, tidak terpotong) */}
           <div className="lg:col-span-7 relative flex justify-center lg:justify-end items-center order-2">
-            <div className="relative w-full max-w-[620px] aspect-[3/4] h-[580px] sm:h-[700px] lg:max-w-none lg:aspect-auto lg:h-[600px] lg:w-full lg:-mr-12 xl:-mr-20 lg:-translate-y-4">
+            <div className="relative w-full max-w-[680px] aspect-[3/4] h-[620px] sm:h-[760px] lg:max-w-none lg:aspect-auto lg:h-[680px] xl:h-[720px] lg:w-full lg:mr-1 xl:mr-3 lg:-translate-y-4">
               <Image
                 src="/product.webp"
                 alt="AWANG Products"
                 fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-contain object-right"
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                className="object-contain object-center lg:object-right"
                 priority
               />
             </div>

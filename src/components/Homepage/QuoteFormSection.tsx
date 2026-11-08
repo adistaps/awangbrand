@@ -1,16 +1,29 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Check } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { buildWhatsAppLink, buildQuoteWhatsAppMessage } from '@/lib/whatsapp'
 
+// Foto slider (folder: public/quote)
+const SLIDES = ['/quote/1.webp', '/quote/3.webp', '/quote/2.webp']
+const SLIDE_INTERVAL = 4000
+
 export function QuoteFormSection() {
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [formData, setFormData] = useState({ name: '', email: '', message: '' })
+  const [current, setCurrent] = useState(0)
+
+  // Auto slide
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent((c) => (c + 1) % SLIDES.length)
+    }, SLIDE_INTERVAL)
+    return () => clearInterval(timer)
+  }, [])
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -32,40 +45,34 @@ export function QuoteFormSection() {
   }
 
   return (
-    <section className="relative w-full bg-[#CC0000] font-sans pt-10 pb-0 sm:pt-16 lg:pt-20 lg:pb-0 px-4 sm:px-8 lg:px-16 overflow-hidden">
-      {/* KHUSUS MOBILE: Menggunakan flex-col-reverse agar maskot otomatis berada di bawah form */}
-      <div className="max-w-6xl mx-auto flex flex-col-reverse lg:flex-row items-center lg:items-end justify-between gap-6 lg:gap-16 relative">
+    <section className="relative w-full bg-[#CC0000] font-sans overflow-hidden flex flex-col lg:block lg:aspect-video lg:min-h-[640px]">
+      {/* SLIDER FOTO: berganti langsung (tanpa animasi).
+          Tidak bisa disentuh / di-drag / dipilih */}
+      <div className="relative order-2 w-full aspect-video lg:order-none lg:absolute lg:inset-0 lg:aspect-auto lg:h-full z-0 overflow-hidden pointer-events-none select-none">
+        {SLIDES.map((src, i) => (
+          <Image
+            key={src}
+            src={src}
+            alt={`Awang slide ${i + 1}`}
+            fill
+            priority={i === 0}
+            draggable={false}
+            className={`object-cover object-left pointer-events-none select-none ${i === current ? 'opacity-100' : 'opacity-0'
+              }`}
+            sizes="100vw"
+          />
+        ))}
+      </div>
 
-        {/* Bagian Kiri (di Desktop) / Bawah (di Mobile): Maskot Menempel Rapi di Dasar */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="w-full lg:w-1/2 flex justify-center items-end self-end z-10"
-        >
-          {/* KHUSUS MOBILE: Ukuran tinggi maskot disesuaikan agar proporsional dan berada di bawah */}
-          <div className="relative w-full max-w-[280px] sm:max-w-[420px] lg:max-w-[560px] h-[260px] sm:h-[400px] lg:h-[580px] flex items-end justify-center -mb-1">
-            <Image
-              src="/mascot.webp"
-              alt="Mascot Awang"
-              fill
-              priority
-              className="object-contain object-bottom drop-shadow-2xl"
-              sizes="(max-width: 640px) 280px, (max-width: 1024px) 420px, 560px"
-            />
-          </div>
-        </motion.div>
-
-        {/* Bagian Kanan (di Desktop) / Atas (di Mobile): Form Penawaran */}
+      {/* FORM PENAWARAN: kanan (desktop) / atas (mobile) */}
+      <div className="relative order-1 z-20 w-full px-4 sm:px-8 pt-10 pb-6 sm:pt-16 lg:order-none lg:absolute lg:inset-0 lg:p-0 lg:flex lg:items-center lg:justify-end lg:pr-12 xl:pr-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="w-full lg:w-1/2 max-w-lg mx-auto lg:pb-16 z-20"
+          className="w-full max-w-lg mx-auto lg:mx-0 lg:w-[40%] lg:max-w-xl"
         >
-          {/* KHUSUS MOBILE: Ukuran font judul disesuaikan agar pas dan tidak terlalu besar */}
           <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white uppercase tracking-tight mb-2 text-center lg:text-left drop-shadow-md">
             MINTA PENAWARAN
           </h2>
@@ -152,7 +159,6 @@ export function QuoteFormSection() {
             </form>
           )}
         </motion.div>
-
       </div>
     </section>
   )
