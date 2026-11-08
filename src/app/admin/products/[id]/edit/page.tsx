@@ -8,15 +8,17 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   const { id } = await params
   const supabase = await createClient()
 
-  const [{ data: product }, { data: categories }, { data: hierarchySetting }, { data: gallery }, { data: specs }] = await Promise.all([
+  const [{ data: product }, { data: categories }, { data: hierarchyRows }, { data: gallery }, { data: specs }] = await Promise.all([
     supabase.from('products').select('*').eq('id', id).single(),
     supabase.from('categories').select('*').order('name'),
-    supabase.from('site_settings').select('value').eq('key', 'product_categories_hierarchy').maybeSingle(),
+    supabase.from('site_settings').select('value').eq('key', 'product_categories_hierarchy').order('updated_at', { ascending: false }).limit(1),
     supabase.from('product_images').select('*').eq('product_id', id).order('sort_order'),
     supabase.from('product_specifications').select('*').eq('product_id', id).order('sort_order'),
   ])
 
   if (!product) notFound()
+
+  const hierarchySetting = hierarchyRows?.[0] ?? null
 
   let categoryGroups = []
   try {
@@ -43,6 +45,9 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           category_ids: facts.category_ids || [],
           subcategory_ids: facts.subcategory_ids || [],
           description: product.description || '',
+          sizes: (product.sizes as string[]) || [],
+          ingredients: product.ingredients || '',
+          how_to_use: product.how_to_use || '',
           thumbnail_url: product.main_image,
           shopee_url: product.shopee_url || '',
           tokopedia_url: product.tokopedia_url || '',

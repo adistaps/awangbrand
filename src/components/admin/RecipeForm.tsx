@@ -207,20 +207,30 @@ export function RecipeForm({ initialData, products, categoryGroups = [] }: Props
           </select>
         </div>
 
-        <div>
-          <label className="block text-xs font-bold uppercase text-gray-700 mb-1.5">Produk Rekomendasi Terkait</label>
+        <div className="bg-stone-50/70 p-4 rounded-2xl border border-stone-200">
+          <label className="block text-xs font-bold uppercase text-[#590014] mb-1">
+            Produk AWANG yang Digunakan (Featured Product)
+          </label>
+          <p className="text-[11px] text-gray-500 mb-2">
+            Pilih produk yang digunakan dalam resep ini. Produk akan tampil di halaman detail resep (&quot;Shop Featured Products&quot;) dan resep ini otomatis muncul di bagian &quot;Cook With Us&quot; pada detail produk terkait.
+          </p>
           <select
             value={featuredProductId}
             onChange={(e) => setFeaturedProductId(e.target.value)}
-            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:border-[#CC0000] transition-colors"
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-white font-medium focus:outline-none focus:border-[#CC0000] transition-colors"
           >
-            <option value="">-- Tidak ada produk terpaut --</option>
+            <option value="">-- Pilih Produk AWANG --</option>
             {products.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
               </option>
             ))}
           </select>
+          {featuredProductId && (
+            <p className="text-[11px] text-emerald-700 font-semibold mt-2 flex items-center gap-1">
+              ✓ Resep ini terhubung dengan produk: <u>{products.find((p) => p.id === featuredProductId)?.name}</u>
+            </p>
+          )}
         </div>
       </div>
 

@@ -18,6 +18,9 @@ interface ProductFormValues {
   category_ids?: string[]
   subcategory_ids?: string[]
   description: string
+  sizes?: string[]
+  ingredients?: string
+  how_to_use?: string
   thumbnail_url: string | null
   shopee_url: string
   tokopedia_url: string
@@ -50,6 +53,9 @@ export function ProductForm({
       category_ids: [],
       subcategory_ids: [],
       description: '',
+      sizes: [],
+      ingredients: '',
+      how_to_use: '',
       thumbnail_url: null,
       shopee_url: '',
       tokopedia_url: '',
@@ -141,6 +147,9 @@ export function ProductForm({
       name: values.name,
       slug: values.slug,
       description: values.description,
+      sizes: values.sizes || [],
+      ingredients: values.ingredients || null,
+      how_to_use: values.how_to_use || null,
       main_image: values.thumbnail_url,
       shopee_url: values.shopee_url || null,
       tokopedia_url: values.tokopedia_url || null,
@@ -346,6 +355,108 @@ export function ProductForm({
           placeholder="Jelaskan cita rasa, keunggulan bahan alami, dan panduan saji..."
           className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000] transition-colors"
         />
+      </div>
+
+      {/* FIELD UKURAN / SIZES (Tampil di Product Grid & Product Detail) */}
+      <div className="bg-stone-50/80 p-4 sm:p-5 rounded-2xl border border-stone-200/80 space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-xs font-bold text-stone-900 uppercase tracking-wider">Ukuran / Varian Kemasan (Sizes)</h3>
+            <p className="text-[11px] text-stone-500 mt-0.5">
+              Contoh: &quot;180g&quot;, &quot;250g&quot;, &quot;1kg&quot;. Ini akan tampil sebagai tag &quot;Available In X Sizes&quot; dan pill ukuran di detail produk.
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {(values.sizes || []).map((s, idx) => (
+            <span
+              key={idx}
+              className="inline-flex items-center gap-1.5 bg-white border border-stone-300 text-stone-800 text-xs font-bold px-3 py-1.5 rounded-full shadow-xs"
+            >
+              <span>{s}</span>
+              <button
+                type="button"
+                onClick={() => {
+                  const updated = (values.sizes || []).filter((_, i) => i !== idx)
+                  setValues((v) => ({ ...v, sizes: updated }))
+                }}
+                className="text-stone-400 hover:text-red-600 rounded-full cursor-pointer ml-0.5"
+                title="Hapus ukuran"
+              >
+                ✕
+              </button>
+            </span>
+          ))}
+          <div className="flex items-center gap-1.5">
+            <input
+              id="input-new-size"
+              type="text"
+              placeholder="Tambah ukuran (cth: 180g)..."
+              className="px-3 py-1.5 border border-stone-300 rounded-xl text-xs bg-white focus:outline-none focus:border-[#CC0000]"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  const val = e.currentTarget.value.trim()
+                  if (val && !(values.sizes || []).includes(val)) {
+                    setValues((v) => ({ ...v, sizes: [...(v.sizes || []), val] }))
+                    e.currentTarget.value = ''
+                  }
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const input = document.getElementById('input-new-size') as HTMLInputElement | null
+                if (input && input.value.trim()) {
+                  const val = input.value.trim()
+                  if (!(values.sizes || []).includes(val)) {
+                    setValues((v) => ({ ...v, sizes: [...(v.sizes || []), val] }))
+                    input.value = ''
+                  }
+                }
+              }}
+              className="bg-stone-800 hover:bg-[#CC0000] text-white text-xs font-bold px-3 py-1.5 rounded-xl transition-all cursor-pointer"
+            >
+              + Tambah
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* FIELD INGREDIENTS & CARA PENGGUNAAN (Sinkron dengan Accordion Detail Produk) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs font-semibold text-gray-700 mb-1.5 block">
+            Bahan-Bahan (Ingredients)
+          </label>
+          <textarea
+            rows={4}
+            value={values.ingredients || ''}
+            onChange={(e) => setValues((v) => ({ ...v, ingredients: e.target.value }))}
+            placeholder="Cth: Cili merah segar, bawang merah, bawang putih, garam, minyak sayuran..."
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000] transition-colors"
+          />
+          <span className="text-[11px] text-gray-400 block mt-1">
+            Ditampilkan pada accordion &quot;Ingredients&quot; di detail produk.
+          </span>
+        </div>
+
+        <div>
+          <label className="text-xs font-semibold text-gray-700 mb-1.5 block">
+            Cara Penggunaan / Memasak (How to Use)
+          </label>
+          <textarea
+            rows={4}
+            value={values.how_to_use || ''}
+            onChange={(e) => setValues((v) => ({ ...v, how_to_use: e.target.value }))}
+            placeholder="Cth: 1. Panaskan minyak&#10;2. Masukkan pes dan tumis sehingga wangi&#10;3. Masukkan lauk..."
+            className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#CC0000] transition-colors"
+          />
+          <span className="text-[11px] text-gray-400 block mt-1">
+            Ditampilkan pada accordion &quot;How to Use&quot; di detail produk.
+          </span>
+        </div>
       </div>
 
       {/* FIELD INPUT E-COMMERCE / MARKETPLACE */}

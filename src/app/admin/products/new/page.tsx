@@ -5,10 +5,12 @@ export const dynamic = 'force-dynamic'
 
 export default async function NewProductPage() {
   const supabase = await createClient()
-  const [{ data: categories }, { data: hierarchySetting }] = await Promise.all([
+  const [{ data: categories }, { data: hierarchyRows }] = await Promise.all([
     supabase.from('categories').select('*').order('name'),
-    supabase.from('site_settings').select('value').eq('key', 'product_categories_hierarchy').maybeSingle(),
+    supabase.from('site_settings').select('value').eq('key', 'product_categories_hierarchy').order('updated_at', { ascending: false }).limit(1),
   ])
+
+  const hierarchySetting = hierarchyRows?.[0] ?? null
 
   let categoryGroups = []
   try {
