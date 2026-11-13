@@ -58,33 +58,31 @@ export function AboutUsClient() {
       {/* ==========================================
           BAGIAN 1: HERO SECTION ("WHO WE ARE")
           Gaya Heinz: pola brand di kiri & kanan, teks di tengah.
-          File /bgabout.webp TIDAK diubah. Ruang kosong di tengah dibuat
-          lewat CSS mask pada layer background (bukan mengedit gambar).
+          Tengah gambar /bgabout.webp sudah kosong, jadi tanpa mask.
       ========================================== */}
-      <section className="relative w-full min-h-[720px] sm:min-h-[820px] lg:min-h-[900px] bg-[#CC0000] text-white pt-28 sm:pt-36 pb-20 px-6 sm:px-12 flex items-center justify-center overflow-hidden">
+      <section className="relative w-full min-h-[720px] sm:min-h-[820px] lg:min-h-[900px] bg-[#DA0208] text-white pt-28 sm:pt-36 pb-20 px-6 sm:px-12 flex items-center justify-center overflow-hidden">
 
-        {/* Layer pola: pakai bgabout.webp apa adanya, lalu dimask supaya tengahnya kosong */}
+        {/* Layer pola: bgabout.webp dipakai apa adanya. Bagian tengah gambar sudah kosong,
+            jadi tidak perlu mask/gradasi dan tidak ada garis potong di tengah. */}
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-cover bg-center bg-no-repeat pointer-events-none
-            lg:opacity-[0.55] max-lg:opacity-[0.18] max-lg:[mask-image:none] max-lg:[-webkit-mask-image:none]
-            [mask-image:linear-gradient(to_right,black_0%,black_21%,transparent_32%,transparent_68%,black_79%,black_100%)]
-            [-webkit-mask-image:linear-gradient(to_right,black_0%,black_21%,transparent_32%,transparent_68%,black_79%,black_100%)]"
+            lg:opacity-100 max-lg:opacity-[0.55]"
           style={{ backgroundImage: "url('/bgabout.webp')" }}
         />
 
         {/* Konten tengah */}
-        <div className="relative z-10 w-full max-w-3xl mx-auto flex flex-col items-center text-center">
+        <div className="relative z-10 w-full max-w-xl mx-auto flex flex-col items-center text-center">
 
-          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black uppercase tracking-tight leading-[0.95] mb-5 sm:mb-6 text-white font-heinz">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight leading-[0.95] mb-4 sm:mb-5 text-white font-heinz">
             WHO WE ARE
           </h1>
 
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-6 sm:mb-8 leading-snug">
+          <h2 className="text-base sm:text-lg lg:text-xl font-bold text-white mb-5 sm:mb-6 leading-snug">
             Awang Brand Brings a Burst of Flavours to Your Cuisine
           </h2>
 
-          <div className="space-y-4 text-sm sm:text-base md:text-[17px] font-normal leading-relaxed text-white/95 max-w-2xl">
+          <div className="space-y-3 text-[13px] sm:text-sm lg:text-[15px] font-normal leading-relaxed text-white/95 max-w-[30rem]">
             <p>
               Awang Brand is a leading Malaysian paste manufacturer dedicated to reviving authentic Malay heritage cuisine. We specialize in ready-to-cook pastes crafted to save kitchen prep time while preserving the original, rich, and natural flavors of traditional recipes.
             </p>
