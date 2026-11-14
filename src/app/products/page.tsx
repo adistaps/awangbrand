@@ -94,7 +94,7 @@ export default async function Page() {
           <div className="lg:col-span-7 relative flex justify-center lg:justify-end items-center order-2">
             <div className="relative w-full max-w-[680px] aspect-[3/4] h-[620px] sm:h-[760px] lg:max-w-none lg:aspect-auto lg:h-[680px] xl:h-[720px] lg:w-full lg:mr-1 xl:mr-3 lg:-translate-y-4">
               <Image
-                src="/product.webp`"
+                src="/product.webp"
                 alt="AWANG Products"
                 fill
                 sizes="(max-width: 1024px) 100vw, 60vw"

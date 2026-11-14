@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ShoppingBag, X, ChevronRight, ChevronLeft, Plus, Minus, Utensils } from 'lucide-react'
+import { ShoppingBag, X, ChevronRight, ChevronLeft, Plus, Minus } from 'lucide-react'
 import { ProductGallery } from '@/components/ProductGallery'
 import { ProductViewTracker } from '@/components/ProductViewTracker'
 
@@ -23,6 +23,7 @@ interface RelatedRecipe {
   category: string
   prep_time?: string | null
   cook_time?: string | null
+  servings?: string | number | null
 }
 
 interface ProductDetailClientProps {
@@ -84,6 +85,98 @@ function AccordionItem({
   )
 }
 
+// Carousel horizontal bergaya Heinz: judul merah di kiri, panah bulat di kanan.
+// Panah kiri/kanan otomatis redup saat sudah mentok.
+function Carousel({
+  title,
+  itemCount,
+  action,
+  children,
+}: {
+  title: string
+  itemCount: number
+  action?: React.ReactNode
+  children: React.ReactNode
+}) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+
+  function updateScrollState() {
+    const el = scrollRef.current
+    if (!el) return
+    setCanScrollLeft(el.scrollLeft > 4)
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4)
+  }
+
+  useEffect(() => {
+    updateScrollState()
+    window.addEventListener('resize', updateScrollState)
+    return () => window.removeEventListener('resize', updateScrollState)
+  }, [itemCount])
+
+  function scrollByCard(dir: 'left' | 'right') {
+    const el = scrollRef.current
+    if (!el) return
+    const firstCard = el.firstElementChild as HTMLElement | null
+    const step = firstCard ? firstCard.offsetWidth + 24 : 320
+    el.scrollBy({ left: dir === 'left' ? -step : step, behavior: 'smooth' })
+  }
+
+  const arrowClass =
+    'w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 border-[#CC0000] text-[#CC0000] flex items-center justify-center transition-all duration-200 cursor-pointer enabled:hover:bg-[#CC0000] enabled:hover:text-white disabled:opacity-35 disabled:cursor-default'
+
+  return (
+    <div className="max-w-[1440px] mx-auto">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-3xl sm:text-4xl font-black text-[#CC0000] tracking-tight font-heinz">
+          {title}
+        </h2>
+        <div className="flex items-center gap-3">
+          {action}
+          <button
+            type="button"
+            onClick={() => scrollByCard('left')}
+            disabled={!canScrollLeft}
+            className={arrowClass}
+            aria-label={`Scroll ${title} left`}
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollByCard('right')}
+            disabled={!canScrollRight}
+            className={arrowClass}
+            aria-label={`Scroll ${title} right`}
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Horizontal scroll */}
+      <div
+        ref={scrollRef}
+        onScroll={updateScrollState}
+        className="flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {children}
+      </div>
+    </div>
+  )
+}
+
+// Format jumlah porsi: angka -> "6 Servings", teks lain dipakai apa adanya
+function formatServings(servings?: string | number | null): string | null {
+  if (servings === null || servings === undefined || servings === '') return null
+  const text = String(servings).trim()
+  if (/^\d+$/.test(text)) return `${text} ${text === '1' ? 'Serving' : 'Servings'}`
+  return text
+}
+
 export function ProductDetailClient({
   product,
   images,
@@ -93,8 +186,6 @@ export function ProductDetailClient({
   brands = [],
 }: ProductDetailClientProps) {
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false)
-  const relatedScrollRef = useRef<HTMLDivElement>(null)
-  const recipesScrollRef = useRef<HTMLDivElement>(null)
 
   const categoryName =
     (product.category as unknown as { name: string } | null)?.name ?? 'AWANG Brand'
@@ -115,16 +206,6 @@ export function ProductDetailClient({
       : getSpec('size') || getSpec('berat') || getSpec('packing')
   const remarkText = getSpec('remark') || getSpec('catatan')
   const tipsText = getSpec('tips') || getSpec('tip') || getSpec('petua')
-
-  function scrollRelated(dir: 'left' | 'right') {
-    if (!relatedScrollRef.current) return
-    relatedScrollRef.current.scrollBy({ left: dir === 'left' ? -320 : 320, behavior: 'smooth' })
-  }
-
-  function scrollRecipes(dir: 'left' | 'right') {
-    if (!recipesScrollRef.current) return
-    recipesScrollRef.current.scrollBy({ left: dir === 'left' ? -320 : 320, behavior: 'smooth' })
-  }
 
   return (
     <main className="bg-white min-h-screen font-sans text-slate-900 antialiased">
@@ -272,177 +353,143 @@ export function ProductDetailClient({
         </section>
       )}
 
-      {/* ── OTHER PRODUCTS YOU MAY LIKE ── */}
+      {/* ── OTHER PRODUCTS YOU MAY LIKE (gaya Heinz + efek hover seperti ProductsGrid) ── */}
       {relatedProducts.length > 0 && (
-        <section className="py-14 px-4 sm:px-6 bg-white">
-          <div className="max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl sm:text-3xl font-black text-[#CC0000] uppercase tracking-tight">
-                Other Products You May Like
-              </h2>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => scrollRelated('left')}
-                  className="w-9 h-9 rounded-full border-2 border-[#2b1a10] flex items-center justify-center hover:bg-[#2b1a10] hover:text-white transition-all cursor-pointer"
-                  aria-label="Scroll left"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => scrollRelated('right')}
-                  className="w-9 h-9 rounded-full border-2 border-[#2b1a10] flex items-center justify-center hover:bg-[#2b1a10] hover:text-white transition-all cursor-pointer"
-                  aria-label="Scroll right"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Horizontal scroll */}
-            <div
-              ref={relatedScrollRef}
-              className="flex gap-6 sm:gap-10 overflow-x-auto pb-6 scrollbar-hide snap-x snap-mandatory"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {relatedProducts.map((p) => (
-                <Link
-                  key={p.slug}
-                  href={`/products/${p.slug}`}
-                  className="group shrink-0 w-[220px] sm:w-[260px] snap-start flex flex-col items-center text-center"
-                >
-                  {/* Product image — transparent background, drop shadow, hover scale */}
-                  <div className="w-full aspect-square flex items-center justify-center mb-5 relative">
+        <section className="py-14 px-4 sm:px-8 lg:px-12 bg-white">
+          <Carousel title="Other Products You May Like" itemCount={relatedProducts.length}>
+            {relatedProducts.map((p) => (
+              <Link
+                key={p.slug}
+                href={`/products/${p.slug}`}
+                className="group shrink-0 snap-start w-[72%] sm:w-[44%] lg:w-[29%] flex flex-col items-center text-center focus:outline-none"
+              >
+                {/* Kotak gambar: putih, hover berubah merah (sama seperti ProductsGrid) */}
+                <div className="relative w-full aspect-[4/5] flex items-center justify-center p-2 sm:p-3 overflow-hidden bg-white group-hover:bg-[#9B1527] transition-colors duration-500 ease-out">
+                  {/* Gambar produk: naik sedikit, bergeser + miring saat hover */}
+                  <div className="relative w-full h-[76%] -translate-y-3 sm:-translate-y-4 lg:-translate-y-5 z-10 flex items-center justify-center">
                     {p.img ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={p.img}
                         alt={p.name}
-                        className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300"
-                        style={{ filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.18)) drop-shadow(0 2px 6px rgba(0,0,0,0.10))' }}
+                        fill
+                        unoptimized
+                        sizes="(max-width: 640px) 72vw, (max-width: 1024px) 44vw, 29vw"
+                        className="object-contain filter drop-shadow-[0_8px_10px_rgba(0,0,0,0.22)] group-hover:translate-x-1.5 group-hover:rotate-3 transition-transform duration-500 ease-out origin-center"
                       />
                     ) : (
-                      <div className="w-20 h-20 rounded-2xl bg-stone-100 flex items-center justify-center text-[#7a6555] text-3xl">
+                      <div className="w-24 h-24 rounded-2xl bg-stone-100 flex items-center justify-center text-[#7a6555] text-4xl">
                         🍲
                       </div>
                     )}
                   </div>
-                  {/* "Awang" brand label */}
-                  <p className="text-xs font-semibold text-[#540B26] mb-0.5 tracking-wide">
+
+                  {/* Bayangan di bawah produk */}
+                  <div className="absolute bottom-8 sm:bottom-9 lg:bottom-11 left-1/2 -translate-x-1/2 w-2/5 h-2 bg-black/20 group-hover:bg-black/30 rounded-full blur-[4px] transition-all duration-500 pointer-events-none" />
+                </div>
+
+                {/* Info produk di bawah kartu */}
+                <div className="mt-4 w-full flex flex-col items-center text-center px-1">
+                  <span className="text-sm font-bold text-[#540B26] tracking-tight">
                     Awang
-                  </p>
-                  {/* Product name — red bold */}
-                  <p className="text-sm sm:text-base font-extrabold text-[#CC0000] leading-snug line-clamp-2 px-1 mb-1">
+                  </span>
+                  <h3 className="mt-1 w-full truncate text-xl sm:text-2xl font-black text-[#CC0000] tracking-tight leading-tight font-heinz">
                     {p.name}
-                  </p>
-                  {/* Sizes */}
-                  {p.sizes && p.sizes.length > 0 && (
-                    <p className="text-xs text-gray-500 font-medium">
-                      Available In {p.sizes.length} {p.sizes.length === 1 ? 'Size' : 'Sizes'}
+                  </h3>
+                  {p.sizes && p.sizes.length > 0 ? (
+                    <p className="mt-1.5 text-xs sm:text-sm font-medium text-[#540B26]">
+                      Available in {p.sizes.length} {p.sizes.length === 1 ? 'size' : 'sizes'}
                     </p>
-                  )}
-                </Link>
-              ))}
-            </div>
-          </div>
+                  ) : p.cat ? (
+                    <p className="mt-1.5 text-xs sm:text-sm font-medium text-[#540B26]">
+                      {p.cat}
+                    </p>
+                  ) : null}
+                </div>
+              </Link>
+            ))}
+          </Carousel>
         </section>
       )}
 
-      {/* ── COOK WITH US (Recipes using this product) ── */}
+      {/* ── COOK WITH US (gaya Heinz: teks di bawah gambar, rata tengah) ── */}
       {relatedRecipes.length > 0 && (
-        <section className="py-14 px-4 sm:px-6 bg-white">
-          <div className="max-w-7xl mx-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl sm:text-3xl font-black text-[#CC0000] uppercase tracking-tight flex items-center gap-3">
-                <Utensils className="w-6 h-6" />
-                Cook With Us
-              </h2>
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/recipes"
-                  className="text-xs font-bold text-[#2b1a10] hover:text-[#CC0000] uppercase tracking-widest transition-colors mr-2 hidden sm:inline"
-                >
-                  See All Recipes
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => scrollRecipes('left')}
-                  className="w-9 h-9 rounded-full border-2 border-[#2b1a10] flex items-center justify-center hover:bg-[#2b1a10] hover:text-white transition-all cursor-pointer"
-                  aria-label="Scroll recipes left"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => scrollRecipes('right')}
-                  className="w-9 h-9 rounded-full border-2 border-[#2b1a10] flex items-center justify-center hover:bg-[#2b1a10] hover:text-white transition-all cursor-pointer"
-                  aria-label="Scroll recipes right"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+        <section className="py-14 px-4 sm:px-8 lg:px-12 bg-white">
+          <Carousel
+            title="Cook With Us"
+            itemCount={relatedRecipes.length}
+            action={
+              <Link
+                href="/recipes"
+                className="text-xs font-bold text-[#2b1a10] hover:text-[#CC0000] uppercase tracking-widest transition-colors mr-2 hidden sm:inline"
+              >
+                See All Recipes
+              </Link>
+            }
+          >
+            {relatedRecipes.map((recipe) => {
+              // Baris meta: waktu • porsi • kategori
+              const metaItems = [
+                recipe.prep_time ? `Prep ${recipe.prep_time}` : null,
+                recipe.cook_time ? `Cook ${recipe.cook_time}` : null,
+                formatServings(recipe.servings),
+                recipe.category || null,
+              ].filter(Boolean) as string[]
 
-            {/* Horizontal scroll cards */}
-            <div
-              ref={recipesScrollRef}
-              className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {relatedRecipes.map((recipe) => (
+              return (
                 <Link
                   key={recipe.id}
                   href={`/recipes/${recipe.slug}`}
-                  className="group shrink-0 w-[220px] sm:w-[260px] snap-start flex flex-col"
+                  className="group shrink-0 snap-start w-[72%] sm:w-[44%] lg:w-[29%] flex flex-col items-center text-center focus:outline-none"
                 >
-                  {/* Full-bleed image top */}
-                  <div className="w-full aspect-[4/3] overflow-hidden rounded-t-lg">
+                  {/* Gambar full-bleed, rasio sama dengan kartu produk */}
+                  <div className="w-full aspect-[4/5] overflow-hidden bg-[#e0d8cc]">
                     {recipe.main_image ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={recipe.main_image}
                         alt={recipe.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                       />
                     ) : (
-                      <div className="w-full h-full bg-[#e0d8cc] flex items-center justify-center text-4xl">
+                      <div className="w-full h-full flex items-center justify-center text-5xl">
                         🍳
                       </div>
                     )}
                   </div>
 
-                  {/* Text below image */}
-                  <div className="pt-3 px-1 pb-2 flex flex-col gap-0.5">
-                    {/* "Recipes" label */}
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                      Recipes
-                    </p>
-                    {/* Title — red bold uppercase */}
-                    <h3 className="text-sm sm:text-base font-extrabold text-[#CC0000] leading-snug uppercase tracking-tight line-clamp-2">
+                  {/* Teks di bawah gambar: judul, label "Recipes", lalu meta */}
+                  <div className="mt-4 w-full flex flex-col items-center text-center px-1">
+                    <h3 className="w-full truncate text-xl sm:text-2xl font-black text-[#CC0000] uppercase tracking-tight leading-tight font-heinz">
                       {recipe.title}
                     </h3>
-                    {/* Time metadata */}
-                    {(recipe.prep_time || recipe.cook_time) && (
-                      <p className="text-[11px] text-gray-500 font-medium mt-1">
-                        {[recipe.prep_time, recipe.cook_time].filter(Boolean).join(' · ')}
+                    <p className="mt-1.5 text-sm font-bold text-[#540B26]">
+                      Recipes
+                    </p>
+                    {metaItems.length > 0 && (
+                      <p className="mt-1 text-xs sm:text-sm font-medium text-[#540B26] flex flex-wrap items-center justify-center gap-x-2">
+                        {metaItems.map((item, i) => (
+                          <span key={`${item}-${i}`} className="inline-flex items-center gap-2">
+                            {i > 0 && <span aria-hidden="true">•</span>}
+                            <span className={i < 2 && (recipe.prep_time || recipe.cook_time) ? 'uppercase' : ''}>
+                              {item}
+                            </span>
+                          </span>
+                        ))}
                       </p>
                     )}
                   </div>
                 </Link>
-              ))}
-            </div>
+              )
+            })}
+          </Carousel>
 
-            <div className="text-center mt-8 sm:hidden">
-              <Link
-                href="/recipes"
-                className="inline-flex items-center gap-1 text-sm font-bold text-[#CC0000] hover:underline uppercase tracking-widest"
-              >
-                See All Recipes <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
+          <div className="text-center mt-4 sm:hidden">
+            <Link
+              href="/recipes"
+              className="inline-flex items-center gap-1 text-sm font-bold text-[#CC0000] hover:underline uppercase tracking-widest"
+            >
+              See All Recipes <ChevronRight className="w-4 h-4" />
+            </Link>
           </div>
         </section>
       )}
