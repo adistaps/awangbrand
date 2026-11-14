@@ -114,6 +114,7 @@ export function ProductDetailClient({
       ? product.sizes.join(', ')
       : getSpec('size') || getSpec('berat') || getSpec('packing')
   const remarkText = getSpec('remark') || getSpec('catatan')
+  const tipsText = getSpec('tips') || getSpec('tip') || getSpec('petua')
 
   function scrollRelated(dir: 'left' | 'right') {
     if (!relatedScrollRef.current) return
@@ -219,6 +220,18 @@ export function ProductDetailClient({
                   <AccordionItem title="Remark">
                     {remarkText}
                   </AccordionItem>
+                )}
+                {tipsText && (
+                  <div className="pt-5 pb-2">
+                    <h4 className="text-2xl font-black text-[#F39C12] font-heinz uppercase tracking-tight mb-2.5">
+                      Tips!
+                    </h4>
+                    <div className="bg-[#F8A01A] text-white p-5 sm:p-6 rounded-2xl shadow-sm">
+                      <p className="text-sm sm:text-[15px] font-medium leading-relaxed whitespace-pre-line">
+                        {tipsText}
+                      </p>
+                    </div>
+                  </div>
                 )}
 
                 {/* Jika tidak ada field manapun yang terisi, fallback ke specs lain */}
