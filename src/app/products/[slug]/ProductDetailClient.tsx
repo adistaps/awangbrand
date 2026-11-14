@@ -222,16 +222,9 @@ export function ProductDetailClient({
                   </AccordionItem>
                 )}
                 {tipsText && (
-                  <div className="pt-5 pb-2">
-                    <h4 className="text-2xl font-black text-[#F39C12] font-heinz uppercase tracking-tight mb-2.5">
-                      Tips!
-                    </h4>
-                    <div className="bg-[#F8A01A] text-white p-5 sm:p-6 rounded-2xl shadow-sm">
-                      <p className="text-sm sm:text-[15px] font-medium leading-relaxed whitespace-pre-line">
-                        {tipsText}
-                      </p>
-                    </div>
-                  </div>
+                  <AccordionItem title="Tips!">
+                    {tipsText}
+                  </AccordionItem>
                 )}
 
                 {/* Jika tidak ada field manapun yang terisi, fallback ke specs lain */}

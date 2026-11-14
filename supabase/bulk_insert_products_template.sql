@@ -110,7 +110,7 @@ SET
 -- ==============================================================================
 -- Keterangan:
 -- - spec_key = 'Remark' -> Muncul di accordion "Remark"
--- - spec_key = 'Tips'   -> Muncul sebagai box kartu oranye "Tips!" di bawah Remark
+-- - spec_key = 'Tips'   -> Muncul di accordion "Tips!" di bawah Remark
 -- ==============================================================================
 
 -- 1. Hapus entri Remark & Tips lama untuk produk di atas agar tidak terjadi duplikasi

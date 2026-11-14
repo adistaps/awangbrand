@@ -57,7 +57,7 @@ export function SpecificationsEditor({
         </div>
       </div>
       <p className="text-[11px] text-gray-400 mb-2.5">
-        Gunakan <strong>Remark</strong> untuk info sertifikasi/catatan (muncul di accordion), dan <strong>Tips</strong> untuk box kartu kuning &quot;Tips!&quot; di bawah Remark.
+        Gunakan <strong>Remark</strong> dan <strong>Tips</strong> untuk menambahkan accordion informasi tambahan (Ingredients, How to Use, Size, Remark, Tips!).
       </p>
       <div className="space-y-2">
         {specs.map((spec) => {
