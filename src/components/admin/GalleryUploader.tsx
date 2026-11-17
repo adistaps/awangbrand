@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { toAssetUrl } from '@/lib/storage-url'
 import { Upload, X, Loader2, GripVertical } from 'lucide-react'
 
 export interface GalleryImage {
@@ -31,12 +32,15 @@ export function GalleryUploader({
     for (const file of Array.from(files)) {
       const ext = file.name.split('.').pop()
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-      const { error } = await supabase.storage.from('product-gallery').upload(fileName, file)
+      const { error } = await supabase.storage.from('product-gallery').upload(fileName, file, {
+        cacheControl: '31536000',
+        upsert: false,
+      })
       if (!error) {
         const { data } = supabase.storage.from('product-gallery').getPublicUrl(fileName)
         newImages.push({
           id: `temp-${Date.now()}-${Math.random()}`,
-          image_url: data.publicUrl,
+          image_url: toAssetUrl(data.publicUrl),
           sort_order: images.length + newImages.length,
         })
       }

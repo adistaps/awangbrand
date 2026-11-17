@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { toAssetUrl } from '@/lib/storage-url'
 import { Upload, X, Loader2 } from 'lucide-react'
 
 export function ImageUploader({
@@ -30,7 +31,7 @@ export function ImageUploader({
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
 
     const { error: uploadError } = await supabase.storage.from(bucket).upload(fileName, file, {
-      cacheControl: '3600',
+      cacheControl: '31536000',
       upsert: false,
     })
 
@@ -41,7 +42,7 @@ export function ImageUploader({
     }
 
     const { data: publicUrlData } = supabase.storage.from(bucket).getPublicUrl(fileName)
-    onChange(publicUrlData.publicUrl)
+    onChange(toAssetUrl(publicUrlData.publicUrl))
     setUploading(false)
   }
 

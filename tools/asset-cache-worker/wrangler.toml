@@ -1,0 +1,7 @@
+name = "awang-assets"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+# URL project Supabase awangbrand (tanpa slash di akhir).
+SUPABASE_URL = "https://nvigwjlejzggkfqjqnxs.supabase.co"
