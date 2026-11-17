@@ -235,8 +235,6 @@ export function ProductsGrid({
                           <img
                             src={img}
                             alt={sub.name}
-                            loading="lazy"
-                            decoding="async"
                             className="absolute left-1/2 top-[12%] -translate-x-1/2 w-[88%] h-[130%] max-w-none object-contain object-top drop-shadow-md transition-transform duration-300 origin-top group-hover:scale-105"
                           />
                         </div>

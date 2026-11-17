@@ -14,9 +14,7 @@ const SLIDE_INTERVAL = 4000
 export function QuoteFormSection() {
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [formData, setFormData] = useState({ name: '', email: '', message: '' })
-  const [honeypot, setHoneypot] = useState('')
   const [current, setCurrent] = useState(0)
 
   // Auto slide
@@ -29,64 +27,21 @@ export function QuoteFormSection() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    setErrorMessage(null)
-
-    // Honeypot check (jika bot mengisi field tersembunyi ini, pura-pura sukses tanpa insert)
-    if (honeypot.trim()) {
-      setSubmitted(true)
-      return
-    }
-
-    const trimmedName = formData.name.trim()
-    const trimmedEmail = formData.email.trim()
-    const trimmedMessage = formData.message.trim()
-
-    // Validasi panjang & format
-    if (trimmedName.length < 1 || trimmedName.length > 100) {
-      setErrorMessage('Nama harus antara 1 sampai 100 karakter.')
-      return
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(trimmedEmail) || trimmedEmail.length < 3 || trimmedEmail.length > 254) {
-      setErrorMessage('Format email tidak valid.')
-      return
-    }
-    if (trimmedMessage.length > 2000) {
-      setErrorMessage('Pesan maksimal 2000 karakter.')
-      return
-    }
-
     setSubmitting(true)
 
-    try {
-      const supabase = createClient()
-      const { error } = await supabase.from('quote_submissions').insert({
-        name: trimmedName,
-        email: trimmedEmail,
-        message: trimmedMessage,
-        status: 'new',
-      })
+    const supabase = createClient()
+    await supabase.from('quote_submissions').insert({
+      name: formData.name,
+      email: formData.email,
+      message: formData.message,
+    })
 
-      if (error) {
-        setErrorMessage('Gagal mengirim permintaan. Silakan coba lagi.')
-        setSubmitting(false)
-        return
-      }
+    setSubmitting(false)
+    setSubmitted(true)
 
-      setSubmitting(false)
-      setSubmitted(true)
-
-      // Kirim data quotation ke WhatsApp hanya jika insert sukses
-      const waLink = buildWhatsAppLink(buildQuoteWhatsAppMessage({
-        name: trimmedName,
-        email: trimmedEmail,
-        message: trimmedMessage,
-      }))
-      window.open(waLink, '_blank', 'noopener,noreferrer')
-    } catch {
-      setErrorMessage('Terjadi kesalahan. Silakan coba lagi.')
-      setSubmitting(false)
-    }
+    // Kirim data quotation ke WhatsApp
+    const waLink = buildWhatsAppLink(buildQuoteWhatsAppMessage(formData))
+    window.open(waLink, '_blank')
   }
 
   return (
@@ -146,26 +101,6 @@ export function QuoteFormSection() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="flex flex-col gap-3.5 sm:gap-4">
-              {/* Honeypot field (hidden from screen reader & visual users) */}
-              <div className="hidden" aria-hidden="true">
-                <label htmlFor="website_hp">Leave this empty</label>
-                <input
-                  id="website_hp"
-                  type="text"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  value={honeypot}
-                  onChange={(e) => setHoneypot(e.target.value)}
-                />
-              </div>
-
-              {/* Error Alert */}
-              {errorMessage && (
-                <div className="bg-black/60 border border-white/40 text-white text-xs sm:text-sm px-4 py-3 rounded-xl font-medium">
-                  {errorMessage}
-                </div>
-              )}
-
               {/* Input Nama */}
               <div className="flex flex-col gap-1">
                 <label className="text-white text-[11px] sm:text-sm font-bold uppercase tracking-wider ml-1">
@@ -174,7 +109,6 @@ export function QuoteFormSection() {
                 <input
                   required
                   type="text"
-                  maxLength={100}
                   placeholder="Masukkan nama lengkap Anda"
                   value={formData.name}
                   onChange={(e) => setFormData((f) => ({ ...f, name: e.target.value }))}
@@ -190,7 +124,6 @@ export function QuoteFormSection() {
                 <input
                   required
                   type="email"
-                  maxLength={254}
                   placeholder="nama@email.com"
                   value={formData.email}
                   onChange={(e) => setFormData((f) => ({ ...f, email: e.target.value }))}
@@ -206,7 +139,6 @@ export function QuoteFormSection() {
                 <textarea
                   rows={3}
                   required
-                  maxLength={2000}
                   placeholder="Tuliskan spesifikasi produk, kuantitas, atau detail proyek..."
                   value={formData.message}
                   onChange={(e) => setFormData((f) => ({ ...f, message: e.target.value }))}

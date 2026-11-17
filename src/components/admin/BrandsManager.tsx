@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { revalidatePublicSite } from '@/app/admin/revalidate-actions'
 import { Plus, Trash2, X, Check, Save } from 'lucide-react'
 import { ImageUploader } from './ImageUploader'
 import type { Brand } from '@/types/database'
@@ -35,7 +34,6 @@ export function BrandsManager({
       setItems((it) => [...it, data])
       // Default aktifkan juga di detail produk
       setProductDetailIds((prev) => [...prev, data.id])
-      await revalidatePublicSite()
     }
     setSaving(false)
     setModalOpen(false)
@@ -46,7 +44,6 @@ export function BrandsManager({
     const supabase = createClient()
     await supabase.from('brands').update({ is_active: !b.is_active }).eq('id', b.id)
     setItems((it) => it.map((i) => (i.id === b.id ? { ...i, is_active: !i.is_active } : i)))
-    await revalidatePublicSite()
   }
 
   async function toggleProductDetail(brandId: string) {
@@ -70,7 +67,6 @@ export function BrandsManager({
     )
     setSavingSettings(false)
     setSettingsSaved(true)
-    await revalidatePublicSite()
     setTimeout(() => setSettingsSaved(false), 2500)
   }
 
@@ -80,7 +76,6 @@ export function BrandsManager({
     await supabase.from('brands').delete().eq('id', id)
     setItems((it) => it.filter((i) => i.id !== id))
     setProductDetailIds((prev) => prev.filter((item) => item !== id))
-    await revalidatePublicSite()
   }
 
   return (

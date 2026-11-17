@@ -1,10 +1,8 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { supabasePublic } from '@/lib/supabase/public'
+import { createClient } from '@/lib/supabase/server'
 import { RecipeDetailClient } from './RecipeDetailClient'
 import { Recipe } from '@/types/database'
-
-export const revalidate = 3600
 
 export async function generateMetadata({
   params
@@ -12,11 +10,11 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const { data: recipe } = await supabasePublic
+  const supabase = await createClient()
+  const { data: recipe } = await supabase
     .from('recipes')
     .select('title, description, main_image')
     .eq('slug', slug)
-    .eq('status', 'published')
     .single()
 
   if (!recipe) {
@@ -42,13 +40,13 @@ export default async function RecipeDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
+  const supabase = await createClient()
 
   // Fetch recipe details & linked product
-  const { data: recipe } = await supabasePublic
+  const { data: recipe } = await supabase
     .from('recipes')
     .select('*, featured_product:products(*)')
     .eq('slug', slug)
-    .eq('status', 'published')
     .single()
 
   if (!recipe) {
@@ -56,18 +54,16 @@ export default async function RecipeDetailPage({
   }
 
   // Fetch related recipes
-  const { data: relatedRecipes } = await supabasePublic
+  const { data: relatedRecipes } = await supabase
     .from('recipes')
-    .select('id, title, slug, main_image, prep_time, cook_time, servings, difficulty, calories, status')
+    .select('*')
     .neq('slug', slug)
     .eq('status', 'published')
     .limit(4)
 
   return (
-    <RecipeDetailClient
-      recipe={recipe as Recipe}
-      relatedRecipes={(relatedRecipes as Recipe[]) || []}
-      slug={slug}
-    />
+    <main className="bg-white font-sans min-h-screen">
+      <RecipeDetailClient recipe={recipe as Recipe} relatedRecipes={relatedRecipes as Recipe[]} slug={slug} />
+    </main>
   )
 }

@@ -1,10 +1,11 @@
-import { supabasePublic } from '@/lib/supabase/public'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * Mengambil daftar Brand aktif
  */
 export async function getActiveBrands() {
-  const { data: brands } = await supabasePublic
+  const supabase = await createClient()
+  const { data: brands } = await supabase
     .from('brands')
     .select('id, name, logo_url')
     .eq('is_active', true)
@@ -17,13 +18,15 @@ export async function getActiveBrands() {
  * Mengambil daftar Brand yang ditampilkan di Detail Produk
  */
 export async function getProductDetailBrands() {
+  const supabase = await createClient()
+
   const [{ data: brands }, { data: settingRows }] = await Promise.all([
-    supabasePublic
+    supabase
       .from('brands')
       .select('id, name, logo_url')
       .eq('is_active', true)
       .order('sort_order', { ascending: true }),
-    supabasePublic
+    supabase
       .from('site_settings')
       .select('value')
       .eq('key', 'product_detail_brand_ids')

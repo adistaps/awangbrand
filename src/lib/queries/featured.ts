@@ -1,4 +1,4 @@
-import { supabasePublic } from '@/lib/supabase/public'
+import { createClient } from '@/lib/supabase/server'
 
 export type FeaturedItemType = 'product' | 'recipe'
 export type FeaturedBadge = 'trending' | 'favorite' | null
@@ -21,8 +21,10 @@ export interface FeaturedItem {
  * Total maksimum = limit (default 4)
  */
 export async function getFeaturedItems(limit = 4): Promise<FeaturedItem[]> {
+  const supabase = await createClient()
+
   const [{ data: products }, { data: recipes }] = await Promise.all([
-    supabasePublic
+    supabase
       .from('products')
       .select('id, name, slug, main_image, featured_badge, featured_sort, created_at, category:categories(name)')
       .eq('status', 'published')
@@ -30,7 +32,7 @@ export async function getFeaturedItems(limit = 4): Promise<FeaturedItem[]> {
       .order('featured_sort', { ascending: true })
       .order('created_at', { ascending: false }),
 
-    supabasePublic
+    supabase
       .from('recipes')
       .select('id, title, slug, main_image, category, prep_time, servings, featured_badge, featured_sort, created_at')
       .eq('status', 'published')

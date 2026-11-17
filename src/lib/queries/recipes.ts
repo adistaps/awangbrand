@@ -1,45 +1,33 @@
-import { supabasePublic } from '@/lib/supabase/public'
+import { createClient } from '@/lib/supabase/server'
 import type { Recipe } from '@/types/database'
-
-const RECIPE_LIST_FIELDS = `
-  id,
-  title,
-  slug,
-  category,
-  prep_time,
-  cook_time,
-  servings,
-  difficulty,
-  calories,
-  description,
-  main_image,
-  is_featured,
-  status,
-  created_at,
-  home_carousel_sort,
-  featured_product:products(id, name, slug, main_image)
-`
 
 /**
  * Mengambil resep pilihan untuk tampilan Beranda "COOK SOMETHING GOOD"
+ * Mengutamakan resep yang bertanda is_featured = true, dan diurutkan
+ * sesuai home_carousel_sort ASC lalu created_at DESC.
  */
 export async function getHomeRecipes(limit = 6): Promise<Recipe[]> {
-  const { data: featuredRecipes } = await supabasePublic
+  const supabase = await createClient()
+
+  // Ambil resep pilihan (is_featured = true) terlebih dahulu
+  const { data: featuredRecipes } = await supabase
     .from('recipes')
-    .select(RECIPE_LIST_FIELDS)
+    .select('*, featured_product:products(*)')
     .eq('status', 'published')
     .eq('is_featured', true)
     .order('home_carousel_sort', { ascending: true })
     .order('created_at', { ascending: false })
     .limit(limit)
 
-  let list = (featuredRecipes as unknown as Recipe[]) || []
+  let list = (featuredRecipes as Recipe[]) || []
 
+  // Jika resep berstatus is_featured kurang dari limit (misal baru ada 1 atau 0),
+  // ambil resep berstatus published lainnya sebagai pelengkap agar carousel tali gantungan polaroid tampil penuh
   if (list.length < limit) {
     const existingIds = list.map((r) => r.id)
-    let query = supabasePublic
+    let query = supabase
       .from('recipes')
-      .select(RECIPE_LIST_FIELDS)
+      .select('*, featured_product:products(*)')
       .eq('status', 'published')
       .order('created_at', { ascending: false })
       .limit(limit - list.length)
@@ -50,7 +38,7 @@ export async function getHomeRecipes(limit = 6): Promise<Recipe[]> {
 
     const { data: moreRecipes } = await query
     if (moreRecipes && moreRecipes.length > 0) {
-      list = [...list, ...(moreRecipes as unknown as Recipe[])]
+      list = [...list, ...(moreRecipes as Recipe[])]
     }
   }
 
@@ -61,20 +49,22 @@ export async function getHomeRecipes(limit = 6): Promise<Recipe[]> {
  * Mengambil semua resep yang berstatus 'published'
  */
 export async function getAllRecipes(): Promise<Recipe[]> {
-  const { data: recipes } = await supabasePublic
+  const supabase = await createClient()
+  const { data: recipes } = await supabase
     .from('recipes')
-    .select(RECIPE_LIST_FIELDS)
+    .select('*, featured_product:products(*)')
     .eq('status', 'published')
     .order('created_at', { ascending: false })
 
-  return (recipes as unknown as Recipe[]) || []
+  return (recipes as Recipe[]) || []
 }
 
 /**
  * Mengambil detail 1 resep berdasarkan slug beserta produk rekomendasi
  */
 export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
-  const { data: recipe } = await supabasePublic
+  const supabase = await createClient()
+  const { data: recipe } = await supabase
     .from('recipes')
     .select('*, featured_product:products(*)')
     .eq('slug', slug)
@@ -87,12 +77,13 @@ export async function getRecipeBySlug(slug: string): Promise<Recipe | null> {
  * Mengambil resep terkait
  */
 export async function getRelatedRecipes(currentSlug: string, limit = 4): Promise<Recipe[]> {
-  const { data: relatedRecipes } = await supabasePublic
+  const supabase = await createClient()
+  const { data: relatedRecipes } = await supabase
     .from('recipes')
-    .select('id, title, slug, main_image, prep_time, cook_time, servings, difficulty, calories, status')
+    .select('*')
     .neq('slug', currentSlug)
     .eq('status', 'published')
     .limit(limit)
 
-  return (relatedRecipes as unknown as Recipe[]) || []
+  return (relatedRecipes as Recipe[]) || []
 }

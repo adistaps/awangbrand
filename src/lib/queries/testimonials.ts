@@ -1,12 +1,13 @@
-import { supabasePublic } from '@/lib/supabase/public'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * Mengambil daftar Testimonial aktif
  */
 export async function getActiveTestimonials() {
-  const { data: testimonials } = await supabasePublic
+  const supabase = await createClient()
+  const { data: testimonials } = await supabase
     .from('testimonials')
-    .select('id, name, role, company, content, rating, avatar_url')
+    .select('*')
     .eq('is_active', true)
     .order('sort_order', { ascending: true })
 

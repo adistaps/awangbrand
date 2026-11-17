@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { toAssetUrl } from '@/lib/storage-url'
-import { revalidatePublicSite } from '@/app/admin/revalidate-actions'
 import { Plus, Trash2, Pencil, Check, X, Image as ImageIcon, Loader2 } from 'lucide-react'
 import type { CategoryGroup, Subcategory } from '@/types/database'
 
@@ -62,13 +60,13 @@ export function CategoriesManager({
     let bucket = 'product-images'
     let { error: uploadError } = await supabase.storage
       .from(bucket)
-      .upload(fileName, file, { cacheControl: '31536000', upsert: false })
+      .upload(fileName, file, { cacheControl: '3600', upsert: false })
 
     if (uploadError && uploadError.message.toLowerCase().includes('bucket not found')) {
       bucket = 'product-thumbnails'
       const retry = await supabase.storage
         .from(bucket)
-        .upload(fileName, file, { cacheControl: '31536000', upsert: false })
+        .upload(fileName, file, { cacheControl: '3600', upsert: false })
       uploadError = retry.error
     }
 
@@ -78,7 +76,7 @@ export function CategoriesManager({
     }
 
     const { data: publicUrlData } = supabase.storage.from(bucket).getPublicUrl(fileName)
-    return toAssetUrl(publicUrlData.publicUrl)
+    return publicUrlData.publicUrl
   }
 
   async function saveHierarchy(updated: CategoryGroup[]) {
@@ -95,7 +93,6 @@ export function CategoriesManager({
     )
     if (!error) {
       setHierarchy(updated)
-      await revalidatePublicSite()
     } else {
       alert('Gagal menyimpan: ' + error.message)
     }

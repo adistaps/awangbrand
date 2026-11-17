@@ -3,7 +3,6 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { revalidatePublicSite } from '@/app/admin/revalidate-actions'
 import { Pencil, Trash2, ExternalLink, Search, Star, Check, Minus } from 'lucide-react'
 import type { Product, CategoryGroup } from '@/types/database'
 
@@ -78,7 +77,6 @@ export function ProductsTable({
     setBusy(true)
     const supabase = createClient()
     await supabase.from('products').delete().eq('id', id)
-    await revalidatePublicSite()
     setBusy(false)
     window.location.reload()
   }
@@ -87,7 +85,6 @@ export function ProductsTable({
     setBusy(true)
     const supabase = createClient()
     await supabase.from('products').update({ status }).in('id', selected)
-    await revalidatePublicSite()
     setBusy(false)
     window.location.reload()
   }
@@ -97,7 +94,6 @@ export function ProductsTable({
     setBusy(true)
     const supabase = createClient()
     await supabase.from('products').delete().in('id', selected)
-    await revalidatePublicSite()
     setBusy(false)
     window.location.reload()
   }
@@ -113,7 +109,6 @@ export function ProductsTable({
     setBusy(true)
     const supabase = createClient()
     await supabase.from('products').update({ is_featured: !currentFeatured }).eq('id', id)
-    await revalidatePublicSite()
     setBusy(false)
     window.location.reload()
   }
@@ -304,7 +299,7 @@ export function ProductsTable({
                   </td>
                   <td className="p-3.5">
                     <div className="flex items-center justify-end gap-1.5">
-                      <Link href={`/products/${p.slug}`} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-lg text-gray-400 hover:text-[#0A1628] hover:bg-gray-100 transition-colors" title="Lihat di Web">
+                      <Link href={`/products/${p.slug}`} target="_blank" className="p-1.5 rounded-lg text-gray-400 hover:text-[#0A1628] hover:bg-gray-100 transition-colors" title="Lihat di Web">
                         <ExternalLink size={15} />
                       </Link>
                       <Link href={`/admin/products/${p.id}/edit`} className="p-1.5 rounded-lg text-gray-400 hover:text-[#CC0000] hover:bg-red-50 transition-colors" title="Edit">

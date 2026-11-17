@@ -2,21 +2,13 @@
 
 import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import dynamic from 'next/dynamic'
 import { useInView } from 'framer-motion'
 import TimelineBlock01 from '@/components/ui/timeline-01'
 import { MarqueeAbout } from '@/components/Marqueeabout'
+import { WorldMap } from '@/components/ui/map'
 import { ProductCarouselSection } from '@/components/Homepage/ProductCarouselSection'
 import { RecipePreviewSection } from '@/components/About/RecipePreviewSection'
 import { QuoteFormSection } from '@/components/Homepage/QuoteFormSection'
-
-const WorldMap = dynamic(
-  () => import('@/components/ui/map').then((mod) => mod.WorldMap),
-  {
-    ssr: false,
-    loading: () => <div className="w-full aspect-2/1 max-w-[900px] mx-auto min-h-[300px]" />,
-  }
-)
 
 // Lokasi file logo halal di folder /public
 const HALAL_LOGO_SRC = '/logohalal.webp'

@@ -6,7 +6,6 @@ import { Check } from 'lucide-react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFire, faSliders } from '@fortawesome/free-solid-svg-icons'
 import { createClient } from '@/lib/supabase/client'
-import { revalidatePublicSite } from '@/app/admin/revalidate-actions'
 import { ImageUploader } from './ImageUploader'
 import { GalleryUploader, type GalleryImage } from './GalleryUploader'
 import { SpecificationsEditor, type SpecRow } from './SpecificationsEditor'
@@ -226,9 +225,6 @@ export function ProductForm({
         }))
       )
     }
-
-    // Revalidate public cache
-    await revalidatePublicSite()
 
     setSaving(false)
     router.push('/admin/products')

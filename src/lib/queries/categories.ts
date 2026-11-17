@@ -1,12 +1,13 @@
-import { supabasePublic } from '@/lib/supabase/public'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * Mengambil semua Kategori produk
  */
 export async function getAllCategories() {
-  const { data: categories } = await supabasePublic
+  const supabase = await createClient()
+  const { data: categories } = await supabase
     .from('categories')
-    .select('id, name, slug, description')
+    .select('*')
     .order('name', { ascending: true })
 
   return categories || []

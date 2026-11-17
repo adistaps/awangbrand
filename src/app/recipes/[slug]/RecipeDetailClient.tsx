@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Recipe } from '@/types/database'
-import { Check, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react'
 
 function TikTokIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
@@ -251,7 +251,10 @@ export function RecipeDetailClient({ recipe, relatedRecipes }: Props) {
                           </div>
                         </div>
 
-
+                        {/* Arrow Link Icon */}
+                        <div className="shrink-0 w-7 h-7 rounded-full bg-stone-100 group-hover:bg-[#CC0000] text-stone-500 group-hover:text-white flex items-center justify-center transition-all duration-200">
+                          <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                        </div>
                       </a>
                     )
                   })}

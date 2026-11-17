@@ -1,8 +1,5 @@
 import type { Metadata } from 'next'
-import { Suspense } from 'react'
 import { RecipesClient } from '@/app/recipes/RecipesClient'
-import { supabasePublic } from '@/lib/supabase/public'
-import type { CategoryGroup, Recipe } from '@/types/database'
 
 export const metadata: Metadata = {
   title: 'All Recipes - AwangBrand',
@@ -15,23 +12,20 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://awangbrand.com/recipes' },
 }
 
-export const revalidate = 3600
+export const dynamic = 'force-dynamic'
+
+import { createClient } from '@/lib/supabase/server'
+import type { CategoryGroup } from '@/types/database'
 
 export default async function RecipesPage() {
-  const [{ data: recipeCatRows }, { data: recipes }] = await Promise.all([
-    supabasePublic
-      .from('site_settings')
-      .select('value')
-      .eq('key', 'recipe_categories_hierarchy')
-      .order('updated_at', { ascending: false })
-      .limit(1),
-
-    supabasePublic
-      .from('recipes')
-      .select('id, title, slug, category, prep_time, cook_time, servings, difficulty, calories, description, main_image, is_featured, status, created_at, featured_product:products(id, name, slug, main_image)')
-      .eq('status', 'published')
-      .order('created_at', { ascending: false }),
-  ])
+  const supabase = await createClient()
+  // Gunakan .order + .limit(1) untuk menghindari error jika ada duplikat row di site_settings
+  const { data: recipeCatRows } = await supabase
+    .from('site_settings')
+    .select('value')
+    .eq('key', 'recipe_categories_hierarchy')
+    .order('updated_at', { ascending: false })
+    .limit(1)
 
   const recipeCatSetting = recipeCatRows?.[0] ?? null
 
@@ -40,18 +34,13 @@ export default async function RecipesPage() {
     if (recipeCatSetting?.value) {
       categoryGroups = JSON.parse(recipeCatSetting.value)
     }
-  } catch {
+  } catch (err) {
     categoryGroups = []
   }
 
   return (
     <main className="bg-white font-sans min-h-screen">
-      <Suspense fallback={<div className="p-8 text-center text-stone-400">Loading recipes...</div>}>
-        <RecipesClient
-          initialCategoryGroups={categoryGroups}
-          initialRecipes={(recipes as unknown as Recipe[]) || []}
-        />
-      </Suspense>
+      <RecipesClient initialCategoryGroups={categoryGroups} />
     </main>
   )
 }

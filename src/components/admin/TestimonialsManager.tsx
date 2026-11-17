@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { revalidatePublicSite } from '@/app/admin/revalidate-actions'
 import { Plus, Trash2, Pencil, X } from 'lucide-react'
 import { ImageUploader } from './ImageUploader'
 import type { Testimonial } from '@/types/database'
@@ -45,7 +44,6 @@ export function TestimonialsManager({ initialTestimonials }: { initialTestimonia
         .single()
       if (data) setItems((it) => [...it, data])
     }
-    await revalidatePublicSite()
     setSaving(false)
     setModalOpen(false)
   }
@@ -54,7 +52,6 @@ export function TestimonialsManager({ initialTestimonials }: { initialTestimonia
     const supabase = createClient()
     await supabase.from('testimonials').update({ is_active: !t.is_active }).eq('id', t.id)
     setItems((it) => it.map((i) => (i.id === t.id ? { ...i, is_active: !i.is_active } : i)))
-    await revalidatePublicSite()
   }
 
   async function handleDelete(id: string) {
@@ -62,7 +59,6 @@ export function TestimonialsManager({ initialTestimonials }: { initialTestimonia
     const supabase = createClient()
     await supabase.from('testimonials').delete().eq('id', id)
     setItems((it) => it.filter((i) => i.id !== id))
-    await revalidatePublicSite()
   }
 
   return (

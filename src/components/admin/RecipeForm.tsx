@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { revalidatePublicSite } from '@/app/admin/revalidate-actions'
 import { Recipe, RecipeVideoLink } from '@/types/database'
 import { Plus, Trash2, Save, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
@@ -155,7 +154,6 @@ export function RecipeForm({ initialData, products, categoryGroups = [] }: Props
         alert('Resep baru berhasil disimpan!')
       }
 
-      await revalidatePublicSite()
       router.push('/admin/recipes')
       router.refresh()
     } catch (err: any) {

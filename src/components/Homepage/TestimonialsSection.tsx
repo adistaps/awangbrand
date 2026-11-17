@@ -54,8 +54,6 @@ export function TestimonialsSection() {
               <img
                 src={item.avatar_url || '/placeholder-avatar.webp'}
                 alt={item.name || `Client ${idx + 1}`}
-                loading="lazy"
-                decoding="async"
                 className={`w-full aspect-square object-cover transition-transform duration-500 shadow-sm rounded-none ${activeIndex === idx ? 'scale-105' : 'scale-100'}`}
               />
             </div>
