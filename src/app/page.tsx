@@ -67,7 +67,7 @@ export default async function Page() {
     <main className="bg-[#FDFBF7]">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
       />
       <HeroSection />
       <FeaturedProductsSection />

@@ -142,6 +142,7 @@ export function RecipesTable({ recipes }: { recipes: any[] }) {
                       <Link
                         href={`/recipes/${item.slug}`}
                         target="_blank"
+                        rel="noopener noreferrer"
                         className="p-1.5 text-gray-400 hover:text-[#0A1628] hover:bg-gray-100 rounded-lg transition-colors"
                         title="Lihat Halaman"
                       >
