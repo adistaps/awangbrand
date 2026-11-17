@@ -200,8 +200,8 @@ export function RecipeDetailClient({ recipe, relatedRecipes }: Props) {
             {/* Video Recipe Links (TikTok / Instagram) */}
             {displayRecipe.recipe_links && displayRecipe.recipe_links.length > 0 && (
               <div className="space-y-2 pt-1">
-                <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 flex items-center gap-1.5">
-                  <span>🎬</span> Video Tutorial Resep
+                <p className="text-[10px] font-black uppercase tracking-widest text-stone-400">
+                  Video Recipe Tutorial
                 </p>
                 <div className="flex flex-col gap-2.5">
                   {displayRecipe.recipe_links.map((link, idx) => {
@@ -240,10 +240,10 @@ export function RecipeDetailClient({ recipe, relatedRecipes }: Props) {
                           <div className="min-w-0 text-left">
                             <span className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 group-hover:text-[#CC0000] transition-colors">
                               {isTiktok
-                                ? 'Tonton di TikTok'
+                                ? 'Watch on TikTok'
                                 : isInstagram
-                                ? 'Tonton di Instagram'
-                                : 'Tonton Video Resep'}
+                                ? 'Watch on Instagram'
+                                : 'Watch Recipe Video'}
                             </span>
                             <span className="block text-xs sm:text-[13px] font-bold text-[#111111] group-hover:text-[#CC0000] transition-colors truncate">
                               {link.title || displayRecipe.title}
