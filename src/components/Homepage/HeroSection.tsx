@@ -59,6 +59,8 @@ function BrandSlide() {
           <img
             src="/logo.webp"
             alt="AWANG Brand"
+            fetchPriority="high"
+            decoding="async"
             className="w-auto max-w-[90vw] h-[26vh] sm:h-[36vh] lg:h-[42vh] object-contain brightness-0 invert select-none"
             draggable={false}
           />

@@ -27,6 +27,8 @@ export async function BrandsSection() {
                 <img
                   src={brand.logo_url}
                   alt={brand.name}
+                  loading="lazy"
+                  decoding="async"
                   className="max-h-10 sm:max-h-12 w-auto object-contain transition-all duration-300"
                 />
               ) : (
