@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { supabasePublic } from '@/lib/supabase/public'
 import { ProductsGrid } from '@/components/ProductsGrid'
 
@@ -101,11 +102,13 @@ export default async function Page() {
 
       {/* PRODUCTS GRID DENGAN CLIENT FILTER & SEARCH */}
       <div className="mt-4">
-        <ProductsGrid
-          products={(products || []) as any}
-          categories={categories || []}
-          categoryGroups={categoryGroups}
-        />
+        <Suspense fallback={<div className="p-8 text-center text-stone-400">Loading products...</div>}>
+          <ProductsGrid
+            products={(products || []) as any}
+            categories={categories || []}
+            categoryGroups={categoryGroups}
+          />
+        </Suspense>
       </div>
     </main>
   )

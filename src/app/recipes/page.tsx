@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { RecipesClient } from '@/app/recipes/RecipesClient'
 import { supabasePublic } from '@/lib/supabase/public'
 import type { CategoryGroup, Recipe } from '@/types/database'
@@ -45,10 +46,12 @@ export default async function RecipesPage() {
 
   return (
     <main className="bg-white font-sans min-h-screen">
-      <RecipesClient
-        initialCategoryGroups={categoryGroups}
-        initialRecipes={(recipes as unknown as Recipe[]) || []}
-      />
+      <Suspense fallback={<div className="p-8 text-center text-stone-400">Loading recipes...</div>}>
+        <RecipesClient
+          initialCategoryGroups={categoryGroups}
+          initialRecipes={(recipes as unknown as Recipe[]) || []}
+        />
+      </Suspense>
     </main>
   )
 }
