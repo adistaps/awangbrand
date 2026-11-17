@@ -18,14 +18,14 @@ const awangTimelineData: TimelineItem[] = [
         description:
             "Our founder, a working mom and wife herself, was struggling to feed her family healthy home-cooked meals with limited time at hand. She had an enduring passion to cook authentic Malay dishes passed down by her ancestors. From its humble start in a shop house with a few employees in 2015, Awang Brand produced its paste to the Malaysian market with an eye on the wellbeing of each and every customer.",
         date: "2015",
-        image: "/time1time2.png",
+        image: "/time1.webp",
     },
     {
         title: "EXPANDING HORIZONS",
         description:
             "Awang Brand first big break came end of 2015 when we managed to penetrate into 10 hypermarkets. The factory expanded to add additional acreage. With the introductions of 150 varieties and comprehensive selection of pastes sold in retails, we now proudly serve our market with products covering a wide array of Asian cuisines.",
         date: "2015",
-        image: "/time2time2.png",
+        image: "/time2.webp",
     },
 ];
 
