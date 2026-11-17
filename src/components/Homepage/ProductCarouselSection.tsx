@@ -1,10 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, ChevronRight } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { createClient } from '@/lib/supabase/client'
 import type { Category } from '@/types/database'
 
 export interface CarouselCardItem {
@@ -48,64 +47,57 @@ function CategoryCarouselCard({
 }) {
   const img =
     item.image_url ||
-    'https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800&auto=format&fit=crop'
+    'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80'
 
-  // Gunakan themeKey dari CMS jika ada, fallback ke rotasi otomatis
-  const resolvedKey = (themeKey && CARD_THEMES[themeKey]) ? themeKey : THEME_KEYS[index % THEME_KEYS.length]
-  const theme = CARD_THEMES[resolvedKey]
+  const effectiveKey =
+    themeKey && CARD_THEMES[themeKey]
+      ? themeKey
+      : THEME_KEYS[index % THEME_KEYS.length]
+
+  const theme = CARD_THEMES[effectiveKey]
 
   return (
     <motion.div
-      data-card
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.45, delay: index * 0.06 }}
-      className="shrink-0 w-[320px] sm:w-[420px] md:w-[460px] lg:w-[500px] snap-start pt-14 pb-4"
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.5, delay: index * 0.08 }}
+      className="shrink-0 select-none"
     >
       <Link
-        href={`/products?category=${encodeURIComponent(item.name)}`}
-        className="group relative block w-full cursor-pointer focus:outline-none"
+        href={`/products?sub=${item.id}`}
+        className="group block relative focus:outline-none focus-visible:ring-2 focus-visible:ring-[#CC0000] rounded-2xl"
       >
-        {/* KARTU LATAR (gaya Heinz "FIND YOUR FLAVOR") */}
         <div
-          className={`relative w-full aspect-[4/3] sm:aspect-[1.35/1] rounded-[20px] sm:rounded-[26px] ${theme.bg} ${theme.hoverBg} transition-all duration-500 shadow-lg group-hover:shadow-2xl group-hover:scale-[1.02] flex flex-col justify-end p-5 sm:p-7 overflow-visible`}
+          className={`relative w-[240px] sm:w-[270px] md:w-[290px] h-[340px] sm:h-[370px] md:h-[400px] rounded-2xl overflow-hidden p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-2xl ${theme.bg} ${theme.hoverBg}`}
         >
-          {/* Watermark tipografi samar (pengganti ilustrasi latar Heinz) */}
-          <div className="absolute inset-0 rounded-[20px] sm:rounded-[26px] overflow-hidden pointer-events-none select-none z-0">
-            <span className="absolute left-4 top-3 -rotate-6 whitespace-nowrap font-heinz font-black uppercase leading-none text-white/[0.08] text-5xl sm:text-7xl">
-              Awang
-            </span>
-            <span className="absolute left-6 top-[44%] -rotate-3 whitespace-nowrap font-heinz font-black uppercase leading-none tracking-[0.2em] text-white/[0.07] text-base sm:text-2xl">
-              Recipe Base Paste
-            </span>
-            <span className="absolute -right-2 top-[18%] rotate-6 whitespace-nowrap font-heinz font-black uppercase leading-none text-white/[0.08] text-3xl sm:text-5xl">
-              4 ke 6
-            </span>
-          </div>
+          {/* Efek kilau halus saat hover */}
+          <div className="absolute inset-0 bg-radial from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-          {/* GAMBAR PRODUK POP-OUT: keluar ~28% dari atas kartu, ujung bawahnya
-              tenggelam di gradient */}
-          <div className="absolute inset-x-0 top-[-28%] bottom-[10%] flex items-center justify-center pointer-events-none z-10 transition-transform duration-500 ease-out group-hover:scale-105 group-hover:-translate-y-3">
-            <img
-              src={img}
-              alt={item.name}
-              draggable={false}
-              className="h-full w-auto max-w-[85%] object-contain drop-shadow-[0_14px_20px_rgba(0,0,0,0.35)] select-none"
-            />
-          </div>
-
-          {/* GRADIENT GELAP DI BAWAH KARTU (menutupi ujung bawah produk) */}
-          <div className="absolute inset-x-0 bottom-0 h-[40%] rounded-b-[20px] sm:rounded-b-[26px] bg-gradient-to-t from-black/85 via-black/45 to-transparent pointer-events-none z-20" />
-
-          {/* BAR BAWAH: Judul Subkategori & Tombol Panah Bulat */}
-          <div className="relative z-30 w-full flex items-center justify-between gap-3">
-            <h3 className="text-xl sm:text-3xl font-black text-white uppercase tracking-tight line-clamp-1 font-heinz">
+          {/* Bagian Atas: Nama Kategori */}
+          <div className="relative z-10 pr-2">
+            <h3 className="font-sans font-black text-2xl sm:text-3xl text-white uppercase tracking-tight leading-[1.08] drop-shadow-xs line-clamp-3">
               {item.name}
             </h3>
+          </div>
 
-            <div className="w-10 h-10 sm:w-14 sm:h-14 shrink-0 rounded-full border-2 border-white text-white flex items-center justify-center transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:scale-110">
-              <ChevronRight className="w-5 h-5 sm:w-7 sm:h-7" strokeWidth={2} />
+          {/* Bagian Bawah: Gambar Produk & Arrow Action */}
+          <div className="relative z-10 flex items-end justify-between mt-auto pt-4">
+            {/* Foto Produk Kategori */}
+            <div className="relative w-36 h-36 sm:w-44 sm:h-44 -ml-2 -mb-2 transition-transform duration-300 group-hover:scale-105 group-hover:rotate-[-2deg]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={img}
+                alt={item.name}
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-contain filter drop-shadow-[0_12px_16px_rgba(0,0,0,0.45)]"
+              />
+            </div>
+
+            {/* Tombol Panah Kanan Bulat */}
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/20 backdrop-blur-xs text-white flex items-center justify-center shrink-0 mb-1 transition-all duration-300 group-hover:bg-white group-hover:text-black group-hover:scale-110 shadow-sm">
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 transition-transform duration-300 group-hover:translate-x-0.5" />
             </div>
           </div>
         </div>
@@ -114,112 +106,24 @@ function CategoryCarouselCard({
   )
 }
 
-export function ProductCarouselSection() {
-  const [items, setItems] = useState<CarouselCardItem[]>([])
-  const [sectionTitle, setSectionTitle] = useState('FIND YOUR FLAVOUR')
-  const [cardColors, setCardColors] = useState<Record<string, string>>({})
-  const [loading, setLoading] = useState(true)
+interface ProductCarouselSectionProps {
+  initialItems?: CarouselCardItem[]
+  title?: string
+  cardColors?: Record<string, string>
+}
+
+export function ProductCarouselSection({
+  initialItems = [],
+  title = 'CATEGORIES TO EXPLORE',
+  cardColors = {},
+}: ProductCarouselSectionProps) {
+  const [items] = useState<CarouselCardItem[]>(initialItems)
+  const [sectionTitle] = useState(title)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
-  // Padding kiri carousel — diukur dari posisi kiri judul supaya SELALU sejajar
   const [padLeft, setPadLeft] = useState(16)
   const titleRef = useRef<HTMLHeadingElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    async function fetchCarouselData() {
-      try {
-        const supabase = createClient()
-
-        // Ambil konfigurasi dari site_settings
-        const { data: settings } = await supabase
-          .from('site_settings')
-          .select('key, value')
-          .in('key', [
-            'homepage_product_carousel_title',
-            'homepage_product_carousel_subcategories',
-            'homepage_product_carousel_card_colors',
-            'product_categories_hierarchy',
-          ])
-
-        const map: Record<string, string> = {}
-          ; (settings || []).forEach((row) => {
-            if (row.value) map[row.key] = row.value
-          })
-
-        if (map.homepage_product_carousel_title) {
-          setSectionTitle(map.homepage_product_carousel_title)
-        }
-
-        if (map.homepage_product_carousel_card_colors) {
-          try {
-            setCardColors(JSON.parse(map.homepage_product_carousel_card_colors))
-          } catch (e) { /* ignore */ }
-        }
-
-        // Kumpulkan semua subkategori dari hierarchy
-        let allSubs: CarouselCardItem[] = []
-        if (map.product_categories_hierarchy) {
-          try {
-            const hierarchy = JSON.parse(map.product_categories_hierarchy)
-            if (Array.isArray(hierarchy)) {
-              hierarchy.forEach((group: any) => {
-                if (Array.isArray(group.subcategories)) {
-                  group.subcategories.forEach((sub: any) => {
-                    allSubs.push({
-                      id: sub.id,
-                      name: sub.name,
-                      slug: sub.slug,
-                      image_url: sub.image_url || null,
-                    })
-                  })
-                }
-              })
-            }
-          } catch (e) {
-            console.error('Failed parsing hierarchy', e)
-          }
-        }
-
-        // Cek apakah ada pilihan subkategori spesifik dari CMS
-        if (map.homepage_product_carousel_subcategories) {
-          try {
-            const selectedIds: string[] = JSON.parse(map.homepage_product_carousel_subcategories)
-            if (Array.isArray(selectedIds) && selectedIds.length > 0) {
-              const ordered = selectedIds
-                .map((id) => allSubs.find((s) => s.id === id))
-                .filter(Boolean) as CarouselCardItem[]
-
-              if (ordered.length > 0) {
-                setItems(ordered)
-                return
-              }
-            }
-          } catch (e) {
-            console.error('Failed parsing selected subcategories', e)
-          }
-        }
-
-        // Fallback: Jika belum ada setting CMS spesifik, gunakan semua subkategori yang memiliki gambar
-        if (allSubs.length > 0) {
-          setItems(allSubs)
-        } else {
-          // Fallback ke tabel categories lama jika hierarchy belum ada
-          const { data: fallbackCats } = await supabase
-            .from('categories')
-            .select('id, name, slug, image_url')
-            .order('name', { ascending: true })
-
-          setItems(fallbackCats || [])
-        }
-      } catch (err) {
-        console.error('Failed to load carousel subcategories', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchCarouselData()
-  }, [])
 
   // Update status aktif/nonaktif tombol panah sesuai posisi scroll
   const updateScrollState = useCallback(() => {
@@ -234,109 +138,89 @@ export function ProductCarouselSection() {
     const title = titleRef.current
     const scroller = scrollContainerRef.current
     if (!title || !scroller) return
-    const left = title.getBoundingClientRect().left - scroller.getBoundingClientRect().left
-    if (left >= 0) setPadLeft(Math.round(left))
+
+    const titleRect = title.getBoundingClientRect()
+    const scrollerRect = scroller.getBoundingClientRect()
+    const offset = Math.max(16, titleRect.left - scrollerRect.left)
+    setPadLeft(offset)
   }, [])
 
   useEffect(() => {
-    if (loading) return
     measureAlignment()
+    window.addEventListener('resize', measureAlignment)
+    return () => window.removeEventListener('resize', measureAlignment)
+  }, [measureAlignment])
+
+  useEffect(() => {
+    const el = scrollContainerRef.current
+    if (!el) return
     updateScrollState()
-    const onResize = () => {
-      measureAlignment()
-      updateScrollState()
-    }
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [loading, items, measureAlignment, updateScrollState])
+    el.addEventListener('scroll', updateScrollState, { passive: true })
+    return () => el.removeEventListener('scroll', updateScrollState)
+  }, [items, updateScrollState])
 
   const scroll = (direction: 'left' | 'right') => {
     const el = scrollContainerRef.current
     if (!el) return
-    const firstCard = el.querySelector<HTMLElement>('[data-card]')
-    const step = firstCard ? firstCard.offsetWidth + 20 : 420
-    el.scrollBy({ left: direction === 'left' ? -step : step, behavior: 'smooth' })
+    const amount = direction === 'left' ? -320 : 320
+    el.scrollBy({ left: amount, behavior: 'smooth' })
   }
 
-  if (loading) {
-    return (
-      <section className="w-full bg-[#FFF1DF] py-16 px-4 text-center">
-        <div className="animate-pulse font-bold text-neutral-400">Loading categories...</div>
-      </section>
-    )
-  }
-
-  if (!items || items.length === 0) return null
+  if (items.length === 0) return null
 
   return (
-    <section
-      className="w-full bg-[#FFF1DF] py-16 sm:py-20 md:py-24"
-      style={{ overflowX: 'clip', overflowY: 'visible' }}
-    >
-      {/* Header & Navigasi Panah — lebar penuh dengan padding kecil seperti Heinz
-          (tanpa max-w / mx-auto supaya judul menempel dekat tepi kiri) */}
-      <div className="w-full px-4 sm:px-6 md:px-10 lg:px-14">
-        <div className="flex items-center justify-between gap-4 mb-4 sm:mb-6">
+    <section className="bg-white py-14 sm:py-20 overflow-hidden font-sans border-b border-neutral-100">
+      {/* Header: Judul & Navigasi Panah */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 sm:mb-10 flex items-end justify-between gap-4">
+        <div>
           <h2
             ref={titleRef}
-            className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.95] font-black text-[#CC0000] uppercase tracking-tight"
+            className="font-sans font-black text-2xl sm:text-4xl lg:text-5xl text-[#0A1628] uppercase tracking-tight"
           >
             {sectionTitle}
           </h2>
+        </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <button
-              onClick={() => scroll('left')}
-              disabled={!canScrollLeft}
-              aria-label="Previous Slide"
-              className="w-10 h-10 sm:w-14 sm:h-14 rounded-full border-2 border-[#4A0A22] text-[#4A0A22] bg-transparent flex items-center justify-center transition-all duration-300 cursor-pointer hover:bg-[#4A0A22] hover:text-white active:scale-95 disabled:opacity-30 disabled:cursor-default disabled:hover:bg-transparent disabled:hover:text-[#4A0A22] disabled:active:scale-100"
-            >
-              <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2} />
-            </button>
-            <button
-              onClick={() => scroll('right')}
-              disabled={!canScrollRight}
-              aria-label="Next Slide"
-              className="w-10 h-10 sm:w-14 sm:h-14 rounded-full border-2 border-[#4A0A22] text-[#4A0A22] bg-transparent flex items-center justify-center transition-all duration-300 cursor-pointer hover:bg-[#4A0A22] hover:text-white active:scale-95 disabled:opacity-30 disabled:cursor-default disabled:hover:bg-transparent disabled:hover:text-[#4A0A22] disabled:active:scale-100"
-            >
-              <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2} />
-            </button>
-          </div>
+        {/* Tombol Panah Navigasi */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => scroll('left')}
+            disabled={!canScrollLeft}
+            aria-label="Scroll left"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-neutral-300 flex items-center justify-center text-neutral-800 transition-all duration-200 hover:bg-[#CC0000] hover:text-white hover:border-[#CC0000] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-neutral-800 disabled:hover:border-neutral-300"
+          >
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => scroll('right')}
+            disabled={!canScrollRight}
+            aria-label="Scroll right"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-neutral-300 flex items-center justify-center text-neutral-800 transition-all duration-200 hover:bg-[#CC0000] hover:text-white hover:border-[#CC0000] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-neutral-800 disabled:hover:border-neutral-300"
+          >
+            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
+          </button>
         </div>
       </div>
 
-      {/* Carousel — padding kiri mengikuti posisi kiri judul (hasil pengukuran) */}
+      {/* Carousel Track */}
       <div
         ref={scrollContainerRef}
-        onScroll={updateScrollState}
-        className="flex justify-start gap-4 sm:gap-5 overflow-x-auto scrollbar-hide pt-20 pb-8 pr-4 sm:pr-6 md:pr-10 lg:pr-14 snap-x snap-mandatory scroll-smooth"
         style={{
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          paddingLeft: padLeft,
-          scrollPaddingLeft: padLeft,
+          paddingLeft: `${padLeft}px`,
+          paddingRight: `${padLeft}px`,
         }}
+        className="flex gap-4 sm:gap-6 overflow-x-auto no-scrollbar scroll-smooth py-4"
       >
-        {items.map((it, idx) => (
+        {items.map((item, index) => (
           <CategoryCarouselCard
-            key={it.id}
-            item={it}
-            index={idx}
-            themeKey={cardColors[it.id]}
+            key={item.id}
+            item={item}
+            index={index}
+            themeKey={cardColors[item.id]}
           />
         ))}
-      </div>
-
-      {/* Tombol "Lihat Semua Produk" di Tengah Bawah */}
-      <div className="w-full px-4 sm:px-6 md:px-10 lg:px-14">
-        <div className="mt-8 sm:mt-10 text-center">
-          <Link
-            href="/products"
-            className="inline-block bg-[#4A0A22] hover:bg-[#360718] text-white !text-white font-bold text-base sm:text-lg py-4 px-10 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 shadow-md"
-          >
-            Lihat Semua Produk
-          </Link>
-        </div>
       </div>
     </section>
   )

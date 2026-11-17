@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://awangbrand.com/about-us' },
 }
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 export default function Page() {
   return (

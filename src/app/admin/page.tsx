@@ -26,6 +26,12 @@ export const metadata = {
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
 
+  const sixMonthsAgo = new Date()
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5)
+  sixMonthsAgo.setDate(1)
+  sixMonthsAgo.setHours(0, 0, 0, 0)
+  const sixMonthsAgoISO = sixMonthsAgo.toISOString()
+
   const [
     { count: totalProducts },
     { count: publishedProducts },
@@ -47,8 +53,8 @@ export default async function AdminDashboardPage() {
     supabase.from('contact_submissions').select('*', { count: 'exact', head: true }).eq('status', 'new'),
     supabase.from('quote_submissions').select('*').order('created_at', { ascending: false }).limit(5),
     supabase.from('contact_submissions').select('*').order('created_at', { ascending: false }).limit(5),
-    supabase.from('quote_submissions').select('created_at'),
-    supabase.from('contact_submissions').select('created_at'),
+    supabase.from('quote_submissions').select('created_at').gte('created_at', sixMonthsAgoISO),
+    supabase.from('contact_submissions').select('created_at').gte('created_at', sixMonthsAgoISO),
     supabase.from('cashflow_transactions').select('amount, type, channel, store_name, transaction_date, description').order('transaction_date', { ascending: false }),
   ])
 

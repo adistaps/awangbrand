@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { toAssetUrl } from '@/lib/storage-url'
+import { revalidatePublicSite } from '@/app/admin/revalidate-actions'
 import { Plus, Trash2, Pencil, Check, X, Image as ImageIcon, Loader2 } from 'lucide-react'
 import type { CategoryGroup, Subcategory } from '@/types/database'
 
@@ -94,6 +95,7 @@ export function CategoriesManager({
     )
     if (!error) {
       setHierarchy(updated)
+      await revalidatePublicSite()
     } else {
       alert('Gagal menyimpan: ' + error.message)
     }

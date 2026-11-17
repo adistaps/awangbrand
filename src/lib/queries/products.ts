@@ -1,11 +1,10 @@
-import { createClient } from '@/lib/supabase/server'
+import { supabasePublic } from '@/lib/supabase/public'
 
 /**
  * Mengambil produk unggulan (Featured Products) untuk tampilan Beranda
  */
 export async function getFeaturedProducts(limit = 4) {
-  const supabase = await createClient()
-  const { data: products } = await supabase
+  const { data: products } = await supabasePublic
     .from('products')
     .select('id, name, slug, main_image, category:categories(name)')
     .eq('status', 'published')
@@ -17,13 +16,24 @@ export async function getFeaturedProducts(limit = 4) {
 }
 
 /**
- * Mengambil semua produk yang berstatus 'published'
+ * Mengambil semua produk yang berstatus 'published' untuk daftar katalog
  */
 export async function getAllProducts() {
-  const supabase = await createClient()
-  const { data: products } = await supabase
+  const { data: products } = await supabasePublic
     .from('products')
-    .select('*, category:categories(*)')
+    .select(`
+      id,
+      name,
+      slug,
+      category_id,
+      brand_id,
+      short_description,
+      main_image,
+      sizes,
+      status,
+      is_featured,
+      category:categories(id, name, slug)
+    `)
     .eq('status', 'published')
     .order('created_at', { ascending: false })
 
@@ -34,8 +44,7 @@ export async function getAllProducts() {
  * Mengambil detail 1 produk berdasarkan slug
  */
 export async function getProductBySlug(slug: string) {
-  const supabase = await createClient()
-  const { data: product } = await supabase
+  const { data: product } = await supabasePublic
     .from('products')
     .select(`
       *,
@@ -53,10 +62,9 @@ export async function getProductBySlug(slug: string) {
  * Mengambil produk terkait (Related Products)
  */
 export async function getRelatedProducts(categoryId?: string | null, currentSlug?: string, limit = 4) {
-  const supabase = await createClient()
-  let query = supabase
+  let query = supabasePublic
     .from('products')
-    .select('*')
+    .select('id, name, slug, main_image, sizes, category:categories(name)')
     .eq('status', 'published')
     .limit(limit)
 

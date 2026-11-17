@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { revalidatePublicSite } from '@/app/admin/revalidate-actions'
 import { Edit, Trash2, ExternalLink, Star } from 'lucide-react'
 
 export function RecipesTable({ recipes }: { recipes: any[] }) {
@@ -17,6 +18,7 @@ export function RecipesTable({ recipes }: { recipes: any[] }) {
     const { error } = await supabase.from('recipes').delete().eq('id', id)
     if (!error) {
       setList(list.filter((r) => r.id !== id))
+      await revalidatePublicSite()
       router.refresh()
     } else {
       alert('Gagal menghapus resep: ' + error.message)
@@ -43,6 +45,7 @@ export function RecipesTable({ recipes }: { recipes: any[] }) {
       setList((prev) =>
         prev.map((r) => (r.id === id ? { ...r, is_featured: !currentFeatured } : r))
       )
+      await revalidatePublicSite()
     } else {
       alert('Gagal mengubah status featured: ' + error.message)
     }

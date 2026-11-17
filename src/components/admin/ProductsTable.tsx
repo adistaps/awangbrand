@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { revalidatePublicSite } from '@/app/admin/revalidate-actions'
 import { Pencil, Trash2, ExternalLink, Search, Star, Check, Minus } from 'lucide-react'
 import type { Product, CategoryGroup } from '@/types/database'
 
@@ -77,6 +78,7 @@ export function ProductsTable({
     setBusy(true)
     const supabase = createClient()
     await supabase.from('products').delete().eq('id', id)
+    await revalidatePublicSite()
     setBusy(false)
     window.location.reload()
   }
@@ -85,6 +87,7 @@ export function ProductsTable({
     setBusy(true)
     const supabase = createClient()
     await supabase.from('products').update({ status }).in('id', selected)
+    await revalidatePublicSite()
     setBusy(false)
     window.location.reload()
   }
@@ -94,6 +97,7 @@ export function ProductsTable({
     setBusy(true)
     const supabase = createClient()
     await supabase.from('products').delete().in('id', selected)
+    await revalidatePublicSite()
     setBusy(false)
     window.location.reload()
   }
@@ -109,6 +113,7 @@ export function ProductsTable({
     setBusy(true)
     const supabase = createClient()
     await supabase.from('products').update({ is_featured: !currentFeatured }).eq('id', id)
+    await revalidatePublicSite()
     setBusy(false)
     window.location.reload()
   }

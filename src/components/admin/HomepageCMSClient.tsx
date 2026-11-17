@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { revalidatePublicSite } from '@/app/admin/revalidate-actions'
 import { CARD_THEMES } from '@/components/Homepage/ProductCarouselSection'
 import { FEATURED_CARD_THEMES } from '@/components/ui/FeaturedItemCard'
 import {
@@ -442,6 +443,9 @@ export function HomepageCMSClient({
 
       // Update local state dengan sort yang benar
       setAllItems(itemsWithCorrectSort)
+
+      // Revalidate cache publik ISR
+      await revalidatePublicSite()
 
       setSavedSuccess(true)
       setTimeout(() => setSavedSuccess(false), 3500)
