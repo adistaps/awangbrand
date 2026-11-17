@@ -144,7 +144,7 @@ export function RecipesClient({
             <div className="relative w-full max-w-[680px] aspect-[3/4] h-[620px] sm:h-[760px] lg:max-w-none lg:aspect-auto lg:h-[680px] xl:h-[720px] lg:w-full lg:mr-1 xl:mr-3 lg:-translate-y-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/recipe.webp"
+                src="/recipetime2.png"
                 alt="Featured Recipe"
                 className="absolute inset-0 w-full h-full object-contain object-center lg:object-right"
               />

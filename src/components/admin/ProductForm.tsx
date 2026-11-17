@@ -9,7 +9,8 @@ import { createClient } from '@/lib/supabase/client'
 import { ImageUploader } from './ImageUploader'
 import { GalleryUploader, type GalleryImage } from './GalleryUploader'
 import { SpecificationsEditor, type SpecRow } from './SpecificationsEditor'
-import type { Category, CategoryGroup } from '@/types/database'
+import { RecipeLinksEditor } from './RecipeLinksEditor'
+import type { Category, CategoryGroup, RecipeVideoLink } from '@/types/database'
 
 interface ProductFormValues {
   id?: string
@@ -28,6 +29,7 @@ interface ProductFormValues {
   is_featured: boolean
   is_carousel: boolean
   status: 'draft' | 'published'
+  recipe_links?: RecipeVideoLink[]
 }
 
 export function ProductForm({
@@ -36,12 +38,14 @@ export function ProductForm({
   initialValues,
   initialGallery = [],
   initialSpecs = [],
+  initialRecipeLinks = [],
 }: {
   categories: Category[]
   categoryGroups?: CategoryGroup[]
   initialValues?: ProductFormValues
   initialGallery?: GalleryImage[]
   initialSpecs?: SpecRow[]
+  initialRecipeLinks?: RecipeVideoLink[]
 }) {
   const router = useRouter()
   const isEdit = !!initialValues?.id
@@ -63,10 +67,14 @@ export function ProductForm({
       is_featured: false,
       is_carousel: false,
       status: 'published',
+      recipe_links: [],
     }
   )
   const [gallery, setGallery] = useState<GalleryImage[]>(initialGallery)
   const [specs, setSpecs] = useState<SpecRow[]>(initialSpecs)
+  const [recipeLinks, setRecipeLinks] = useState<RecipeVideoLink[]>(
+    initialValues?.recipe_links || initialRecipeLinks || []
+  )
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -143,6 +151,15 @@ export function ProductForm({
       }
     }
 
+    const validRecipeLinks = recipeLinks
+      .filter((l) => l.title?.trim() || l.url?.trim())
+      .map((l) => ({
+        id: l.id,
+        title: l.title.trim(),
+        url: l.url.trim(),
+        platform: l.platform || (l.url.toLowerCase().includes('instagram.com') ? 'instagram' : 'tiktok'),
+      }))
+
     const payload = {
       name: values.name,
       slug: values.slug,
@@ -157,6 +174,7 @@ export function ProductForm({
       is_featured: values.is_featured,
       is_carousel: values.is_carousel,
       status: values.status,
+      recipe_links: validRecipeLinks,
       nutritional_facts: {
         category_ids: values.category_ids || [],
         subcategory_ids: values.subcategory_ids || [],
@@ -458,6 +476,9 @@ export function ProductForm({
           </span>
         </div>
       </div>
+
+      {/* RESEP VIDEO (TIKTOK & INSTAGRAM) */}
+      <RecipeLinksEditor links={recipeLinks} onChange={setRecipeLinks} />
 
       {/* FIELD INPUT E-COMMERCE / MARKETPLACE */}
       <div className="bg-gray-50/70 p-4 sm:p-5 rounded-2xl border border-gray-100 space-y-3">

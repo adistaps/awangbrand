@@ -33,7 +33,7 @@ export function AllInSection() {
 
             {/* people.webp — di-anchor ke dasar kartu agar tidak terlihat terbang */}
             <Image
-              src="/people.webp"
+              src="/people2.webp"
               alt="AWANG Brand — Cerita & Warisan Kami"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"

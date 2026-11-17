@@ -114,7 +114,7 @@ export function ContactClient() {
         <div className="lg:col-span-6 relative w-full flex items-end justify-center pt-10 lg:pt-0" style={{ height: '540px' }}>
           <div className="relative h-full mx-auto" style={{ width: '72%', maxHeight: '540px' }}>
             <Image
-              src="/mascot.webp"
+              src="/people.webp"
               alt="Contact AWANG Team"
               fill
               className="object-contain object-bottom drop-shadow-2xl"

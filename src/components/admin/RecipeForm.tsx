@@ -3,11 +3,12 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Recipe } from '@/types/database'
+import { Recipe, RecipeVideoLink } from '@/types/database'
 import { Plus, Trash2, Save, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import type { CategoryGroup } from '@/types/database'
 import { ImageUploader } from '@/components/admin/ImageUploader'
+import { RecipeLinksEditor } from '@/components/admin/RecipeLinksEditor'
 
 interface Props {
   initialData?: Recipe
@@ -33,6 +34,9 @@ export function RecipeForm({ initialData, products, categoryGroups = [] }: Props
   const [mainImage, setMainImage] = useState(initialData?.main_image || '')
   const [tips, setTips] = useState(initialData?.tips || '')
   const [featuredProductId, setFeaturedProductId] = useState(initialData?.featured_product_id || '')
+  const [recipeLinks, setRecipeLinks] = useState<RecipeVideoLink[]>(
+    (initialData?.recipe_links as RecipeVideoLink[]) || []
+  )
   const [status, setStatus] = useState<'published' | 'draft'>(initialData?.status || 'published')
 
   function toggleCategoryId(id: string) {
@@ -105,6 +109,15 @@ export function RecipeForm({ initialData, products, categoryGroups = [] }: Props
     setLoading(true)
     try {
       const supabase = createClient()
+      const validRecipeLinks = recipeLinks
+        .filter((l) => l.title?.trim() || l.url?.trim())
+        .map((l) => ({
+          id: l.id,
+          title: l.title.trim(),
+          url: l.url.trim(),
+          platform: l.platform || (l.url.toLowerCase().includes('instagram.com') ? 'instagram' : 'tiktok'),
+        }))
+
       const payload = {
         title,
         slug,
@@ -122,6 +135,7 @@ export function RecipeForm({ initialData, products, categoryGroups = [] }: Props
         subcategory_ids: subcategoryIds,
         ingredients: ingredients.filter((i) => i.trim() !== ''),
         instructions: instructions.filter((i) => i.trim() !== ''),
+        recipe_links: validRecipeLinks,
         status,
         updated_at: new Date().toISOString()
       }
@@ -463,6 +477,9 @@ export function RecipeForm({ initialData, products, categoryGroups = [] }: Props
           </div>
         ))}
       </div>
+
+      {/* VIDEO RESEP (TIKTOK & INSTAGRAM) */}
+      <RecipeLinksEditor links={recipeLinks} onChange={setRecipeLinks} />
 
       {/* Recipe Tips & Status */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t border-gray-100">

@@ -55,10 +55,12 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           is_featured: product.is_featured,
           is_carousel: !!product.is_carousel,
           status: product.status,
+          recipe_links: (product.recipe_links as any) || [],
         }}
 
         initialGallery={(gallery || []).map((g) => ({ id: g.id, image_url: g.image_url, sort_order: g.sort_order }))}
         initialSpecs={(specs || []).map((s) => ({ id: s.id, spec_key: s.spec_key, spec_value: s.spec_value }))}
+        initialRecipeLinks={(product.recipe_links as any) || []}
       />
     </div>
   )

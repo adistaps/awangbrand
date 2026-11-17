@@ -127,7 +127,7 @@ export default function AdminLoginPage() {
       <div className="hidden lg:block lg:w-1/2 p-3 sm:p-4">
         <div className="relative w-full h-full overflow-hidden rounded-2xl">
           <img
-            src="/time1.webp"
+            src="/time1time2.png"
             alt="AWANG Brand Login Visual"
             className="w-full h-full object-cover absolute inset-0"
           />
