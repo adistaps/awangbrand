@@ -9,7 +9,6 @@ INSERT INTO public.product_reviews (
   content,
   review_date,
   photos,
-  is_verified_buyer,
   is_featured_homepage,
   status
 ) VALUES
@@ -26,7 +25,6 @@ INSERT INTO public.product_reviews (
     'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=600&q=80'
   ],
   true,
-  true,
   'published'
 ),
 (
@@ -37,7 +35,6 @@ INSERT INTO public.product_reviews (
   'Sangat membantu bila balik kerja lewat malam lapar nak makan laju-laju. Sambal dia pekat dan pedasnya mantap. Bebola isi ayam penuh tak rasa tepung langsung.',
   '2026-11-05',
   ARRAY[]::TEXT[],
-  true,
   false,
   'published'
 ),
@@ -49,7 +46,6 @@ INSERT INTO public.product_reviews (
   'Rasa sedap, cheese dalam meatball tu budak-budak suka. Untuk saya pedasnya ngam, anak kecil kena minum air banyak sikit tapi tetap habiskan licin.',
   '2026-10-28',
   ARRAY[]::TEXT[],
-  true,
   false,
   'published'
 ),
@@ -66,7 +62,6 @@ INSERT INTO public.product_reviews (
     'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'
   ],
   true,
-  true,
   'published'
 ),
 (
@@ -77,7 +72,6 @@ INSERT INTO public.product_reviews (
   'Tak payah tumis lada berpeluh-peluh kat dapur lagi. Masuk pes, tambah air, letak ikan jenahak sekejap je siap makan malam lazat. Terbaik AWANG!',
   '2026-11-01',
   ARRAY[]::TEXT[],
-  true,
   true,
   'published'
 ),
@@ -94,7 +88,6 @@ INSERT INTO public.product_reviews (
     'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80'
   ],
   true,
-  true,
   'published'
 ),
 
@@ -110,7 +103,6 @@ INSERT INTO public.product_reviews (
     'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=600&q=80'
   ],
   true,
-  true,
   'published'
 ),
 (
@@ -121,7 +113,6 @@ INSERT INTO public.product_reviews (
   'Gaul dengan nasi panas dan telur mata pun dah cukup nikmat. Packaging kemas dan kualiti terjamin Halal.',
   '2026-11-08',
   ARRAY[]::TEXT[],
-  true,
   false,
   'published'
 ),
@@ -138,7 +129,6 @@ INSERT INTO public.product_reviews (
     'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80'
   ],
   true,
-  true,
   'published'
 ),
 
@@ -151,7 +141,6 @@ INSERT INTO public.product_reviews (
   'Udang banyak dan fresh, tak hanyir langsung. Sambal berapi dia betul-betul membakar selera. Sangat rekomen untuk peminat pedas tegar.',
   '2026-11-13',
   ARRAY[]::TEXT[],
-  true,
   true,
   'published'
 );

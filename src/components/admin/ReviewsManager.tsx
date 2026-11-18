@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Plus, Trash2, Pencil, X, Star, Image as ImageIcon, CheckCircle, ExternalLink } from 'lucide-react'
+import { Plus, Trash2, Pencil, X, Star, Image as ImageIcon, ExternalLink } from 'lucide-react'
 import { ReviewPhotosUploader } from './ReviewPhotosUploader'
 import type { ProductReview, Product } from '@/types/database'
 
@@ -209,12 +209,6 @@ export function ReviewsManager({ initialReviews, products }: Props) {
                     {item.product && (
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-stone-100 text-stone-700 text-xs font-bold">
                         {item.product.name}
-                      </span>
-                    )}
-
-                    {item.is_verified_buyer && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                        <CheckCircle size={12} /> Verified Buyer
                       </span>
                     )}
 
@@ -429,16 +423,6 @@ export function ReviewsManager({ initialReviews, products }: Props) {
 
               {/* Opsi Tambahan */}
               <div className="pt-3 border-t border-gray-100 flex flex-wrap gap-6">
-                <label className="flex items-center gap-2 cursor-pointer font-bold text-gray-700">
-                  <input
-                    type="checkbox"
-                    checked={form.is_verified_buyer}
-                    onChange={(e) => setForm({ ...form, is_verified_buyer: e.target.checked })}
-                    className="rounded text-[#CC0000] focus:ring-[#CC0000] w-4 h-4"
-                  />
-                  <span>Tandai sebagai "Verified Buyer"</span>
-                </label>
-
                 <label className="flex items-center gap-2 cursor-pointer font-bold text-gray-700">
                   <input
                     type="checkbox"

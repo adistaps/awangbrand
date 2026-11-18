@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import { Star, ChevronLeft, ChevronRight, CheckCircle, X } from 'lucide-react'
+import { Star, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import type { ProductReview } from '@/types/database'
 
 interface HomepageReviewsSectionProps {
@@ -41,19 +41,14 @@ export function HomepageReviewsSection({ initialReviews }: HomepageReviewsSectio
   return (
     <section className="w-full bg-[#FAF6ED] py-16 sm:py-24 border-t border-[#590014]/10 font-sans overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 sm:mb-12">
           <div>
-            <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#CC0000] block mb-2">
-              Customer Stories
-            </span>
+
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#590014] tracking-tight leading-tight">
               What Our Customers Say
             </h2>
-            <p className="text-stone-600 text-xs sm:text-sm font-medium mt-2 max-w-xl">
-              Ulasan jujur dari pelanggan setia masakan warisan Melayu AWANG di seluruh Malaysia & Indonesia.
-            </p>
           </div>
 
           {/* Navigation Arrows */}
@@ -104,11 +99,7 @@ export function HomepageReviewsSection({ initialReviews }: HomepageReviewsSectio
                     ))}
                   </div>
 
-                  {review.is_verified_buyer && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-stone-600 bg-stone-100 px-2 py-0.5 rounded">
-                      <CheckCircle size={10} className="text-[#CC0000]" /> Verified
-                    </span>
-                  )}
+
                 </div>
 
                 {/* Judul & Isi Review */}
@@ -147,7 +138,7 @@ export function HomepageReviewsSection({ initialReviews }: HomepageReviewsSectio
               </div>
 
               {/* Footer Review: Nama & Produk Terkait */}
-              <div className="pt-5 mt-5 border-t border-stone-100 flex items-center justify-between gap-3">
+              <div className="pt-5 mt-5 flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <span className="block text-xs font-bold text-stone-900 truncate">
                     {review.reviewer_name}

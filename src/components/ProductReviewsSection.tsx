@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Star, ChevronDown, CheckCircle, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { Star, ChevronDown, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import type { ProductReview } from '@/types/database'
 
 interface ProductReviewsSectionProps {
@@ -274,14 +274,9 @@ export function ProductReviewsSection({ productName, reviews }: ProductReviewsSe
                   {review.title}
                 </h3>
 
-                {/* Reviewer Name & Verified */}
+                {/* Reviewer Name */}
                 <div className="flex items-center gap-2 text-xs">
                   <span className="font-bold text-[#CC0000]">{review.reviewer_name}</span>
-                  {review.is_verified_buyer && (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-stone-500 bg-stone-100 px-2 py-0.5 rounded">
-                      <CheckCircle size={11} className="text-[#CC0000]" /> Verified Purchaser
-                    </span>
-                  )}
                 </div>
 
                 {/* Waktu Review */}
@@ -315,12 +310,6 @@ export function ProductReviewsSection({ productName, reviews }: ProductReviewsSe
                   </div>
                 )}
 
-                {/* Tag Asal Produk */}
-                <div className="pt-2">
-                  <span className="inline-block border border-stone-200 text-[11px] font-medium text-stone-600 px-3 py-1 rounded-md bg-stone-50">
-                    Originally posted on {productName}
-                  </span>
-                </div>
 
               </div>
             ))}
