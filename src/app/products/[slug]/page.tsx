@@ -113,6 +113,15 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     (a: { sort_order: number }, b: { sort_order: number }) => a.sort_order - b.sort_order
   )
 
+  // Ambil review untuk produk ini
+  const { data: reviews } = await supabase
+    .from('product_reviews')
+    .select('*')
+    .eq('product_id', product.id)
+    .eq('status', 'published')
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: false })
+
   return (
     <ProductDetailClient
       product={product}
@@ -120,6 +129,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
       specs={specs}
       relatedProducts={relatedProducts}
       relatedRecipes={relatedRecipes}
+      reviews={reviews || []}
       brands={brands || []}
     />
   )

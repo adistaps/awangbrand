@@ -9,6 +9,7 @@ import { MarqueeSection } from '@/components/Homepage/MarqueeSection'
 import { FeaturedProductsSection } from '@/components/Homepage/FeaturedProductsSection'
 import { RecipesBentoSection } from '@/components/Homepage/RecipesBentoSection'
 import { TestimonialsSection } from '@/components/Homepage/TestimonialsSection'
+import { HomepageReviewsSection } from '@/components/Homepage/HomepageReviewsSection'
 import { BrandsSection } from '@/components/Homepage/BrandsSection'
 import { AllInSection } from '@/components/Homepage/AllInSection'
 import { createClient } from '@/lib/supabase/server'
@@ -63,6 +64,16 @@ export default async function Page() {
     }
   }
 
+  // Ambil review pilihan untuk homepage (yang ditandai is_featured_homepage = true)
+  const { data: featuredReviews } = await supabase
+    .from('product_reviews')
+    .select('*, product:products(id, name, slug, main_image)')
+    .eq('is_featured_homepage', true)
+    .eq('status', 'published')
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: false })
+    .limit(10)
+
   return (
     <main className="bg-[#FDFBF7]">
       <script
@@ -84,6 +95,7 @@ export default async function Page() {
       />
       <MarqueeSection />
       <AllInSection />
+      <HomepageReviewsSection initialReviews={featuredReviews || []} />
       <TestimonialsSection />
       <BrandsSection />
     </main>

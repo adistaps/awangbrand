@@ -17,6 +17,7 @@ import {
   TrendingUp,
   Wallet,
   Sparkles,
+  Star,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -26,6 +27,7 @@ const navItems = [
   { href: '/admin/cashflow', label: 'Cashflow & Penjualan', icon: Wallet },
   { href: '/admin/products', label: 'Produk', icon: Package },
   { href: '/admin/recipes', label: 'Resep', icon: Tags },
+  { href: '/admin/reviews', label: 'Ulasan Produk', icon: Star },
   { href: '/admin/categories', label: 'Kategori', icon: Tags },
   { href: '/admin/testimonials', label: 'Testimoni', icon: MessageSquareQuote },
   { href: '/admin/brands', label: 'Brand & Mitra', icon: Building2 },

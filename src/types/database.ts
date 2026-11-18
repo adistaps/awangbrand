@@ -174,3 +174,26 @@ export interface CashflowTransaction {
   created_at: string
   brand?: Brand | null
 }
+
+export interface ProductReview {
+  id: string
+  product_id: string | null
+  reviewer_name: string
+  rating: number
+  title: string
+  content: string
+  review_date: string | null
+  photos: string[]
+  is_verified_buyer: boolean
+  is_featured_homepage: boolean
+  status: 'published' | 'draft'
+  sort_order: number
+  created_at: string
+  updated_at?: string
+  product?: {
+    id: string
+    name: string
+    slug: string
+    main_image: string | null
+  } | null
+}

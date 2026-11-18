@@ -6,7 +6,8 @@ import Link from 'next/link'
 import { ShoppingBag, X, ChevronRight, ChevronLeft, Plus, Minus, ArrowUpRight } from 'lucide-react'
 import { ProductGallery } from '@/components/ProductGallery'
 import { ProductViewTracker } from '@/components/ProductViewTracker'
-import type { RecipeVideoLink } from '@/types/database'
+import { ProductReviewsSection } from '@/components/ProductReviewsSection'
+import type { RecipeVideoLink, ProductReview } from '@/types/database'
 
 function TikTokIcon({ className = 'w-4 h-4' }: { className?: string }) {
   return (
@@ -62,6 +63,7 @@ interface ProductDetailClientProps {
   specs: { id: string; spec_key: string; spec_value: string }[]
   relatedProducts: RelatedProduct[]
   relatedRecipes?: RelatedRecipe[]
+  reviews?: ProductReview[]
   brands?: { id: string; name: string; logo_url: string | null }[]
 }
 
@@ -201,6 +203,7 @@ export function ProductDetailClient({
   specs,
   relatedProducts,
   relatedRecipes = [],
+  reviews = [],
   brands = [],
 }: ProductDetailClientProps) {
   const [isBuyModalOpen, setIsBuyModalOpen] = useState(false)
@@ -578,6 +581,9 @@ export function ProductDetailClient({
       )}
 
       {/* ── BUY MODAL ── */}
+      {/* Customer Reviews Section */}
+      <ProductReviewsSection productName={product.name} reviews={reviews} />
+
       {isBuyModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
           <div className="relative w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100">
