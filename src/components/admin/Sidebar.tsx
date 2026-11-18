@@ -67,19 +67,19 @@ export function Sidebar({
     <aside className="relative w-full lg:w-64 shrink-0 bg-[#CC0000] text-white h-full flex flex-col z-20">
 
       {/* Header / Logo */}
-      <div className="relative z-10 p-5 border-b border-white/15 flex items-center shrink-0">
+      <div className="relative z-10 p-4 border-b border-white/15 flex items-center shrink-0">
         <Image
           src="/logo.webp"
           alt="AWANG Logo"
-          width={130}
-          height={38}
-          className="object-contain h-9 w-auto brightness-0 invert"
+          width={120}
+          height={34}
+          className="object-contain h-8 w-auto brightness-0 invert"
           priority
         />
       </div>
 
-      {/* Navigasi Utama */}
-      <nav className="relative z-10 flex-1 min-h-0 py-4 pl-4 lg:pr-0 pr-4 space-y-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
+      {/* Navigasi Utama - Compact & Tanpa Scrollbar */}
+      <nav className="relative z-10 flex-1 min-h-0 py-2.5 pl-3.5 lg:pr-0 pr-3.5 space-y-0.5 overflow-hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {navItems.map(({ href, label, icon: Icon, exact }) => {
           const active = exact ? pathname === href : pathname.startsWith(href)
           const badge =
@@ -94,18 +94,18 @@ export function Sidebar({
               key={href}
               href={href}
               onClick={onClose}
-              className={`flex items-center justify-between gap-3 px-4 py-3 font-semibold text-sm transition-all duration-200 ${active
-                ? 'bg-white !text-[#CC0000] rounded-l-2xl lg:-mr-3 pr-6 shadow-sm relative z-10'
+              className={`flex items-center justify-between gap-2.5 px-3.5 py-2 font-semibold text-[13px] transition-all duration-200 ${active
+                ? 'bg-white !text-[#CC0000] rounded-l-2xl lg:-mr-3 pr-5 shadow-sm relative z-10'
                 : 'text-white/80 hover:bg-white/10 hover:text-white rounded-xl'
                 }`}
             >
-              <span className="flex items-center gap-3">
-                <Icon size={19} className={active ? '!text-[#CC0000]' : 'text-white/80'} />
+              <span className="flex items-center gap-2.5">
+                <Icon size={17} className={active ? '!text-[#CC0000]' : 'text-white/80'} />
                 <span className={active ? '!text-[#CC0000]' : ''}>{label}</span>
               </span>
               {badge > 0 && (
                 <span
-                  className={`text-[10px] font-extrabold rounded-full min-w-[20px] h-[20px] flex items-center justify-center px-1.5 ${active ? 'bg-[#CC0000] text-white' : 'bg-white text-[#CC0000]'
+                  className={`text-[9px] font-extrabold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1 ${active ? 'bg-[#CC0000] text-white' : 'bg-white text-[#CC0000]'
                     }`}
                 >
                   {badge}
@@ -117,21 +117,21 @@ export function Sidebar({
       </nav>
 
       {/* Footer Akun & Logout */}
-      <div className="relative z-10 p-4 border-t border-white/15 space-y-2 shrink-0 mt-auto bg-[#CC0000]">
-        <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/10">
-          <UserCircle size={22} className="text-white/80 shrink-0" />
+      <div className="relative z-10 p-3.5 border-t border-white/15 space-y-1.5 shrink-0 mt-auto bg-[#CC0000]">
+        <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-white/10">
+          <UserCircle size={20} className="text-white/80 shrink-0" />
           <div className="min-w-0">
-            <p className="text-xs font-bold text-white truncate">
+            <p className="text-[11px] font-bold text-white truncate">
               {userEmail || 'Memuat...'}
             </p>
-            <p className="text-[10px] text-white/60">Akun aktif</p>
+            <p className="text-[9px] text-white/60">Akun aktif</p>
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-white/80 hover:bg-white/15 hover:text-white transition-colors cursor-pointer"
+          className="w-full flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white/80 hover:bg-white/15 hover:text-white transition-colors cursor-pointer"
         >
-          <LogOut size={16} />
+          <LogOut size={15} />
           Keluar
         </button>
       </div>
